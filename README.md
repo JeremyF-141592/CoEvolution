@@ -1,2 +1,8 @@
 # CoEvolution
- Internship AMAC 2020 - CoEvolution of policies and environments 
+ 
+ POET Implementation as in Wang, rui and Lehman, Joel, and Clune, Jeff, and Stanley, Kenneth O. 2019 Uber AI Labs.
+ 
+ # Install
+ 
+ todo
+ 
