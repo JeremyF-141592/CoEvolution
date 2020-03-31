@@ -13,7 +13,7 @@ from Box2D.b2 import (edgeShape, circleShape, fixtureDef,
 from gym import spaces
 from gym.utils import seeding
 from collections import namedtuple
-from Utils.Environment_Interface import EnvironmentInterface
+from Utils.Environments import EnvironmentInterface
 
 # This is simple 4-joints walker robot environment.
 #
@@ -42,7 +42,6 @@ from Utils.Environment_Interface import EnvironmentInterface
 # To solve hardcore version you need 300 points in 2000 time steps.
 #
 # Created by Oleg Klimov. Licensed on the same terms as the rest of OpenAI Gym.
-
 Env_config = namedtuple('Env_config', [
     'name',
     'ground_roughness',
@@ -631,3 +630,42 @@ class BipedalWalkerCustom(EnvironmentInterface):
         self.viewer.draw_polyline(f + [f[0]], color=(0, 0, 0), linewidth=2)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
+
+    # pickle
+    def __getstate__(self):
+        dic = dict()
+        dic["config"] = self.config
+        return dic
+
+    def __setstate__(self, dic):
+        self.spec = None
+        self.set_env_config(dic["config"])
+        self.env_seed = None
+        self._seed()
+        self.viewer = None
+
+        self.world = Box2D.b2World()
+        self.terrain = None
+        self.hull = None
+
+        self.prev_shaping = None
+        self.fd_polygon = fixtureDef(
+            shape=polygonShape(vertices=[(0, 0),
+                                         (1, 0),
+                                         (1, -1),
+                                         (0, -1)]),
+            friction=FRICTION)
+
+        self.fd_edge = fixtureDef(
+            shape=edgeShape(vertices=[(0, 0),
+                                      (1, 1)]),
+            friction=FRICTION,
+            categoryBits=0x0001,
+        )
+
+        self._reset()
+
+        high = np.array([np.inf] * 24)
+        self.action_space = spaces.Box(
+            np.array([-1, -1, -1, -1]), np.array([+1, +1, +1, +1]))
+        self.observation_space = spaces.Box(-high, high)

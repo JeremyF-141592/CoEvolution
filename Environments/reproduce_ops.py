@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from poet_distributed.niches.box2d.env import Env_config
+from Environments.bipedal_walker_custom import Env_config
 import numpy as np
 
 

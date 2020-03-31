@@ -17,11 +17,12 @@ class NeuralAgent(Agent):
         model.add(Dense(size_list[len(size_list)-1], activation=activation))
         model.build(input_shape=(size_list[0],))
         self.model = model
+        self.size_list = size_list
 
     def randomize(self):
-        wei = self.model.get_weights()
-        for i in range(len(wei)):
-            wei[i] = np.random.uniform(-1, 1, wei[i].shape)
+        wei = self.get_weights()
+        wei = np.random.uniform(-1, 1, wei.shape)
+        self.set_weights(wei)
 
     def get_weights(self):
         # Return weights as a flattened array
@@ -49,6 +50,16 @@ class NeuralAgent(Agent):
         stringlist = []
         self.model.summary(print_fn=lambda x: stringlist.append(x))
         return "\n".join(stringlist)
+
+    def __getstate__(self):
+        dic = dict()
+        dic["weights"] = self.get_weights()
+        dic["size_list"] = self.size_list
+        return dic
+
+    def __setstate__(self, state):
+        self.__init__(state["size_list"])
+        self.set_weights(state["weights"])
 
 
 class NeuralAgentFactory(AgentFactory):
