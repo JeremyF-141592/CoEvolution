@@ -10,5 +10,6 @@ def Evaluate_Candidates(ea_list, env, args):
         c.append(ES_Step(ea_list[m][1], env, args))
 
     scores = Configuration.lview.map(env, c)
+    Configuration.budget_spent[-1] += len(c)
     scores = np.array(scores)
     return c[scores.argmax()]

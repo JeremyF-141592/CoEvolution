@@ -5,6 +5,7 @@ from POET.LocalTraining import ES_Step
 from POET.Selection import Evaluate_Candidates
 from Utils.Agents import AgentFactory, Agent
 from Utils.Environments import EnvironmentInterface
+import numpy as np
 import ipyparallel as ipp
 import argparse
 import json
@@ -39,20 +40,20 @@ parser = argparse.ArgumentParser(description='POET Implementation as in Wang, ru
 
 parser.add_argument('--E_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
-parser.add_argument('--Pop_size', type=int, default=2, help='Population size')
+parser.add_argument('--Pop_size', type=int, default=100, help='Population size')
 parser.add_argument('--alpha', type=float, default=0.01, help='Learning Rate for local ES-optimization')
 parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
-parser.add_argument('--T', type=int, default=100, help='Iterations limit')
-parser.add_argument('--N_mutate', type=int, default=2, help='Number of steps before attempting mutation')
-parser.add_argument('--N_transfer', type=int, default=2, help='Number of steps before attempting transfer')
-parser.add_argument('--max_children', type=int, default=10, help='maximum number of children per reproduction')
-parser.add_argument('--max_admitted', type=int, default=10, help='maximum number of children admitted per reproduction')
+parser.add_argument('--T', type=int, default=400, help='Iterations limit')
+parser.add_argument('--N_mutate', type=int, default=25, help='Number of steps before attempting mutation')
+parser.add_argument('--N_transfer', type=int, default=25, help='Number of steps before attempting transfer')
+parser.add_argument('--max_children', type=int, default=16, help='maximum number of children per reproduction')
+parser.add_argument('--max_admitted', type=int, default=16, help='maximum number of children admitted per reproduction')
 parser.add_argument('--capacity', type=int, default=10, help='maximum number of active environments - REPLACED'
                                                              'by Pop_size.')
 parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair')
-parser.add_argument('--mc_min', type=int, default=-198, help='Minimal number of individual solving an env for the MC')
-parser.add_argument('--mc_max', type=int, default=300, help='Maximal number of individual solving an env for the MC')
-parser.add_argument('--batch_size', type=int, default=2, help='Batch size for ES gradient descent')
+parser.add_argument('--mc_min', type=int, default=25, help='Minimal environment novelty score to pass MC')
+parser.add_argument('--mc_max', type=int, default=340, help='Maximal environment novelty score to pass MC')
+parser.add_argument('--batch_size', type=int, default=64, help='Batch size for ES gradient descent')
 
 parser.add_argument('--resume', type=str, default="", help="Resume execution from folder.")
 parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
@@ -80,6 +81,11 @@ if resume != "":
     resume_from = len(filenames)
     with open(f"{ea_path}", "rb") as f:
         ea_list_resume = pickle.load(f)
+    with open(f"{resume}/Archive.pickle", "rb") as f:
+        Configuration.archive = pickle.load(f)
+    with open(f"{args.save_to}/TotalBudget.json", 'r') as f:
+        budget_dic = json.load(f)
+        Configuration.budget_spent = budget_dic["Budget_per_step"]
     print(f"Execution successfully resumed from {resume} .")
 else:
     if not os.path.exists(args.save_to):
@@ -93,6 +99,7 @@ else:
 EA_List = ea_init(args) if resume == "" else ea_list_resume
 for t in range(resume_from, args.T):
     print(f"Iteration {t} ...", end=" ")
+    Configuration.budget_spent.append(0)
 
     if t > 0 and t % args.N_mutate == 0:
         print("Mutate ...", end=" ")
@@ -118,3 +125,10 @@ for t in range(resume_from, args.T):
     print("Done.")
     with open(f'{args.save_to}/Iteration {t}.pickle', 'wb') as f:
         pickle.dump(EA_List, f)
+    with open(f'{args.save_to}/Archive.pickle', 'wb') as f:
+        pickle.dump(Configuration.archive, f)
+    with open(f"{args.save_to}/TotalBudget.json", 'w') as f:
+        budget_dic = dict()
+        budget_dic["Budget_per_step"] = Configuration.budget_spent
+        budget_dic["Total"] = sum(Configuration.budget_spent)
+        json.dump(budget_dic, f)

@@ -14,7 +14,8 @@ def ES_Step(theta, E, args, in_place=False):
         thetas.append(new_theta)
 
     scores = Configuration.lview.map(E, thetas)
-
+    Configuration.budget_spent[-1] += len(thetas)
+	
     summed_weights = np.zeros(og_weights.shape)
     for i in range(len(scores)):
         summed_weights += scores[i] * shared_gaussian_table[i]

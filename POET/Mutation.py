@@ -56,6 +56,7 @@ def mc_satisfied(child_list, args):
     # !!! ----------------------------------------------------- !!!!
     for i in range(args.nb_rounds):
         partial_result = Configuration.lview.map(paired_execution, child_list)
+        Configuration.budget_spent[-1] += len(child_list)
         for k in range(len(partial_result)):
             results[k] += partial_result[k]
     results /= args.nb_rounds
