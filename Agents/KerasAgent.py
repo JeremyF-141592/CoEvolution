@@ -53,13 +53,13 @@ class NeuralAgent(Agent):
 
     def __getstate__(self):
         dic = dict()
-        dic["weights"] = self.get_weights()
+        dic["as_vector"] = self.get_weights()
         dic["size_list"] = self.size_list
         return dic
 
     def __setstate__(self, state):
         self.__init__(state["size_list"])
-        self.set_weights(state["weights"])
+        self.set_weights(state["as_vector"])
 
 
 class NeuralAgentFactory(AgentFactory):

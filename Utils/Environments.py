@@ -32,7 +32,8 @@ class EnvironmentInterface(gym.Env):
                 total_reward += exceed_reward
                 break
 
-        return Configuration.metric(agent, total_reward, Configuration.observer(path))
+        return Configuration.metric(agent.__getstate__()["as_vector"], self.__getstate__()["as_vector"], 
+									total_reward, Configuration.observer(path), Configuration.archive)
 
     @abstractmethod
     def __getstate__(self):

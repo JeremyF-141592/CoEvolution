@@ -634,12 +634,12 @@ class BipedalWalkerCustom(EnvironmentInterface):
     # pickle
     def __getstate__(self):
         dic = dict()
-        dic["config"] = self.config
+        dic["as_vector"] = self.config
         return dic
 
     def __setstate__(self, dic):
         self.spec = None
-        self.set_env_config(dic["config"])
+        self.set_env_config(dic["as_vector"])
         self.env_seed = None
         self._seed()
         self.viewer = None

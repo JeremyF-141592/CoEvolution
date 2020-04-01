@@ -39,7 +39,7 @@ parser = argparse.ArgumentParser(description='POET Implementation as in Wang, ru
 
 parser.add_argument('--E_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
-parser.add_argument('--Pop_size', type=int, default=64, help='Population size')
+parser.add_argument('--Pop_size', type=int, default=2, help='Population size')
 parser.add_argument('--alpha', type=float, default=0.01, help='Learning Rate for local ES-optimization')
 parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
 parser.add_argument('--T', type=int, default=100, help='Iterations limit')
@@ -50,7 +50,7 @@ parser.add_argument('--max_admitted', type=int, default=10, help='maximum number
 parser.add_argument('--capacity', type=int, default=10, help='maximum number of active environments - REPLACED'
                                                              'by Pop_size.')
 parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair')
-parser.add_argument('--mc_min', type=int, default=-200, help='Minimal number of individual solving an env for the MC')
+parser.add_argument('--mc_min', type=int, default=-198, help='Minimal number of individual solving an env for the MC')
 parser.add_argument('--mc_max', type=int, default=300, help='Maximal number of individual solving an env for the MC')
 parser.add_argument('--batch_size', type=int, default=2, help='Batch size for ES gradient descent')
 
@@ -113,7 +113,8 @@ for t in range(resume_from, args.T):
             top_debug = max(top_debug, debug_top)
             if E(theta_top) > E(theta):
                 theta = theta_top
+
+        print("\t Best current score (debug) :", top_debug)
     print("Done.")
-    print("\t Best current score (debug) :", top_debug)
     with open(f'{args.save_to}/Iteration {t}.pickle', 'wb') as f:
         pickle.dump(EA_List, f)

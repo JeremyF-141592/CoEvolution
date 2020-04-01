@@ -2,6 +2,8 @@ import numpy as np
 from Environments.reproduce_ops import Reproducer
 from Parameters import Configuration
 from POET.Selection import Evaluate_Candidates
+import Utils.Metrics
+import pickle
 
 fitness_median = float("-inf")
 
@@ -34,6 +36,12 @@ def mutate_envs(ea_list, args):
 
 def eligible_to_reproduce(ea_pair):
     # TODO - find something useful to put here, original implementation -> check for duplicates
+    # Here, we just expand the environment archive
+    E, theta = ea_pair
+    env_vector = pickle.dumps(E)
+    if not E in Configuration.archive:
+        Configuration.archive.append(env_vector)
+
     return True
 
 
@@ -42,11 +50,17 @@ def mc_satisfied(child_list, args):
     env_scores = list()
     new_list = list()
     results = np.zeros(len(child_list))
+    # !!! Change Score Metric to novelty over environments only !!!!
+    previous_metric = Configuration.metric
+    Configuration.metric = Utils.Metrics.environment_novelty_metric
+    # !!! ----------------------------------------------------- !!!!
     for i in range(args.nb_rounds):
         partial_result = Configuration.lview.map(paired_execution, child_list)
         for k in range(len(partial_result)):
             results[k] += partial_result[k]
     results /= args.nb_rounds
+    # !!! Change it back !!!!
+    Configuration.metric = previous_metric
     for i in range(len(results)):
         if args.mc_min < results[i] < args.mc_max:
             new_list.append(child_list[i])

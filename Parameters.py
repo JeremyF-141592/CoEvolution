@@ -6,6 +6,7 @@ class Configuration:
     metric = None
     lview = None
     rc = None
+    archive = None
 
     @staticmethod
     def make():
@@ -28,3 +29,5 @@ class Configuration:
 
         Configuration.observer = Utils.Observers.empty_observer
         Configuration.metric = Utils.Metrics.fitness_metric
+        Configuration.archive = []
+        Configuration.knn = 8
