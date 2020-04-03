@@ -6,7 +6,6 @@ class Configuration:
     metric = None
     lview = None
     rc = None
-	
     archive = []
     budget_spent = []
     knn = 5
@@ -14,7 +13,7 @@ class Configuration:
     @staticmethod
     def make():
         from Environments.bipedal_walker_custom import BipedalWalkerCustom, Env_config
-        from Agents.KerasAgent import NeuralAgentFactory
+        from Agents.NumpyAgent import NeuralAgentNumpyFactory
         import Utils.Metrics
         import Utils.Observers
 
@@ -28,7 +27,7 @@ class Configuration:
                                               stair_height=[],
                                               stair_width=[],
                                               stair_steps=[])
-        Configuration.agentFactory = NeuralAgentFactory([24, 12, 4])
+        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 10)
 
         Configuration.observer = Utils.Observers.empty_observer
         Configuration.metric = Utils.Metrics.fitness_metric

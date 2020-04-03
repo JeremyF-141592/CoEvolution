@@ -2,3 +2,4 @@ __pycache__/*
 POET_execution/*
 *.pyc
 Tests.py
+misc_testing/*
