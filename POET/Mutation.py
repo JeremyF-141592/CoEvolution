@@ -1,7 +1,7 @@
 import numpy as np
 from Environments.reproduce_ops import Reproducer
 from Parameters import Configuration
-from POET.Selection import Evaluate_Candidates
+from POET.Transfer import Evaluate_Candidates
 import Utils.Metrics
 import pickle
 
@@ -39,7 +39,7 @@ def eligible_to_reproduce(ea_pair):
     # Here, we just expand the environment archive
     E, theta = ea_pair
     env_vector = pickle.dumps(E)
-    if not E in Configuration.archive:
+    if E not in Configuration.archive:
         Configuration.archive.append(env_vector)
 
     return True
@@ -54,12 +54,8 @@ def mc_satisfied(child_list, args):
     previous_metric = Configuration.metric
     Configuration.metric = Utils.Metrics.environment_novelty_metric
     # !!! ----------------------------------------------------- !!!!
-    for i in range(args.nb_rounds):
-        partial_result = Configuration.lview.map(paired_execution, child_list)
-        Configuration.budget_spent[-1] += len(child_list)
-        for k in range(len(partial_result)):
-            results[k] += partial_result[k]
-    results /= args.nb_rounds
+    results = Configuration.lview.map(paired_execution, child_list)
+    Configuration.budget_spent[-1] += len(child_list)
     # !!! Change it back !!!!
     Configuration.metric = previous_metric
     for i in range(len(results)):

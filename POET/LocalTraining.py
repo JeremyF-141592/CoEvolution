@@ -2,7 +2,8 @@ import numpy as np
 from Parameters import Configuration
 
 
-def ES_Step(theta, E, args, in_place=False):
+def ES_Step(theta, E, args):
+    """Local optimization by Evolution Strategy steps, rank normalization and weight decay"""
     og_weights = theta.get_weights()
 
     shared_gaussian_table = [np.random.normal(0, 1, size=len(og_weights)) for i in range(args.batch_size)]
@@ -29,11 +30,6 @@ def ES_Step(theta, E, args, in_place=False):
     print(new_weights.mean())
     new_weights += og_weights
 
-    if in_place:
-        theta.set_weights(new_weights)
-        return
-
-    theta.set_weights(og_weights)
     new_ag = Configuration.agentFactory.new()
     new_ag.set_weights(new_weights)
     return new_ag

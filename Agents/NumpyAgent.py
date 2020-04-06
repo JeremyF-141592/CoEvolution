@@ -25,20 +25,19 @@ class NeuralAgentNumpy(Agent):
         self.randomize()
         self.out = np.zeros(n_out)
         #print("Creating a simple mlp with %d inputs, %d outputs, %d hidden layers and %d neurons per layer"%(n_in, n_out,n_hidden_layers, n_neurons_per_hidden))
-
     
     def randomize(self):
         if(self.n_hidden_layers > 0):
             self.weights = [np.random.random((self.dim_in,self.n_per_hidden))] # In -> first hidden
             self.bias = [np.random.random(self.n_per_hidden)] # In -> first hidden
             for i in range(self.n_hidden_layers-1): # Hidden -> hidden
-                self.weights.append(np.random.random((self.n_per_hidden,self.n_per_hidden)))
-                self.bias.append(np.random.random(self.n_per_hidden))
-            self.weights.append(np.random.random((self.n_per_hidden,self.dim_out))) # -> last hidden -> out
-            self.bias.append(np.random.random(self.dim_out))
+                self.weights.append(2*np.random.random((self.n_per_hidden,self.n_per_hidden))-1)
+                self.bias.append(2*np.random.random(self.n_per_hidden)-1)
+            self.weights.append(2*np.random.random((self.n_per_hidden,self.dim_out))-1) # -> last hidden -> out
+            self.bias.append(2*np.random.random(self.dim_out)-1)
         else:
-            self.weights = [np.random.random((self.dim_in,self.dim_out))] # Single-layer perceptron
-            self.bias = [np.random.random(self.dim_out)]
+            self.weights = [2*np.random.random((self.dim_in,self.dim_out))-1] # Single-layer perceptron
+            self.bias = [2*np.random.random(self.dim_out)-1]
         self.n_weights = np.sum([np.product(w.shape) for w in self.weights]) + np.sum([np.product(b.shape) for b in self.bias])
 
     def get_weights(self):

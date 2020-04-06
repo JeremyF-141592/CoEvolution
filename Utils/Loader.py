@@ -17,14 +17,14 @@ def resume_from_folder(folder, args):
     ea_path = filenames[-1]
     resume_from = len(filenames)
     with open(f"{ea_path}", "rb") as f:
-        ea_list_resume = pickle.load(f)
+        iteration_resume = pickle.load(f)
     with open(f"{folder}/Archive.pickle", "rb") as f:
         Configuration.archive = pickle.load(f)
     with open(f"{args.save_to}/TotalBudget.json", 'r') as f:
         budget_dic = json.load(f)
         Configuration.budget_spent = budget_dic["Budget_per_step"]
     print(f"Execution successfully resumed from {folder} .")
-    return ea_list_resume, resume_from
+    return iteration_resume, resume_from
 
 
 def rm_folder_content(folder):

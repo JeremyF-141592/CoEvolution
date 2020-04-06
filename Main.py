@@ -2,7 +2,7 @@ from Parameters import Configuration
 from POET.EA_Init import ea_init
 from POET.Mutation import mutate_envs
 from POET.LocalTraining import ES_Step
-from POET.Selection import Evaluate_Candidates
+from POET.Transfer import Evaluate_Candidates
 from Utils.Agents import AgentFactory, Agent
 from Utils.Environments import EnvironmentInterface
 from Utils.Loader import resume_from_folder, rm_folder_content
@@ -17,21 +17,13 @@ warnings.filterwarnings("ignore")
 
 Configuration.make()
 # Ipyparallel --------------------------------------------------------------------------------------------------
-# Local parallelism
-try:
-    Configuration.rc = ipp.Client()
-    with Configuration.rc[:].sync_imports():
-        from Parameters import Configuration
-    Configuration.rc[:].execute("Configuration.make()")
-    Configuration.lview = Configuration.rc.load_balanced_view()
-    Configuration.lview.block = True
-except ipp.TimeoutError:
-    print(sys.exc_info()[1])
-    print("\n\tReminder : Ipyparallel must be started beforehand.")
-    sys.exit(-1)
-except:
-    print("Unexpected error :", sys.exc_info()[0])
-    raise
+# Local parallelism, make sure that ipcluster is started beforehand otherwise this will raise an error.
+Configuration.rc = ipp.Client()
+with Configuration.rc[:].sync_imports():
+    from Parameters import Configuration
+Configuration.rc[:].execute("Configuration.make()")
+Configuration.lview = Configuration.rc.load_balanced_view()
+Configuration.lview.block = True
 
 # Check Parameters.py --------------------------------------------------------------------------------------------------
 
@@ -47,35 +39,39 @@ if not issubclass(Configuration.baseEnv, EnvironmentInterface):
 parser = argparse.ArgumentParser(description='POET Implementation as in Wang, rui and Lehman, Joel, and Clune, '
                                              'Jeff, and Stanley, Kenneth O. 2019 Uber AI Labs.')
 
+# General
+parser.add_argument('--T', type=int, default=400, help='Iterations limit')
+parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
+parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
+# Population
 parser.add_argument('--E_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
 parser.add_argument('--Pop_size', type=int, default=8, help='Population size')
+# Local optimization
 parser.add_argument('--alpha', type=float, default=0.01, help='Learning Rate for local ES-optimization')
 parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
-parser.add_argument('--T', type=int, default=400, help='Iterations limit')
+parser.add_argument('--batch_size', type=int, default=12, help='Batch size for ES gradient descent')
+parser.add_argument('--l_decay', type=float, default=0.001, help='Lambda decay penalty')
+# POET
 parser.add_argument('--N_mutate', type=int, default=25, help='Number of steps before attempting mutation')
 parser.add_argument('--N_transfer', type=int, default=25, help='Number of steps before attempting transfer')
 parser.add_argument('--max_children', type=int, default=16, help='maximum number of children per reproduction')
 parser.add_argument('--max_admitted', type=int, default=16, help='maximum number of children admitted per reproduction')
 parser.add_argument('--capacity', type=int, default=10, help='maximum number of active environments - REPLACED'
                                                              'by Pop_size.')
-parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair')
+parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair in '
+                                                             'mutation & transfer')
 parser.add_argument('--mc_min', type=int, default=25, help='Minimal environment novelty score to pass MC')
 parser.add_argument('--mc_max', type=int, default=340, help='Maximal environment novelty score to pass MC')
-parser.add_argument('--batch_size', type=int, default=12, help='Batch size for ES gradient descent')
-parser.add_argument('--l_decay', type=float, default=0.001, help='Lambda decay penalty')
 
-parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
-parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
-
-# POET only parameters
+# POET original implementation of environments
 parser.add_argument('--envs', nargs='+', default=['roughness', 'pit', 'stair', 'stump'])
 parser.add_argument('--master_seed', type=int, default=111)
 
 args = parser.parse_args()
 
 # Resume execution -----------------------------------------------------------------------------------------------------
-
+# TODO - clean up
 folder = ""
 start_from = 0
 ea_list_resume = []
@@ -105,6 +101,7 @@ else:
 
 
 # POET Algorithm -------------------------------------------------------------------------------------------------------
+# This part is intended to be as close as possible as the pseudo-code presented in the original paper.
 
 EA_List = ea_init(args) if folder == "" else ea_list_resume
 for t in range(start_from, args.T):
@@ -118,13 +115,19 @@ for t in range(start_from, args.T):
     M = len(EA_List)
     for m in range(M):
         E, theta = EA_List[m]
-        ES_Step(theta, E, args, in_place=True)  # Operates in-place to lighten execution
+        theta = ES_Step(theta, E, args)
 
     if M > 1 and t > 0 and t % args.N_transfer == 0:
         print("Transfer ...", end=" ", flush=True)
+        new_ea_list = []
         for m in range(M):
             E, theta = EA_List[m]
             theta_top = Evaluate_Candidates(EA_List[:m] + EA_List[m+1:], E, args)
+            if E(theta_top) > E(theta):
+                new_ea_list.append((E, theta_top))
+            else:
+                new_ea_list.append((E, theta))
+        EA_List = new_ea_list
 
     print("Done.")
 
