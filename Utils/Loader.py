@@ -4,7 +4,7 @@ import os
 import shutil
 import json
 import pickle
-import regex as re
+import re
 
 
 def resume_from_folder(folder, args):

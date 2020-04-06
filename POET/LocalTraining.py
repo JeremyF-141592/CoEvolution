@@ -25,7 +25,7 @@ def ES_Step(theta, E, args, in_place=False):
     summed_weights = np.zeros(og_weights.shape)
     for i in range(len(scores)):
         summed_weights += scores[i] * shared_gaussian_table[i]
-    new_weights = args.alpha * (1.0/(len(shared_gaussian_table)*args.sigma)) * summed_weights
+    new_weights = (args.alpha/(len(shared_gaussian_table)*args.sigma)) * summed_weights
     print(new_weights.mean())
     new_weights += og_weights
 
@@ -37,7 +37,12 @@ def ES_Step(theta, E, args, in_place=False):
     new_ag = Configuration.agentFactory.new()
     new_ag.set_weights(new_weights)
     return new_ag
-    
+
+
 def rank_normalize(arr):
-    sorted = arr.argsort()
-    return sorted / sorted.max()
+    asorted = arr.argsort()
+    linsp = np.linspace(0, 1, num=len(asorted))
+    res = np.zeros(len(asorted))
+    for i in range(len(asorted)):
+        res[asorted[i]] = linsp[i]
+    return res
