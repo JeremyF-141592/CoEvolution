@@ -28,8 +28,8 @@ class NeuralAgentNumpy(Agent):
     
     def randomize(self):
         if(self.n_hidden_layers > 0):
-            self.weights = [np.random.random((self.dim_in,self.n_per_hidden))] # In -> first hidden
-            self.bias = [np.random.random(self.n_per_hidden)] # In -> first hidden
+            self.weights = [2*np.random.random((self.dim_in,self.n_per_hidden))-1] # In -> first hidden
+            self.bias = [2*np.random.random(self.n_per_hidden)-1] # In -> first hidden
             for i in range(self.n_hidden_layers-1): # Hidden -> hidden
                 self.weights.append(2*np.random.random((self.n_per_hidden,self.n_per_hidden))-1)
                 self.bias.append(2*np.random.random(self.n_per_hidden)-1)
@@ -96,18 +96,16 @@ class NeuralAgentNumpy(Agent):
     
     def choose_action(self,x):
         """
-        Propagage
+        Propagate
         """
         if(self.n_hidden_layers > 0):
             #Input
-            a = np.matmul(x,self.weights[0]) + self.bias[0]
-            y = sigmoid(a)
+            y = (np.matmul(x,self.weights[0]) + self.bias[0])/(len(x)+1)
             # hidden -> hidden
             for i in range(1,self.n_hidden_layers-1):
-                a = np.matmul(y, self.weights[i]) + self.bias[i]
-                y = sigmoid(a)
+                y = (np.matmul(y, self.weights[i]) + self.bias[i]) / (len(y)+1)
             # Out
-            a = np.matmul(y, self.weights[-1]) + self.bias[-1]
+            a = (np.matmul(y, self.weights[-1]) + self.bias[-1]) / (len(y)+1)
             out = tanh(a)
             return out
         else: # Simple monolayer perceptron
