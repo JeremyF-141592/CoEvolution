@@ -5,13 +5,11 @@ from POET.LocalTraining import ES_Step
 from POET.Transfer import Evaluate_Candidates
 from Utils.Agents import AgentFactory, Agent
 from Utils.Environments import EnvironmentInterface
-from Utils.Loader import resume_from_folder, rm_folder_content
+from Utils.Loader import resume_from_folder, prepare_folder
 import ipyparallel as ipp
 import argparse
 import json
 import pickle
-import os
-import sys
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -43,6 +41,7 @@ parser = argparse.ArgumentParser(description='POET Implementation as in Wang, ru
 parser.add_argument('--T', type=int, default=400, help='Iterations limit')
 parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
 parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
+parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 # Population
 parser.add_argument('--E_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
@@ -71,7 +70,7 @@ parser.add_argument('--master_seed', type=int, default=111)
 args = parser.parse_args()
 
 # Resume execution -----------------------------------------------------------------------------------------------------
-# TODO - clean up
+
 folder = ""
 start_from = 0
 ea_list_resume = []
@@ -82,20 +81,7 @@ if args.resume_from != "":
 if folder != "":
     ea_list_resume, start_from = resume_from_folder(folder, args)
 else:
-    if not os.path.exists(args.save_to):
-        os.mkdir(args.save_to)
-    # Check if the folder to save to is empty, propose to abort otherwise
-    if os.path.isdir(args.save_to) and len(os.listdir(args.save_to)) > 0:
-        erase = ""
-        while erase != "Y" and erase != "N":
-            erase = input(f"\nWARNING : {args.save_to} is not empty, do you wish to erase it ? (Y/N) : ")
-        if erase == "N":
-            print("\n Please use the --save_to argument to specify a different folder.\n")
-            sys.exit()
-        else:
-            rm_folder_content(args.save_to)
-            print(f"{args.save_to} Successfully erased.")
-
+    prepare_folder(args)  # checks if folder exist and propose to erase it
     with open(f"{args.save_to}/commandline_args.txt", 'w') as f:
         json.dump(args.__dict__, f, indent=2)
 

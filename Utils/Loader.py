@@ -37,3 +37,19 @@ def rm_folder_content(folder):
                 shutil.rmtree(file_path)
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+
+def prepare_folder(args):
+    if not os.path.exists(args.save_to):
+        os.mkdir(args.save_to)
+    # Check if the folder to save to is empty, propose to abort otherwise
+    if os.path.isdir(args.save_to) and len(os.listdir(args.save_to)) > 0:
+        erase = ""
+        while erase != "Y" and erase != "N":
+            erase = input(f"\nWARNING : {args.save_to} is not empty, do you want to erase it ? (Y/N) : ")
+        if erase == "N":
+            print("\n Please use the --save_to argument to specify a different folder.\n")
+            sys.exit()
+        else:
+            rm_folder_content(args.save_to)
+            print(f"{args.save_to} Successfully erased.")
