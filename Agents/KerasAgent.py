@@ -18,6 +18,7 @@ class NeuralAgent(Agent):
         model.build(input_shape=(size_list[0],))
         self.model = model
         self.size_list = size_list
+        self.opt_state = []
 
     def randomize(self):
         wei = self.get_weights()
@@ -50,6 +51,12 @@ class NeuralAgent(Agent):
         stringlist = []
         self.model.summary(print_fn=lambda x: stringlist.append(x))
         return "\n".join(stringlist)
+
+    def get_opt_state(self):
+        return self.opt_state
+
+    def set_opt_state(self, state):
+        self.opt_state = state
 
     def __getstate__(self):
         dic = dict()

@@ -9,9 +9,11 @@ class Configuration:
     agentFactory = None
     observer = None
     metric = None
+    optimizer = None
     lview = None
     rc = None
     archive = []
+    opt_states = []
     budget_spent = []
     knn = 5
 

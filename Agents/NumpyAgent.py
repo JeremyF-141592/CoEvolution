@@ -1,10 +1,6 @@
 import numpy as np
 from Utils.Agents import Agent, AgentFactory
 
-## Suppress TF info messages
-
-import os
-
 
 def sigmoid(x):
     return 1./(1 + np.exp(-x))
@@ -24,6 +20,7 @@ class NeuralAgentNumpy(Agent):
         self.n_weights = None
         self.randomize()
         self.out = np.zeros(n_out)
+        self.opt_state = []
         #print("Creating a simple mlp with %d inputs, %d outputs, %d hidden layers and %d neurons per layer"%(n_in, n_out,n_hidden_layers, n_neurons_per_hidden))
     
     def randomize(self):
@@ -111,18 +108,26 @@ class NeuralAgentNumpy(Agent):
         else: # Simple monolayer perceptron
             return tanh(np.matmul(x,self.weights[0]) + self.bias[0])
 
+    def get_opt_state(self):
+        return self.opt_state
+
+    def set_opt_state(self, state):
+        self.opt_state = state
+
     def __getstate__(self):
         dic = dict()
         dic["dim_in"] = self.dim_in
         dic["dim_out"] = self.dim_out
         dic["n_hidden_layers"] = self.n_hidden_layers
         dic["n_per_hidden"] = self.n_per_hidden
+        dic["opt_state"] = self.opt_state
         dic["as_vector"] = self.get_weights()
         return dic
 
     def __setstate__(self, dic):
         self.__init__(dic["dim_in"], dic["dim_out"], dic["n_hidden_layers"], dic["n_per_hidden"])
         self.set_weights(dic["as_vector"])
+        self.set_opt_state(dic["opt_state"])
 
 
 class NeuralAgentNumpyFactory(AgentFactory):

@@ -18,6 +18,14 @@ class Agent(ABC):
     def set_weights(self, weights):
         return NotImplementedError
 
+    @abstractmethod
+    def get_opt_state(self):
+        return NotImplementedError
+
+    @abstractmethod
+    def set_opt_state(self, state):
+        return NotImplementedError
+
     #  Needed for Pickle
 
     @abstractmethod

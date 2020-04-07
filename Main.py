@@ -50,7 +50,7 @@ parser.add_argument('--Pop_size', type=int, default=8, help='Population size')
 parser.add_argument('--alpha', type=float, default=0.01, help='Learning Rate for local ES-optimization')
 parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
 parser.add_argument('--batch_size', type=int, default=12, help='Batch size for ES gradient descent')
-parser.add_argument('--l_decay', type=float, default=0.001, help='Lambda decay penalty')
+parser.add_argument('--w_decay', type=float, default=0.001, help='Weight decay penalty')
 # POET
 parser.add_argument('--N_mutate', type=int, default=25, help='Number of steps before attempting mutation')
 parser.add_argument('--N_transfer', type=int, default=25, help='Number of steps before attempting transfer')
@@ -62,6 +62,9 @@ parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts
                                                              'mutation & transfer')
 parser.add_argument('--mc_min', type=int, default=25, help='Minimal environment novelty score to pass MC')
 parser.add_argument('--mc_max', type=int, default=340, help='Maximal environment novelty score to pass MC')
+parser.add_argument('--lr_decay', type=float, default=0.9999, help="Adam step decay")
+parser.add_argument('--lr_limit', type=float, default=0.001, help="Adam step limit")
+parser.add_argument('--init_step', type=float, default=1, help="Adam initial step")
 
 # POET original implementation of environments
 parser.add_argument('--envs', nargs='+', default=['roughness', 'pit', 'stair', 'stump'])
@@ -102,6 +105,7 @@ for t in range(start_from, args.T):
     for m in range(M):
         E, theta = EA_List[m]
         theta = ES_Step(theta, E, args)
+        EA_List[m] = (E, theta)
 
     if M > 1 and t > 0 and t % args.N_transfer == 0:
         print("Transfer ...", end=" ", flush=True)
