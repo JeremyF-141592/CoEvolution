@@ -28,12 +28,20 @@ def ES_Step(theta, E, args):
     summed_weights = np.zeros(og_weights.shape)
     for i in range(len(scores)):
         summed_weights += scores[i] * shared_gaussian_table[i]
-    grad_estimate = (args.alpha/(len(shared_gaussian_table)*args.sigma)) * summed_weights
+    grad_estimate = (1/(len(shared_gaussian_table))) * summed_weights
 
-    step, state = Adam.step(og_weights, grad_estimate, theta.get_opt_state(), args)
+    alpha = 1
+    t = 0
+    if len(theta.get_opt_state()) > 0:
+        alpha = theta.get_opt_state()[0]
+        t = theta.get_opt_state()[1]
+    step = grad_estimate * alpha
+
+    alpha = max(alpha * args.lr_decay**t, args.lr_limit)
+    t += 1
 
     new_ag = Configuration.agentFactory.new()
-    new_ag.set_opt_state(state)
+    new_ag.set_opt_state([alpha, t])
     new_ag.set_weights(og_weights + step)
     return new_ag
 
@@ -44,32 +52,4 @@ def rank_normalize(arr):
     res = np.zeros(len(asorted))
     for i in range(len(asorted)):
         res[asorted[i]] = linsp[i]
-    return res
-
-
-class Adam:
-    @staticmethod
-    def init_state(size):
-        t = 1
-        beta1 = 0.9
-        beta2 = 0.999
-        epsilon = 1e-08
-        m = [0 for i in range(size)]
-        v = [0 for i in range(size)]
-        return t, beta1, beta2, epsilon, m, v
-
-    @staticmethod
-    def step(point, gradient, state, args):
-        if len(state) == 0:
-            state = Adam.init_state(len(point))
-        t, beta1, beta2, epsilon, m, v = state
-        m = np.array(m)
-        v = np.array(v)
-        stepsize = max(args.init_step * args.lr_decay**t, args.lr_limit)
-        a = stepsize * np.sqrt(1 - beta2 ** t) / (1 - beta1 ** t)
-        m = beta1 * m + (1 - beta1) * gradient
-        v = beta2 * v + (1 - beta2) * (gradient * gradient)
-        step = -a * m / (np.sqrt(v) + epsilon)
-        t += 1
-        newstate = (t, beta1, beta2, epsilon, m.tolist(), v.tolist())
-        return step, newstate
+    return 2*res - 1

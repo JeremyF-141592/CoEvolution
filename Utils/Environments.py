@@ -27,7 +27,6 @@ class EnvironmentInterface(gym.Env):
             state, reward, done, info = self.step(action)
             # path.append(state)
             total_reward += reward
-
             count += 1
             if count > max_steps:
                 total_reward += exceed_reward

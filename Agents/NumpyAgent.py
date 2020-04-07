@@ -97,12 +97,14 @@ class NeuralAgentNumpy(Agent):
         """
         if(self.n_hidden_layers > 0):
             #Input
-            y = (np.matmul(x,self.weights[0]) + self.bias[0])/(len(x)+1)
+            y = np.matmul(x,self.weights[0]) + self.bias[0]
+            y = tanh(y)
             # hidden -> hidden
             for i in range(1,self.n_hidden_layers-1):
-                y = (np.matmul(y, self.weights[i]) + self.bias[i]) / (len(y)+1)
+                y = np.matmul(y, self.weights[i]) + self.bias[i]
+                y= tanh(y)
             # Out
-            a = (np.matmul(y, self.weights[-1]) + self.bias[-1]) / (len(y)+1)
+            a = np.matmul(y, self.weights[-1]) + self.bias[-1]
             out = tanh(a)
             return out
         else: # Simple monolayer perceptron
