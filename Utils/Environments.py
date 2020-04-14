@@ -8,7 +8,7 @@ class EnvironmentInterface(gym.Env):
     Allows a gym environment to be called like a function to run a whole episode.
     """
 
-    def __call__(self, agent, render=False, max_steps=2000, exceed_reward=0):
+    def __call__(self, agent, render=False, max_steps=100, exceed_reward=0):
         """
         An observer is a function acting on the path taken by the agent, returning an observation.
         A metric is a function returning the final score for a given agent, total reward and observation.
@@ -34,6 +34,10 @@ class EnvironmentInterface(gym.Env):
 
         return Configuration.metric(agent.__getstate__()["as_vector"], self.__getstate__()["as_vector"],
                                     total_reward, Configuration.observer(path), Configuration.archive)
+
+    @abstractmethod
+    def get_child(self):
+        return NotImplementedError
 
     @abstractmethod
     def __getstate__(self):

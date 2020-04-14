@@ -20,21 +20,15 @@ class Configuration:
     @staticmethod
     def make():
         """Edit this part to easily change configuration."""
-        from Environments.bipedal_walker_custom import BipedalWalkerCustom, Env_config
+        from Environments.CPPN_NEAT import CPPN_NEAT
+        from Environments.bipedal_walker_cppn import BipedalWalkerCPPN
         from Agents.NumpyAgent import NeuralAgentNumpyFactory
         import Utils.Metrics
         import Utils.Observers
 
-        Configuration.baseEnv = BipedalWalkerCustom
-        Configuration.flatConfig = Env_config(name='flat',
-                                              ground_roughness=0,
-                                              pit_gap=[],
-                                              stump_width=[],
-                                              stump_height=[],
-                                              stump_float=[],
-                                              stair_height=[],
-                                              stair_width=[],
-                                              stair_steps=[])
+        Configuration.baseEnv = BipedalWalkerCPPN
+        Configuration.flatConfig = CPPN_NEAT()
+
         Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 10)
 
         Configuration.observer = Utils.Observers.empty_observer

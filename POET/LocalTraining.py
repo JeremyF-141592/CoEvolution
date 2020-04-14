@@ -17,7 +17,7 @@ def ES_Step(theta, E, args):
     scores = Configuration.lview.map(E, thetas)
     scores = np.array(scores)
     if args.verbose > 0:
-        print("\n\t Local best score :", scores.max())
+        print("\n\t Mean score :", scores.mean(), end="", flush=True)
 
     for i in range(len(scores)):
         scores[i] -= args.w_decay * np.linalg.norm(og_weights + args.sigma * shared_gaussian_table[i])

@@ -61,7 +61,7 @@ parser.add_argument('--capacity', type=int, default=10, help='maximum number of 
                                                              'by Pop_size.')
 parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair in '
                                                              'mutation & transfer')
-parser.add_argument('--mc_min', type=int, default=25, help='Minimal environment novelty score to pass MC')
+parser.add_argument('--mc_min', type=int, default=-25, help='Minimal environment novelty score to pass MC')
 parser.add_argument('--mc_max', type=int, default=340, help='Maximal environment novelty score to pass MC')
 
 # POET original implementation of environments

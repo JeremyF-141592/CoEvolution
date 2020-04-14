@@ -5,13 +5,15 @@ import shutil
 import json
 import pickle
 import re
+import sys
 
 
 def resume_from_folder(folder, args):
     """Resume execution by loading archive, budget spent and the last iteration file generated."""
     with open(folder + "/commandline_args.txt", 'r') as f:
         args.__dict__ = json.load(f)
-    filenames = glob(f"{folder}/*.pickle")[1:]  # Assume there is an archive.pickle file in the folder - ugly I conceed
+    filenames = glob(f"{folder}/*.pickle")
+    filenames = list(filter(lambda x: "Iteration" in x, filenames))
     filenames.sort(key=lambda k: int(re.sub('\D', '', k)))
     # assume we only have relevant files in the folder, take the last sorted .pickle file
     ea_path = filenames[-1]
@@ -47,6 +49,7 @@ def prepare_folder(args):
         erase = ""
         while erase != "Y" and erase != "N":
             erase = input(f"\nWARNING : {args.save_to} is not empty, do you want to erase it ? (Y/N) : ")
+            erase = erase.upper()
         if erase == "N":
             print("\n Please use the --save_to argument to specify a different folder.\n")
             sys.exit()
