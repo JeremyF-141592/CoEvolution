@@ -17,7 +17,7 @@ def ES_Step(theta, E, args):
     scores = Configuration.lview.map(E, thetas)
     scores = np.array(scores)
     if args.verbose > 0:
-        print("\n\t Mean score :", scores.mean(), end="", flush=True)
+        print(f"\n\t Mean score : {scores.mean()}   Max score : {scores.max()}", end="", flush=True)
 
     for i in range(len(scores)):
         scores[i] -= args.w_decay * np.linalg.norm(og_weights + args.sigma * shared_gaussian_table[i])
@@ -37,7 +37,7 @@ def ES_Step(theta, E, args):
         t = theta.get_opt_state()[1]
     step = grad_estimate * alpha
 
-    alpha = max(alpha * args.lr_decay**t, args.lr_limit)
+    alpha = max(args.lr_decay**t, args.lr_limit)
     t += 1
 
     new_ag = Configuration.agentFactory.new()

@@ -47,19 +47,19 @@ parser.add_argument('--E_init', type=str, default="flat", help='Initial policy o
 parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
 parser.add_argument('--Pop_size', type=int, default=8, help='Population size')
 # Local optimization
-parser.add_argument('--lr_decay', type=float, default=0.9999, help="Learning rate decay")
+parser.add_argument('--lr_decay', type=float, default=0.99, help="Learning rate decay")
 parser.add_argument('--lr_limit', type=float, default=0.001, help="Learning rate limit")
 parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
-parser.add_argument('--batch_size', type=int, default=12, help='Batch size for ES gradient descent')
+parser.add_argument('--batch_size', type=int, default=256, help='Batch size for ES gradient descent')
 parser.add_argument('--w_decay', type=float, default=0.001, help='Weight decay penalty')
 # POET
-parser.add_argument('--N_mutate', type=int, default=25, help='Number of steps before attempting mutation')
-parser.add_argument('--N_transfer', type=int, default=25, help='Number of steps before attempting transfer')
-parser.add_argument('--max_children', type=int, default=16, help='maximum number of children per reproduction')
-parser.add_argument('--max_admitted', type=int, default=16, help='maximum number of children admitted per reproduction')
+parser.add_argument('--N_mutate', type=int, default=15, help='Number of steps before attempting mutation')
+parser.add_argument('--N_transfer', type=int, default=15, help='Number of steps before attempting transfer')
+parser.add_argument('--max_children', type=int, default=12, help='maximum number of children per reproduction')
+parser.add_argument('--max_admitted', type=int, default=6, help='maximum number of children admitted per reproduction')
 parser.add_argument('--capacity', type=int, default=10, help='maximum number of active environments - REPLACED'
                                                              'by Pop_size.')
-parser.add_argument('--mc_theta_min', type=float, default=40, help='Minimal criterion for agent evaluation')
+parser.add_argument('--mc_theta_min', type=float, default=0, help='Minimal criterion for agent evaluation')
 
 parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair in '
                                                              'mutation & transfer')
@@ -97,7 +97,7 @@ for t in range(start_from, args.T):
     print(f"Iteration {t} ...", end=" ", flush=True)
     Configuration.budget_spent.append(0)
 
-    if t > 0 and t % args.N_mutate == 0:
+    if t % args.N_mutate == 0:
         print("Mutate ...", end=" ", flush=True)
         EA_List = mutate_envs(EA_List, args)
 
@@ -122,7 +122,7 @@ for t in range(start_from, args.T):
     print("Done.")
 
     # Save current execution -------------------------------------------------------------------------------------------
-    with open(f'{args.save_to}/Iteration {t}.pickle', 'wb') as f:
+    with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
         pickle.dump(EA_List, f)
     with open(f'{args.save_to}/Archive.pickle', 'wb') as f:
         pickle.dump(Configuration.archive, f)

@@ -190,12 +190,12 @@ if __name__ == "__main__":
     for i in range(60):
         plt.clf()
         plt.xlim(-6, 6)
-        plt.ylim(-1.2, 1.2)
+        plt.ylim(-8.2, 8.2)
         plt.title(f"iteration {i}")
         for j in range(len(tests)):
-            plt.plot(lin, tests[j].draw(lin))
+            plt.plot(lin, tests[j].draw(lin, scale=(0, min(8, 1.4*i))))
             tests[j] = tests[j].get_child()
             # print("---", j)
             # print(tests[j].node_genes)
             # print(tests[j].connect_genes)
-        plt.pause(0.5)
+        plt.pause(2)

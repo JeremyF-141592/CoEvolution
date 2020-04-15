@@ -150,8 +150,7 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
         self.terrain   = []
         self.terrain_x = [i*TERRAIN_STEP for i in range(TERRAIN_LENGTH)]
         self.draw_x = [12*i/TERRAIN_LENGTH - 6 for i in range(20, TERRAIN_LENGTH)]
-        terrain_y = self.cppn.draw(self.draw_x, scale=(TERRAIN_HEIGHT*1.3, min(8, 1.4*self.cppn.generation))).tolist()
-        # terrain_y = [TERRAIN_HEIGHT + 10 for i in range(20, TERRAIN_LENGTH)]
+        terrain_y = self.cppn.draw(self.draw_x, scale=(TERRAIN_HEIGHT*1.3, min(8, self.cppn.generation))).tolist()
         self.terrain_y = []
         # smooth start
         for i in range(20):
