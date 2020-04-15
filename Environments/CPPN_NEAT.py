@@ -183,8 +183,8 @@ class CPPN_NEAT:
         return x/5
 
 
-if __name__ == "main":
-    tests = [CPPN_NEAT() for i in range(3)]
+if __name__ == "__main__":
+    tests = [CPPN_NEAT() for i in range(12)]
     lin = np.linspace(-10, 10, num=100)
     plt.show()
     for i in range(60):

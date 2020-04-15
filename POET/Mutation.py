@@ -18,7 +18,6 @@ def mutate_envs(ea_list, args):
     admitted = 0
     for E_child, theta_child in child_list:
         theta_child = Evaluate_Candidates(child_list, E_child, args)
-        # if mc_satisfied([(E_child, theta_child)], args):
         if mc_satisfied_theta(E_child, theta_child, args):
             ea_list.append((E_child, theta_child))
             admitted += 1
@@ -38,7 +37,7 @@ def eligible_to_reproduce(ea_pair):
     env_vector = np.array(E.__getstate__()["as_vector"])
     for k in Configuration.archive:
         vec = np.array(k["as_vector"])
-        if np.linalg.norm(vec - env_vector) < 1:
+        if np.linalg.norm(vec - env_vector) < 0.1:
             return True
     Configuration.archive.append(E.__getstate__())
 
@@ -75,8 +74,8 @@ def mc_satisfied(child_list, args):
 
         dist_list.sort()
         results[i] = dist_list[:Configuration.knn].mean()
-        plt.plot(child_list[i][0].terrain_y)
-    plt.show()
+    #     plt.plot(child_list[i][0].terrain_y)
+    # plt.show()
 
     print("NOVELTY ENVS : ", results.max(), results.min(), len(results))
     for i in range(len(results)):
@@ -113,20 +112,19 @@ def pata_ec(envs, individuals):
     for i in range(len(envs)):
         result = Configuration.lview.map(envs[i], individuals)
         result = np.array(result)
-        result = rank_normalize(result)
+        result = normalize(result)
         res.append(result)
     return res
 
 
-def rank_normalize(arr):
-    asorted = arr.argsort()
-    linsp = np.linspace(0, 1, num=len(asorted))
-    res = np.zeros(len(asorted))
-    for i in range(len(asorted)):
-        res[asorted[i]] = linsp[i]
-    return res - 0.5
+def normalize(arr):
+    res = arr + arr.min()
+    res /= res.max()
+    return res
 
 
 def mc_satisfied_theta(E, theta, args):
     score = E(theta)
-    return True if score > -50 else False
+    if score > args.mc_theta_min:
+        return True
+    return False
