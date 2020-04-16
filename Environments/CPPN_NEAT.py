@@ -75,7 +75,7 @@ class CPPN_NEAT:
         return res
 
     def random_step(self, step_size):
-        new_connect = []
+        new_connect = list()
         for gene in self.connect_genes:
             new_weight = gene[2] + np.random.normal(0, 1) * step_size
             new_connect.append((gene[0], gene[1], new_weight, gene[3]))
@@ -84,7 +84,11 @@ class CPPN_NEAT:
 
     def copy(self):
         new_one = CPPN_NEAT()
-        new_one.__setstate__(self.__getstate__())
+        new_one.node_genes = self.node_genes.copy()
+        new_one.connect_genes = self.connect_genes.copy()
+        new_one.hierarchy = self.hierarchy.copy()
+        new_one.generation = self.generation
+        new_one.make()
         return new_one
 
     def __getstate__(self):
