@@ -40,6 +40,7 @@ class CPPN_NEAT:
             CPPN_NEAT.bump,
             CPPN_NEAT.fast,
             CPPN_NEAT.slow,
+            # CPPN_NEAT.noise,
             np.tanh
         ]
         self.make()
@@ -84,7 +85,6 @@ class CPPN_NEAT:
     def copy(self):
         new_one = CPPN_NEAT()
         new_one.__setstate__(self.__getstate__())
-        new_one.make()
         return new_one
 
     def __getstate__(self):
@@ -104,25 +104,29 @@ class CPPN_NEAT:
         self.make()
 
     def get_child(self):
+        return self.mutate()
+
+    def mutate(self):
         child = self.copy()
         child.generation = self.generation + 1
-        child.random_step(0.2)
         # Generate new nodes
         if np.random.random() < 0.7**(len(self.node_genes) - 2):
+            # print("NEW NODE")
             child.node_genes.append(np.random.randint(0, len(self.map_funcs)))
             chosen_one = np.random.randint(0, len(child.connect_genes))
             new_connections = []
             for i in range(len(child.connect_genes)):
                 gene = child.connect_genes[i]
                 if i == chosen_one:
-                    new_connections.append((gene[0], len(child.node_genes)-1, 1, len(child.connect_genes)-1))
-                    new_connections.append((len(child.node_genes)-1, gene[1], 0.1, len(child.connect_genes)))
+                    new_connections.append((gene[0], len(child.node_genes)-1, 0, len(child.connect_genes)-1))
+                    new_connections.append((len(child.node_genes)-1, gene[1], 0, len(child.connect_genes)))
                     child.hierarchy.append((child.hierarchy[gene[0]] + child.hierarchy[gene[1]]) / 2)
                 else:
                     new_connections.append(gene)
-            child.connect_genes = new_connections
+            child.connect_genes = new_connections.copy()
         # Generate new connections
         if len(child.node_genes) > 3:
+            # print("NEW CONNECTION")
             if np.random.random() < 0.7 ** (len(self.node_genes) - 3):
                 available_pairs = []
                 for i in range(len(child.node_genes)):
@@ -138,8 +142,29 @@ class CPPN_NEAT:
                 if len(available_pairs) > 0:
                     choice = np.random.randint(0, len(available_pairs))
                     one, two = available_pairs[choice]
-                    child.connect_genes.append((one, two, 0.1, len(child.connect_genes)-1))
+                    child.connect_genes.append((one, two, 0, len(child.connect_genes)-1))
+
+        child.random_step(0.2)
         child.make()
+        return child
+
+    def print(self):
+        print("Generation :", self.generation)
+        print("Nodes :", self.node_genes)
+        print("Hierarchy :", self.hierarchy)
+        print("Connections : \n", self.connect_genes, "\n")
+
+    @staticmethod
+    def reproduce(a, b):
+        pass
+
+    @staticmethod
+    def randomize():
+        child = CPPN_NEAT()
+        max_mut = np.random.randint(1, 14)
+        for i in range(max_mut):
+            child = child.mutate()
+        child.random_step(0.5)
         return child
 
     @staticmethod
@@ -167,6 +192,10 @@ class CPPN_NEAT:
         return x
 
     @staticmethod
+    def noise(x):
+        return np.random.random()
+
+    @staticmethod
     def half_id(x):
         return x if x > 0 else 0
 
@@ -187,15 +216,20 @@ if __name__ == "__main__":
     tests = [CPPN_NEAT() for i in range(12)]
     lin = np.linspace(-10, 10, num=100)
     plt.show()
-    for i in range(60):
+    for i in range(20):
         plt.clf()
         plt.xlim(-6, 6)
         plt.ylim(-8.2, 8.2)
         plt.title(f"iteration {i}")
         for j in range(len(tests)):
-            plt.plot(lin, tests[j].draw(lin, scale=(0, min(8, 1.4*i))))
+            plt.plot(lin, tests[j].draw(lin, scale=(0, min(8, 1.4*i))), label=f"{j}")
             tests[j] = tests[j].get_child()
-            # print("---", j)
-            # print(tests[j].node_genes)
-            # print(tests[j].connect_genes)
-        plt.pause(2)
+            print(f"--- {j} ---")
+            tests[j].print()
+        plt.legend()
+        plt.pause(0.4)
+    # test = CPPN_NEAT()
+    # for i in range(8):
+    #     test = test.get_child()
+    #     test.print()
+

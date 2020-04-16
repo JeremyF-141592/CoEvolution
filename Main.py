@@ -97,7 +97,7 @@ for t in range(start_from, args.T):
     print(f"Iteration {t} ...", end=" ", flush=True)
     Configuration.budget_spent.append(0)
 
-    if t % args.N_mutate == 0:
+    if t > 0 and t % args.N_mutate == 0:
         print("Mutate ...", end=" ", flush=True)
         EA_List = mutate_envs(EA_List, args)
 
