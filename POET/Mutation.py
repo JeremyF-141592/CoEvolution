@@ -12,16 +12,17 @@ def mutate_envs(ea_list, args):
             parent_list.append(ea_list[m])
 
     child_list = env_reproduce(parent_list, args.max_children)
-    child_list, scores = mc_satisfied(child_list, args)
-    child_list = rank_by_score(child_list, scores)
+    child_list = mc_satisfied(child_list, args)
+    child_list = rank_by_score(child_list, args)
     admitted = 0
     for E_child, theta_child in child_list:
         theta_child = Evaluate_Candidates(child_list, E_child, args)
-        if mc_satisfied_theta(E_child, theta_child, args):
+        if args.mc_max > E_child(theta_child) > args.mc_min:
             ea_list.append((E_child, theta_child))
             admitted += 1
             if admitted >= args.max_admitted:
                 break
+
     ea_len = len(ea_list)
     if ea_len > args.Pop_size:
         num_removals = ea_len-args.Pop_size
@@ -35,8 +36,8 @@ def eligible_to_reproduce(ea_pair):
     E, theta = ea_pair
     env_vector = np.array(E.__getstate__()["as_vector"])
     for k in Configuration.archive:
-        vec = np.array(k["as_vector"])
-        if np.linalg.norm(vec - env_vector) < 0.1:
+        vec = np.array(k.__getstate__()["as_vector"])
+        if np.linalg.norm(vec - env_vector) < 1:
             return True
     new_env = Configuration.baseEnv(Configuration.flatConfig)
     new_env.__setstate__(E.__getstate__())
@@ -46,9 +47,16 @@ def eligible_to_reproduce(ea_pair):
 
 
 def mc_satisfied(child_list, args):
-    """Check that every env has a novelty score in between a predefined min and max."""
-    env_scores = list()
+    """Check that every env pass the minimal criterion"""
     new_list = list()
+    for ea_pair in child_list:
+        E, theta = ea_pair
+        if args.mc_max > E(theta) > args.mc_min:
+            new_list.append(ea_pair)
+    return new_list
+
+
+def rank_by_score(child_list, args):
     results = np.zeros(len(child_list))
 
     full_env_list = list()
@@ -62,7 +70,8 @@ def mc_satisfied(child_list, args):
 
     points = pata_ec(full_env_list, theta_list)
     print(f"All points PATA-EC, archive starts at {len(child_list)} :")
-    print(points)
+    for i in range(len(points)):
+        print(f"{i} : {points[i]}")
 
     for i in range(len(child_list)):
         # KNN Novelty score
@@ -76,17 +85,8 @@ def mc_satisfied(child_list, args):
         dist_list.sort()
         print(f"Env {i}, knn dists : {dist_list[:args.knn]}")
         results[i] = dist_list[:args.knn].mean()
-
     print("NOVELTY ENVS : ", results.max(), results.min(), len(results))
-    for i in range(len(results)):
-        if args.mc_min < results[i] < args.mc_max:
-            new_list.append(child_list[i])
-            env_scores.append(results[i])
-    return new_list, env_scores
-
-
-def rank_by_score(child_list, scores):
-    arg_sort = np.array(scores).argsort()[::-1]
+    arg_sort = results.argsort()[::-1]
     child_list = [child_list[i] for i in arg_sort]
     return child_list
 
@@ -118,13 +118,6 @@ def pata_ec(envs, individuals):
 
 
 def normalize(arr):
-    res = arr + arr.min()
+    res = arr - arr.min()
     res /= res.max()
     return res
-
-
-def mc_satisfied_theta(E, theta, args):
-    score = E(theta)
-    if score > args.mc_theta_min:
-        return True
-    return False

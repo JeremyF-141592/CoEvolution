@@ -59,7 +59,6 @@ parser.add_argument('--max_children', type=int, default=12, help='maximum number
 parser.add_argument('--max_admitted', type=int, default=6, help='maximum number of children admitted per reproduction')
 parser.add_argument('--capacity', type=int, default=10, help='maximum number of active environments - REPLACED'
                                                              'by Pop_size.')
-parser.add_argument('--mc_theta_min', type=float, default=0, help='Minimal criterion for agent evaluation')
 
 parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair in '
                                                              'mutation & transfer')
