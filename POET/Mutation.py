@@ -93,7 +93,7 @@ def rank_by_score(child_list, scores):
 
 def env_reproduce(parent_list, max_children):
     """Make children envs"""
-    new_list = list(parent_list)
+    new_list = list()
     choices = np.random.choice(np.arange(len(parent_list)), max_children)
     for i in choices:
         E, theta = parent_list[i]
