@@ -35,6 +35,7 @@ def ES_Step(theta, E, args):
     if len(theta.get_opt_state()) > 0:
         alpha = theta.get_opt_state()[0]
         t = theta.get_opt_state()[1]
+    
     step = grad_estimate * alpha
 
     alpha = max(args.lr_decay**t, args.lr_limit)

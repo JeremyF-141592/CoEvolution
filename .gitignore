@@ -1,5 +1,5 @@
 __pycache__/*
 POET_execution/*
+old_executions/*
 *.pyc
 Tests.py
-misc_testing/*

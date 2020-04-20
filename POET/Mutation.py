@@ -1,7 +1,6 @@
 import numpy as np
 from Parameters import Configuration
 from POET.Transfer import Evaluate_Candidates
-import matplotlib.pyplot as plt
 
 
 def mutate_envs(ea_list, args):
@@ -39,7 +38,9 @@ def eligible_to_reproduce(ea_pair):
         vec = np.array(k["as_vector"])
         if np.linalg.norm(vec - env_vector) < 0.1:
             return True
-    Configuration.archive.append(E.__getstate__())
+    new_env = Configuration.baseEnv(Configuration.flatConfig)
+    new_env.__setstate__(E.__getstate__())
+    Configuration.archive.append(new_env)
 
     return True
 
@@ -56,12 +57,12 @@ def mc_satisfied(child_list, args):
         E, theta = ea_pair
         full_env_list.append(E)
         theta_list.append(theta)
-    for state in Configuration.archive:
-        E = Configuration.baseEnv(Configuration.flatConfig)
-        E.__setstate__(state)
-        full_env_list.append(E)
+    for env in Configuration.archive:
+        full_env_list.append(env)
 
     points = pata_ec(full_env_list, theta_list)
+    print(f"All points PATA-EC, archive starts at {len(child_list)} :")
+    print(points)
 
     for i in range(len(child_list)):
         # KNN Novelty score
@@ -73,9 +74,8 @@ def mc_satisfied(child_list, args):
             dist_list[j] += np.linalg.norm(env_vec - points[j + len(child_list)])
 
         dist_list.sort()
-        results[i] = dist_list[:Configuration.knn].mean()
-    #     plt.plot(child_list[i][0].terrain_y)
-    # plt.show()
+        print(f"Env {i}, knn dists : {dist_list[:args.knn]}")
+        results[i] = dist_list[:args.knn].mean()
 
     print("NOVELTY ENVS : ", results.max(), results.min(), len(results))
     for i in range(len(results)):

@@ -47,7 +47,7 @@ parser.add_argument('--E_init', type=str, default="flat", help='Initial policy o
 parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
 parser.add_argument('--Pop_size', type=int, default=8, help='Population size')
 # Local optimization
-parser.add_argument('--lr_decay', type=float, default=0.99, help="Learning rate decay")
+parser.add_argument('--lr_decay', type=float, default=0.995, help="Learning rate decay")
 parser.add_argument('--lr_limit', type=float, default=0.001, help="Learning rate limit")
 parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
 parser.add_argument('--batch_size', type=int, default=256, help='Batch size for ES gradient descent')
@@ -65,6 +65,8 @@ parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts
                                                              'mutation & transfer')
 parser.add_argument('--mc_min', type=int, default=-25, help='Minimal environment novelty score to pass MC')
 parser.add_argument('--mc_max', type=int, default=340, help='Maximal environment novelty score to pass MC')
+
+parser.add_argument('--knn', type=int, default=5, help='Amount of neighbors to evaluate knn Environment Novelty')
 
 # POET original implementation of environments
 parser.add_argument('--envs', nargs='+', default=['roughness', 'pit', 'stair', 'stump'])

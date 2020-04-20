@@ -217,7 +217,7 @@ class CPPN_NEAT:
 
 
 if __name__ == "__main__":
-    tests = [CPPN_NEAT() for i in range(12)]
+    tests = [CPPN_NEAT() for i in range(8)]
     lin = np.linspace(-10, 10, num=100)
     plt.show()
     for i in range(20):
@@ -231,7 +231,7 @@ if __name__ == "__main__":
             print(f"--- {j} ---")
             tests[j].print()
         plt.legend()
-        plt.pause(0.4)
+        plt.pause(1)
     # test = CPPN_NEAT()
     # for i in range(8):
     #     test = test.get_child()
