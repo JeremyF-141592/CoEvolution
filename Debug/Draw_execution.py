@@ -15,8 +15,8 @@ if folder != "":
     filenames = glob(f"{folder}/*.pickle")[1:]
     filenames.sort(key=lambda f: int(re.sub('\D', '', f)))
 
-    plt.show()
-    for i in range(1, len(filenames), 15):
+    # plt.show()
+    for i in range(0, len(filenames), 50):
         plt.clf()
         ea_path = filenames[i]
         with open(f"{ea_path}", "rb") as f:
@@ -27,4 +27,7 @@ if folder != "":
             E.cppn.print()
             plt.plot(E.terrain_y, label=f"{k}")
         plt.legend()
-        plt.pause(1)
+        plt.savefig(f"Iteration {i}.png")
+        # for k in range(3, 8):
+        #     E, theta = ea_list_resume[k]
+        #     E(theta, render=True)

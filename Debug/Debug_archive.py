@@ -9,7 +9,7 @@ Configuration.make()
 
 # Resume execution -----------------------------------------------------------------------------------------------------
 
-folder = "../POET_execution2"
+folder = "../POET_execution"
 
 if folder != "":
     with open(f"{folder}/Archive.pickle", "rb") as f:

@@ -57,6 +57,8 @@ def mc_satisfied(child_list, args):
 
 
 def rank_by_score(child_list, args):
+    if len(child_list) == 0:
+        return child_list
     results = np.zeros(len(child_list))
 
     full_env_list = list()

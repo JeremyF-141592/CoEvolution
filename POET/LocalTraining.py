@@ -2,7 +2,7 @@ import numpy as np
 from Parameters import Configuration
 
 
-def ES_Step(theta, E, args):
+def ES_Step(theta, E, args, verbose=0):
     """Local optimization by Evolution Strategy steps, rank normalization and weight decay"""
     og_weights = theta.get_weights()
 
@@ -16,8 +16,8 @@ def ES_Step(theta, E, args):
 
     scores = Configuration.lview.map(E, thetas)
     scores = np.array(scores)
-    if args.verbose > 0:
-        print(f"\n\t Mean score : {scores.mean()}   Max score : {scores.max()}", end="", flush=True)
+    if verbose > 0:
+        print(f"\n\tMean score : {round(scores.mean(), 2)}   Max score : {round(scores.max(), 2)}", end="", flush=True)
 
     for i in range(len(scores)):
         scores[i] -= args.w_decay * np.linalg.norm(og_weights + args.sigma * shared_gaussian_table[i])

@@ -33,8 +33,8 @@ HULL_POLY =[
 LEG_DOWN = -8/SCALE
 LEG_W, LEG_H = 8/SCALE, 34/SCALE
 
-VIEWPORT_W = 1000
-VIEWPORT_H = 600
+VIEWPORT_W = 1200
+VIEWPORT_H = 800
 
 TERRAIN_STEP   = 14/SCALE
 TERRAIN_LENGTH = 200     # in steps
@@ -150,11 +150,11 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
         self.terrain   = []
         self.terrain_x = [i*TERRAIN_STEP for i in range(TERRAIN_LENGTH)]
         self.draw_x = [12*i/TERRAIN_LENGTH - 6 for i in range(20, TERRAIN_LENGTH)]
-        terrain_y = self.cppn.draw(self.draw_x, scale=(TERRAIN_HEIGHT*1.3, min(8, self.cppn.generation))).tolist()
+        terrain_y = (self.cppn.draw(self.draw_x)*8 + TERRAIN_HEIGHT*1.2).tolist()
         self.terrain_y = []
         # smooth start
         for i in range(20):
-            self.terrain_y.append(TERRAIN_HEIGHT*1.3)
+            self.terrain_y.append(terrain_y[0])
         for i in range(TERRAIN_LENGTH-20):
             self.terrain_y.append(terrain_y[i])
 
@@ -394,9 +394,10 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
                     path.append(path[0])
                     self.viewer.draw_polyline(path, color=obj.color2, linewidth=2)
 
-        flagy1 = TERRAIN_HEIGHT
-        flagy2 = flagy1 + 50/SCALE
+
         x = TERRAIN_STEP*3
+        flagy1 = self.terrain_y[3]
+        flagy2 = flagy1 + 50 / SCALE
         self.viewer.draw_polyline( [(x, flagy1), (x, flagy2)], color=(0,0,0), linewidth=2 )
         f = [(x, flagy2), (x, flagy2-10/SCALE), (x+25/SCALE, flagy2-5/SCALE)]
         self.viewer.draw_polygon(f, color=(0.9,0.2,0) )

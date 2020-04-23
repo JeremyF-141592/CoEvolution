@@ -6,11 +6,13 @@ from POET.Transfer import Evaluate_Candidates
 from Utils.Agents import AgentFactory, Agent
 from Utils.Environments import EnvironmentInterface
 from Utils.Loader import resume_from_folder, prepare_folder
+from Utils.Stats import bundle_stats, append_stats
 import ipyparallel as ipp
 import argparse
 import json
 import pickle
 import warnings
+import time
 warnings.filterwarnings("ignore")
 
 Configuration.make()
@@ -105,7 +107,7 @@ for t in range(start_from, args.T):
     M = len(EA_List)
     for m in range(M):
         E, theta = EA_List[m]
-        theta = ES_Step(theta, E, args)
+        theta = ES_Step(theta, E, args, verbose=1)
         EA_List[m] = (E, theta)
 
     if M > 1 and t > 0 and t % args.N_transfer == 0:
@@ -120,9 +122,10 @@ for t in range(start_from, args.T):
                 new_ea_list.append((E, theta))
         EA_List = new_ea_list
 
-    print("Done.")
+    print(" Done.")
 
     # Save current execution -------------------------------------------------------------------------------------------
+    t = time.time()
     with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
         pickle.dump(EA_List, f)
     with open(f'{args.save_to}/Archive.pickle', 'wb') as f:
@@ -132,3 +135,7 @@ for t in range(start_from, args.T):
         budget_dic["Budget_per_step"] = Configuration.budget_spent
         budget_dic["Total"] = sum(Configuration.budget_spent)
         json.dump(budget_dic, f)
+    bundle = bundle_stats([i[1] for i in EA_List], [i[0] for i in EA_List])
+    append_stats(f"{args.save_to}/Stats.json", bundle)
+    if args.verbose > 0:
+        print(f"\tExecution saved at {args.save_to} in {round(time.time() - t, 4)} s.")

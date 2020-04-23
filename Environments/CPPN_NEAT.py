@@ -2,6 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def poly_mut(eta):
+    u = np.random.random()
+    if u <= 0.5:
+        return (2 * u) ** (1 / (1 + eta)) - 1
+    else:
+        return 1 - (2 * (1 - u)) ** (1 / (1 + eta))
+
+
 class CPPN_Node:
     def __init__(self, func):
         self.func = func
@@ -62,24 +70,29 @@ class CPPN_NEAT:
             node.refresh()
         return result
 
-    def draw(self, arr, scale=(0, 1)):
+    def draw(self, arr, bounds=(-1, 1)):
+        res = np.empty(len(arr))
+        for i in range(len(arr)):
+            res[i] = min(bounds[1], max(bounds[0], self.compute(arr[i])))
+        return res
+
+    def draw_noscale(self, arr):
         res = np.empty(len(arr))
         for i in range(len(arr)):
             res[i] = self.compute(arr[i])
-        diff = abs(res.max() - res.min() + 0.000001)
-        rescale = scale[1] / diff
-        res *= rescale
-
-        rescale = res[0] - scale[0]
-        res -= rescale
         return res
 
-    def random_step(self, step_size):
-        new_connect = list()
+    def usual_poly_mut(self):
+        new_genes = list()
         for gene in self.connect_genes:
-            new_weight = gene[2] + np.random.normal(0, 1) * step_size
-            new_connect.append((gene[0], gene[1], new_weight, gene[3]))
-        self.connect_genes = new_connect
+            if np.random.random() < 2/len(self.connect_genes):
+                plmu = poly_mut(4)
+                new_gene = (gene[0], gene[1], gene[2] + plmu, gene[3])
+                # new_gene = (gene[0], gene[1], gene[2] + 0.5*np.random.random(), gene[3])
+                new_genes.append(new_gene)
+            else:
+                new_genes.append(gene)
+        self.connect_genes = new_genes
         self.make()
 
     def copy(self):
@@ -91,22 +104,6 @@ class CPPN_NEAT:
         new_one.make()
         return new_one
 
-    def __getstate__(self):
-        dic = dict()
-        dic["node_genes"] = self.node_genes
-        dic["connect_genes"] = self.connect_genes
-        dic["hierarchy"] = self.hierarchy
-        dic["generation"] = self.generation
-        return dic
-
-    def __setstate__(self, dic):
-        self.__init__()
-        self.node_genes = dic["node_genes"]
-        self.connect_genes = dic["connect_genes"]
-        self.hierarchy = dic["hierarchy"]
-        self.generation = dic["generation"]
-        self.make()
-
     def get_child(self):
         return self.mutate()
 
@@ -114,43 +111,49 @@ class CPPN_NEAT:
         child = self.copy()
         child.generation = self.generation + 1
         # Generate new nodes
-        if np.random.random() < 0.7**(len(self.node_genes) - 2):
+        if np.random.random() < 0.8**(len(self.node_genes) - 2):
             # print("NEW NODE")
-            child.node_genes.append(np.random.randint(0, len(self.map_funcs)))
-            chosen_one = np.random.randint(0, len(child.connect_genes))
-            new_connections = []
-            for i in range(len(child.connect_genes)):
-                gene = child.connect_genes[i]
-                if i == chosen_one:
-                    new_connections.append((gene[0], len(child.node_genes)-1, 0, len(child.connect_genes)-1))
-                    new_connections.append((len(child.node_genes)-1, gene[1], 0, len(child.connect_genes)))
-                    child.hierarchy.append((child.hierarchy[gene[0]] + child.hierarchy[gene[1]]) / 2)
-                else:
-                    new_connections.append(gene)
-            child.connect_genes = new_connections.copy()
+            child.expand_node()
+
         # Generate new connections
         if len(child.node_genes) > 3:
             # print("NEW CONNECTION")
-            if np.random.random() < 0.7 ** (len(self.node_genes) - 3):
-                available_pairs = []
-                for i in range(len(child.node_genes)):
-                    for j in range(len(child.node_genes)):
-                        if child.hierarchy[i] < child.hierarchy[j]-0.000001:
-                            available_pairs.append((i, j))
+            if np.random.random() < 0.8**(len(self.node_genes) - 3):
+                child.new_link()
 
-                for gene in child.connect_genes:
-                    available_pairs.remove((gene[0], gene[1]))
-                if (0, 1) in available_pairs:
-                    available_pairs.remove((0, 1))
-
-                if len(available_pairs) > 0:
-                    choice = np.random.randint(0, len(available_pairs))
-                    one, two = available_pairs[choice]
-                    child.connect_genes.append((one, two, 0, len(child.connect_genes)-1))
-
-        child.random_step(0.2)
-        child.make()
+        child.usual_poly_mut()
         return child
+
+    def expand_node(self):
+        self.node_genes.append(np.random.randint(0, len(self.map_funcs)))
+        chosen_one = np.random.randint(0, len(self.connect_genes))
+        new_connections = []
+        for i in range(len(self.connect_genes)):
+            gene = self.connect_genes[i]
+            if i == chosen_one:
+                new_connections.append((gene[0], len(self.node_genes) - 1, 0, len(self.connect_genes) - 1))
+                new_connections.append((len(self.node_genes) - 1, gene[1], 0, len(self.connect_genes)))
+                self.hierarchy.append((self.hierarchy[gene[0]] + self.hierarchy[gene[1]]) / 2)
+            else:
+                new_connections.append(gene)
+        self.connect_genes = new_connections.copy()
+
+    def new_link(self):
+        available_pairs = []
+        for i in range(len(self.node_genes)):
+            for j in range(len(self.node_genes)):
+                if self.hierarchy[i] < self.hierarchy[j] - 0.000001:
+                    available_pairs.append((i, j))
+
+        for gene in self.connect_genes:
+            available_pairs.remove((gene[0], gene[1]))
+        if (0, 1) in available_pairs:
+            available_pairs.remove((0, 1))
+
+        if len(available_pairs) > 0:
+            choice = np.random.randint(0, len(available_pairs))
+            one, two = available_pairs[choice]
+            self.connect_genes.append((one, two, 0, len(self.connect_genes) - 1))
 
     def print(self):
         print("Generation :", self.generation)
@@ -170,6 +173,22 @@ class CPPN_NEAT:
             child = child.mutate()
         child.random_step(0.5)
         return child
+
+    def __getstate__(self):
+        dic = dict()
+        dic["node_genes"] = self.node_genes
+        dic["connect_genes"] = self.connect_genes
+        dic["hierarchy"] = self.hierarchy
+        dic["generation"] = self.generation
+        return dic
+
+    def __setstate__(self, dic):
+        self.__init__()
+        self.node_genes = dic["node_genes"]
+        self.connect_genes = dic["connect_genes"]
+        self.hierarchy = dic["hierarchy"]
+        self.generation = dic["generation"]
+        self.make()
 
     @staticmethod
     def sym(x):
