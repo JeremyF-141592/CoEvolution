@@ -7,6 +7,9 @@ import regex as re
 
 Configuration.make()
 
+save = False
+pause_time = 2
+
 # Resume execution -----------------------------------------------------------------------------------------------------
 
 folder = "../POET_execution"
@@ -14,9 +17,9 @@ folder = "../POET_execution"
 if folder != "":
     filenames = glob(f"{folder}/*.pickle")[1:]
     filenames.sort(key=lambda f: int(re.sub('\D', '', f)))
-
-    # plt.show()
-    for i in range(0, len(filenames), 50):
+    if not save:
+        plt.show()
+    for i in range(129, len(filenames), 10):
         plt.clf()
         ea_path = filenames[i]
         with open(f"{ea_path}", "rb") as f:
@@ -26,8 +29,13 @@ if folder != "":
             E, theta = ea_list_resume[k]
             E.cppn.print()
             plt.plot(E.terrain_y, label=f"{k}")
+            E(theta, render=True)
         plt.legend()
-        plt.savefig(f"Iteration {i}.png")
+        if save:
+            plt.savefig(f"Iteration {i}.png")
+        else:
+            plt.pause(pause_time)
+        #
         # for k in range(3, 8):
         #     E, theta = ea_list_resume[k]
         #     E(theta, render=True)

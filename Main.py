@@ -55,9 +55,9 @@ parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for loca
 parser.add_argument('--batch_size', type=int, default=256, help='Batch size for ES gradient descent')
 parser.add_argument('--w_decay', type=float, default=0.001, help='Weight decay penalty')
 # POET
-parser.add_argument('--N_mutate', type=int, default=15, help='Number of steps before attempting mutation')
-parser.add_argument('--N_transfer', type=int, default=15, help='Number of steps before attempting transfer')
-parser.add_argument('--max_children', type=int, default=12, help='maximum number of children per reproduction')
+parser.add_argument('--N_mutate', type=int, default=10, help='Number of steps before attempting mutation')
+parser.add_argument('--N_transfer', type=int, default=10, help='Number of steps before attempting transfer')
+parser.add_argument('--max_children', type=int, default=20, help='maximum number of children per reproduction')
 parser.add_argument('--max_admitted', type=int, default=6, help='maximum number of children admitted per reproduction')
 parser.add_argument('--capacity', type=int, default=10, help='maximum number of active environments - REPLACED'
                                                              'by Pop_size.')
@@ -125,7 +125,6 @@ for t in range(start_from, args.T):
     print(" Done.")
 
     # Save current execution -------------------------------------------------------------------------------------------
-    t = time.time()
     with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
         pickle.dump(EA_List, f)
     with open(f'{args.save_to}/Archive.pickle', 'wb') as f:
@@ -138,4 +137,4 @@ for t in range(start_from, args.T):
     bundle = bundle_stats([i[1] for i in EA_List], [i[0] for i in EA_List])
     append_stats(f"{args.save_to}/Stats.json", bundle)
     if args.verbose > 0:
-        print(f"\tExecution saved at {args.save_to} in {round(time.time() - t, 4)} s.")
+        print(f"\tExecution saved at {args.save_to}.")

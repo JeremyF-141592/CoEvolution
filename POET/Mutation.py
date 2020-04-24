@@ -71,9 +71,6 @@ def rank_by_score(child_list, args):
         full_env_list.append(env)
 
     points = pata_ec(full_env_list, theta_list)
-    print(f"All points PATA-EC, archive starts at {len(child_list)} :")
-    for i in range(len(points)):
-        print(f"{i} : {points[i]}")
 
     for i in range(len(child_list)):
         # KNN Novelty score
@@ -85,9 +82,9 @@ def rank_by_score(child_list, args):
             dist_list[j] += np.linalg.norm(env_vec - points[j + len(child_list)])
 
         dist_list.sort()
-        print(f"Env {i}, knn dists : {dist_list[:args.knn]}")
         results[i] = dist_list[:args.knn].mean()
-    print("NOVELTY ENVS : ", results.max(), results.min(), len(results))
+    if args.verbose > 0:
+        print(f"\nMaximum children novelty : {round(results.max(), 2)} - Minimum : {round(results.min(), 2)}")
     arg_sort = results.argsort()[::-1]
     child_list = [child_list[i] for i in arg_sort]
     return child_list
@@ -120,6 +117,16 @@ def pata_ec(envs, individuals):
 
 
 def normalize(arr):
-    res = arr - arr.min()
+    tol = 10
+    res = np.zeros(len(arr))
+    for i in range(len(arr)):
+        res[i] = min(250, max(-50, arr[i]))//tol
+    uniques = np.unique(res)
+    uniques.sort()
+    dic = dict()
+    for i in range(len(uniques)):
+        dic[uniques[i]] = i
+    for i in range(len(arr)):
+        res[i] = dic[res[i]]
     res /= res.max()
     return res
