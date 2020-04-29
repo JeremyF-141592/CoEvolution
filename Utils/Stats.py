@@ -13,19 +13,14 @@ def agents_stats(agents):
             dist_mean += np.linalg.norm(weights[i] - weights[j])
     dist_mean /= (len(weights) * len(weights+1))/2
     w_mean = weights.mean(axis=0).tolist()
-    cov = np.cov(weights).tolist()
-    return dist_mean, w_mean, cov
+    return dist_mean, w_mean
 
 
 def bundle_stats(agents, envs):
     dic = dict()
-    dic["raw"] = list()
-    # ag_stats = agents_stats(agents)
-    # dic["Dist Mean"] = ag_stats[0]
-    # dic["Weight Mean"] = ag_stats[1]
-    # dic["Covariance"] = ag_stats[2]
-    for i in range(len(agents)):
-        dic["raw"].append(agents[i].get_weights().tolist())
+    ag_stats = agents_stats(agents)
+    dic["Dist Mean"] = ag_stats[0]
+    dic["Weight Mean"] = ag_stats[1]
     return dic
 
 

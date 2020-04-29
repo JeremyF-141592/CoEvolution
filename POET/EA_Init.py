@@ -7,21 +7,21 @@ def ea_init(args):
 
     # Initializing Environments ----------------------------------------------------------------------------------------
     envs = []
-    if args.E_init == "flat":
-        for i in range(args.Pop_size):
+    if args.e_init == "flat":
+        for i in range(args.pop_size):
             envs.append(Configuration.baseEnv(Configuration.flatConfig))
     else:
-        raise(argparse.ArgumentTypeError(f"Unknown Environment Inititialization strategy : {args.E_init}"))
+        raise(argparse.ArgumentTypeError(f"Unknown Environment Inititialization strategy : {args.e_init}"))
 
     # Initializing Agents ----------------------------------------------------------------------------------------------
     ags = []
-    if args.Theta_init == "random":
-        for i in range(args.Pop_size):
+    if args.theta_init == "random":
+        for i in range(args.pop_size):
             ag = Configuration.agentFactory.new()
             ag.randomize()
             ags.append(ag)
     else:
-        raise(argparse.ArgumentTypeError(f"Unknown Agent Inititialization strategy : {args.Theta_init}"))
+        raise(argparse.ArgumentTypeError(f"Unknown Agent Inititialization strategy : {args.theta_init}"))
 
-    ea_pairs = [(envs[i], ags[i]) for i in range(args.Pop_size)]
+    ea_pairs = [(envs[i], ags[i]) for i in range(args.pop_size)]
     return ea_pairs

@@ -56,7 +56,7 @@ def xdominates(a, b):
 def generate_learners(old_learners, args):
     # Mutation, reproduction & new ones
     Configuration.agentFactory.new()
-    for i in range(args.Pop_size):
+    for i in range(args.pop_size):
         pass
     pass
 

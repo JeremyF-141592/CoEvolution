@@ -38,9 +38,9 @@ parser.add_argument('--resume_from', type=str, default="", help="Resume executio
 parser.add_argument('--save_to', type=str, default="./IPCA_execution", help="Execution save-to folder.")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 # Population
-parser.add_argument('--E_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
-parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
-parser.add_argument('--Pop_size', type=int, default=32, help='Population size')
+parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
+parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
+parser.add_argument('--pop_size', type=int, default=32, help='Population size')
 # IPCA
 parser.add_argument('--nb_best', type=int, default=8, help='Population size')
 

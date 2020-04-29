@@ -8,42 +8,40 @@ def mutate_envs(ea_list, args):
     parent_list = list()
     ea_len = len(ea_list)
     for m in range(ea_len):
-        if eligible_to_reproduce(ea_list[m]):
+        if eligible_to_reproduce(ea_list[m], args):
             parent_list.append(ea_list[m])
-
+    if len(parent_list) == 0:
+        print("No environments is eligible to reproduce.")
+        return ea_list
     child_list = env_reproduce(parent_list, args.max_children)
     child_list = mc_satisfied(child_list, args)
     child_list = rank_by_score(child_list, args)
     admitted = 0
     for E_child, theta_child in child_list:
-        theta_child = Evaluate_Candidates(child_list, E_child, args)
-        if args.mc_max > E_child(theta_child) > args.mc_min:
+        theta_child, score_child = Evaluate_Candidates(child_list, E_child, args)
+        if args.mc_max > score_child > args.mc_min:
             ea_list.append((E_child, theta_child))
             admitted += 1
             if admitted >= args.max_admitted:
                 break
 
     ea_len = len(ea_list)
-    if ea_len > args.Pop_size:
-        num_removals = ea_len-args.Pop_size
+    if ea_len > args.capacity:
+        num_removals = ea_len-args.capacity
+        if args.verbose > 0:
+            print(f"\n{num_removals} Environments replaced.")
+        for k in range(num_removals):
+            Configuration.archive.append(ea_list[k])
         ea_list = ea_list[num_removals:]
+    else:
+        if args.verbose > 0:
+            print(f"\n{ea_len} Current active environments.")
     return ea_list
 
 
-def eligible_to_reproduce(ea_pair):
-    # TODO - find something useful to put here, original implementation -> check for duplicates
-    # Here, we just expand the environment archive
+def eligible_to_reproduce(ea_pair, args):
     E, theta = ea_pair
-    env_vector = np.array(E.__getstate__()["as_vector"])
-    for k in Configuration.archive:
-        vec = np.array(k.__getstate__()["as_vector"])
-        if np.linalg.norm(vec - env_vector) < 1:
-            return True
-    new_env = Configuration.baseEnv(Configuration.flatConfig)
-    new_env.__setstate__(E.__getstate__())
-    Configuration.archive.append(new_env)
-
-    return True
+    return E(theta) > args.repro_threshold
 
 
 def mc_satisfied(child_list, args):
@@ -67,15 +65,17 @@ def rank_by_score(child_list, args):
         E, theta = ea_pair
         full_env_list.append(E)
         theta_list.append(theta)
-    for env in Configuration.archive:
-        full_env_list.append(env)
+    for ea_pair in Configuration.archive:
+        E, theta = ea_pair
+        full_env_list.append(E)
+        theta_list.append(theta)
 
     points = pata_ec(full_env_list, theta_list)
 
     for i in range(len(child_list)):
         # KNN Novelty score
         if len(Configuration.archive) == 0:
-            results[i] = 0
+            break
         dist_list = np.zeros(len(Configuration.archive))
         env_vec = points[i]
         for j in range(len(Configuration.archive)):
@@ -117,7 +117,7 @@ def pata_ec(envs, individuals):
 
 
 def normalize(arr):
-    tol = 10
+    tol = 5
     res = np.zeros(len(arr))
     for i in range(len(arr)):
         res[i] = min(250, max(-50, arr[i]))//tol

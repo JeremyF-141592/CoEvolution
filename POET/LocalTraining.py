@@ -8,10 +8,12 @@ def ES_Step(theta, E, args, allow_verbose=0):
 
     shared_gaussian_table = [np.random.normal(0, 1, size=len(og_weights)) for i in range(args.batch_size)]
 
+    sigma = max(args.noise_limit, args.noise_std * args.noise_decay ** theta.get_opt_state()["t"])
+
     thetas = []
     for i in range(args.batch_size):
         new_theta = Configuration.agentFactory.new()
-        new_theta.set_weights(og_weights + args.sigma * shared_gaussian_table[i])
+        new_theta.set_weights(og_weights + sigma * shared_gaussian_table[i])
         thetas.append(new_theta)
 
     scores = Configuration.lview.map(E, thetas)
@@ -20,7 +22,7 @@ def ES_Step(theta, E, args, allow_verbose=0):
         print(f"\n\tMean score : {round(scores.mean(), 2)}   Max score : {round(scores.max(), 2)}", end="", flush=True)
 
     for i in range(len(scores)):
-        scores[i] -= args.w_decay * np.linalg.norm(og_weights + args.sigma * shared_gaussian_table[i])
+        scores[i] -= args.w_decay * np.linalg.norm(og_weights + sigma * shared_gaussian_table[i])
 
     scores = rank_normalize(scores)
     Configuration.budget_spent[-1] += len(thetas)

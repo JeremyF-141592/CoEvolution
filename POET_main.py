@@ -12,7 +12,6 @@ import argparse
 import json
 import pickle
 import warnings
-import time
 warnings.filterwarnings("ignore")
 
 Configuration.make()
@@ -36,43 +35,40 @@ if not issubclass(Configuration.baseEnv, EnvironmentInterface):
 
 # Parse arguments ------------------------------------------------------------------------------------------------------
 
-parser = argparse.ArgumentParser(description='POET Implementation as in Wang, rui and Lehman, Joel, and Clune, '
-                                             'Jeff, and Stanley, Kenneth O. 2019 Uber AI Labs.')
+parser = argparse.ArgumentParser(description='POET Enhanced Implementation as in Wang, rui and Lehman, Joel, and Clune,'
+                                             'Jeff, and Stanley, Kenneth O. 2020 Uber AI Labs.')
 
 # General
 parser.add_argument('--T', type=int, default=400, help='Iterations limit')
 parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
 parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
+parser.add_argument('--nb_rounds', type=int, default=1, help='Number of episodes to evaluate any agent')
 # Population
-parser.add_argument('--E_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
-parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
-parser.add_argument('--Pop_size', type=int, default=8, help='Population size')
+parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
+parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
+parser.add_argument('--pop_size', type=int, default=1, help='Initial population size')
 # Local optimization
-parser.add_argument('--lr_init', type=float, default=0.01, help="Learning rate decay")
+parser.add_argument('--lr_init', type=float, default=0.01, help="Learning rate initial value")
 parser.add_argument('--lr_decay', type=float, default=0.9999, help="Learning rate decay")
 parser.add_argument('--lr_limit', type=float, default=0.001, help="Learning rate limit")
-parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
+parser.add_argument('--noise_std', type=float, default=0.1,  help='Noise std for local ES-optimization')
+parser.add_argument('--noise_decay', type=float, default=0.999)
+parser.add_argument('--noise_limit', type=float, default=0.01)
 parser.add_argument('--batch_size', type=int, default=256, help='Batch size for ES gradient descent')
-parser.add_argument('--w_decay', type=float, default=0.001, help='Weight decay penalty')
+parser.add_argument('--w_decay', type=float, default=0.01, help='Weight decay penalty')
 # POET
-parser.add_argument('--N_mutate', type=int, default=10, help='Number of steps before attempting mutation')
-parser.add_argument('--N_transfer', type=int, default=10, help='Number of steps before attempting transfer')
-parser.add_argument('--max_children', type=int, default=20, help='maximum number of children per reproduction')
-parser.add_argument('--max_admitted', type=int, default=6, help='maximum number of children admitted per reproduction')
-parser.add_argument('--capacity', type=int, default=10, help='maximum number of active environments - REPLACED'
-                                                             'by Pop_size.')
+parser.add_argument('--n_mutate', type=int, default=10, help='Number of steps before attempting mutation')
+parser.add_argument('--n_transfer', type=int, default=10, help='Number of steps before attempting transfer')
+parser.add_argument('--max_children', type=int, default=100, help='Maximum number of children per reproduction')
+parser.add_argument('--max_admitted', type=int, default=6, help='Maximum number of children admitted per reproduction')
+parser.add_argument('--capacity', type=int, default=8, help='Maximum number of active environments')
+parser.add_argument('--repro_threshold', type=int, default=200, help='Minimum score to be allowed to reproduce')
 
-parser.add_argument('--nb_rounds', type=int, default=1, help='Number of rollouts to evaluate one pair in '
-                                                             'mutation & transfer')
-parser.add_argument('--mc_min', type=int, default=-25, help='Minimal environment novelty score to pass MC')
-parser.add_argument('--mc_max', type=int, default=340, help='Maximal environment novelty score to pass MC')
+parser.add_argument('--mc_min', type=int, default=-25, help='Minimal fitness to pass MC')
+parser.add_argument('--mc_max', type=int, default=340, help='Maximal fitness to pass MC')
 
-parser.add_argument('--knn', type=int, default=5, help='Amount of neighbors to evaluate knn Environment Novelty')
-
-# POET original implementation of environments
-parser.add_argument('--envs', nargs='+', default=['roughness', 'pit', 'stair', 'stump'])
-parser.add_argument('--master_seed', type=int, default=111)
+parser.add_argument('--knn', type=int, default=5, help='Amount of neighbors evaluating knn Environment Novelty')
 
 args = parser.parse_args()
 
@@ -92,6 +88,7 @@ else:
     with open(f"{args.save_to}/commandline_args.txt", 'w') as f:
         json.dump(args.__dict__, f, indent=2)
 
+Configuration.nb_rounds = args.nb_rounds
 
 # POET Algorithm -------------------------------------------------------------------------------------------------------
 # This part is intended to be as close as possible as the pseudo-code presented in the original paper.
@@ -101,7 +98,7 @@ for t in range(start_from, args.T):
     print(f"Iteration {t} ...", end=" ", flush=True)
     Configuration.budget_spent.append(0)
 
-    if t > 0 and t % args.N_mutate == 0:
+    if t > 0 and t % args.n_mutate == 0:
         print("Mutate ...", end=" ", flush=True)
         EA_List = mutate_envs(EA_List, args)
 
@@ -111,13 +108,15 @@ for t in range(start_from, args.T):
         theta = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 
-    if M > 1 and t > 0 and t % args.N_transfer == 0:
+    if M > 1 and t > 0 and t % args.n_transfer == 0:
         print("Transfer ...", end=" ", flush=True)
         new_ea_list = []
         for m in range(M):
             E, theta = EA_List[m]
-            theta_top = Evaluate_Candidates(EA_List[:m] + EA_List[m+1:], E, args)
-            if E(theta_top) > E(theta):
+            threshold = E(theta)
+            theta_top, score_top = Evaluate_Candidates(EA_List[:m] + EA_List[m+1:], E, args, threshold=threshold)
+            if score_top > threshold:
+                theta_top.set_opt_state(Configuration.optimizer.default_state())
                 new_ea_list.append((E, theta_top))
             else:
                 new_ea_list.append((E, theta))

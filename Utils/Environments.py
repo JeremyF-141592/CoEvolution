@@ -13,27 +13,29 @@ class EnvironmentInterface(gym.Env):
         An observer is a function acting on the path taken by the agent, returning an observation.
         A metric is a function returning the final score for a given agent, total reward and observation.
         """
-        state = self.reset()
-        done = False
+        total = 0
+        for i in range(Configuration.nb_rounds):
+            state = self.reset()
+            done = False
 
-        total_reward = 0
-        path = list()
-        count = 0
-        while not done:
-            if render:
-                self.render()
+            fitness = 0
+            path = list()
+            count = 0
+            while not done:
+                if render:
+                    self.render()
 
-            action = agent.choose_action(state)
-            state, reward, done, info = self.step(action)
-            # path.append(state)
-            total_reward += reward
-            count += 1
-            if count > max_steps:
-                total_reward += exceed_reward
-                break
+                action = agent.choose_action(state)
+                state, reward, done, info = self.step(action)
+                # path.append(state)
+                fitness += reward
+                count += 1
+                if count > max_steps:
+                    fitness += exceed_reward
+                    break
 
-        return Configuration.metric(agent.__getstate__()["as_vector"], self.__getstate__()["as_vector"],
-                                    total_reward, Configuration.observer(path), Configuration.archive)
+            total += Configuration.metric(agent, self, fitness, Configuration.observer(path), Configuration.archive)
+        return total
 
     @abstractmethod
     def get_child(self):

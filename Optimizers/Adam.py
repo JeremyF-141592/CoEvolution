@@ -9,7 +9,10 @@ class Adam(Optimizer):
         self.epsilon = epsilon
 
     def step(self, gradient, state, args):
-        t, m, v = state
+        t = state["t"]
+        m = state["m"]
+        v = state["v"]
+
         stepsize = max(args.lr_init * args.lr_decay ** t, args.lr_limit)
 
         if m is None:
@@ -17,13 +20,21 @@ class Adam(Optimizer):
         if v is None:
             v = np.zeros(len(gradient), dtype=np.float32)
 
-        print("   ", t)
         a = stepsize * np.sqrt(1 - self.beta2 ** t) / (1 - self.beta1 ** t)
         m = self.beta1 * m + (1 - self.beta1) * gradient
         v = self.beta2 * v + (1 - self.beta2) * (gradient * gradient)
         step = -a * m / (np.sqrt(v) + self.epsilon)
 
-        return step, (t+1, m, v)
+        new_state = dict()
+        new_state["t"] = t+1
+        new_state["m"] = m
+        new_state["v"] = v
+
+        return step, new_state
 
     def default_state(self):
-        return 1, None, None
+        state = dict()
+        state["t"] = 1
+        state["m"] = None
+        state["v"] = None
+        return state

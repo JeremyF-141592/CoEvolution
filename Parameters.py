@@ -17,6 +17,8 @@ class Configuration:
     archive = []
     budget_spent = []
 
+    nb_rounds = 1
+
     @staticmethod
     def make():
         """Edit this part to easily change configuration."""

@@ -9,4 +9,5 @@ class Optimizer(ABC):
 
     @abstractmethod
     def default_state(self):
+        """State is a dict, must include the key 't' representative of time elapsed"""
         return NotImplementedError()

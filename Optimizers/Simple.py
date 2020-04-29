@@ -8,7 +8,11 @@ class Simple(Optimizer):
         alpha = max(args.lr_init * args.lr_decay ** t, args.lr_limit)
         step = gradient * alpha
 
-        return step, t+1
+        new_state = dict()
+        new_state["t"] = t+1
+        return step, new_state
 
     def default_state(self):
-        return 0
+        state = dict()
+        state["t"] = 1
+        return state
