@@ -28,7 +28,7 @@ def ES_Step(theta, E, args, allow_verbose=0):
     summed_weights = np.zeros(og_weights.shape)
     for i in range(len(scores)):
         summed_weights += scores[i] * shared_gaussian_table[i]
-    grad_estimate = (1/(len(shared_gaussian_table))) * summed_weights
+    grad_estimate = -(1/(len(shared_gaussian_table))) * summed_weights
 
     step, new_state = Configuration.optimizer.step(grad_estimate, theta.get_opt_state(), args)
 

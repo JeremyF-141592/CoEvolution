@@ -1,5 +1,4 @@
 from Utils.Optimizers import Optimizer
-from Parameters import Configuration
 import numpy as np
 
 
@@ -11,7 +10,7 @@ class Adam(Optimizer):
 
     def step(self, gradient, state, args):
         t, m, v = state
-        stepsize = max(args.lr_decay ** t, args.lr_limit)
+        stepsize = max(args.lr_init * args.lr_decay ** t, args.lr_limit)
 
         if m is None:
             m = np.zeros(len(gradient), dtype=np.float32)

@@ -49,7 +49,8 @@ parser.add_argument('--E_init', type=str, default="flat", help='Initial policy o
 parser.add_argument('--Theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
 parser.add_argument('--Pop_size', type=int, default=8, help='Population size')
 # Local optimization
-parser.add_argument('--lr_decay', type=float, default=0.995, help="Learning rate decay")
+parser.add_argument('--lr_init', type=float, default=0.01, help="Learning rate decay")
+parser.add_argument('--lr_decay', type=float, default=0.9999, help="Learning rate decay")
 parser.add_argument('--lr_limit', type=float, default=0.001, help="Learning rate limit")
 parser.add_argument('--sigma', type=float, default=0.1, help='Noise std for local ES-optimization')
 parser.add_argument('--batch_size', type=int, default=256, help='Batch size for ES gradient descent')
