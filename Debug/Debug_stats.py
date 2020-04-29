@@ -27,10 +27,7 @@ if folder != "":
         mdist /= len(ag_matrix[i])*(len(ag_matrix[i])+1)*0.5
         mean_dist[i] = mdist
     plt.axhline(y=0, color="black")
-    plt.axvline(x=15, linestyle="dashed", color="orange")
-    plt.axvline(x=30, linestyle="dashed", color="orange")
-    plt.axvline(x=45, linestyle="dashed", color="orange")
-    for i in range(50, len(ag_matrix), 10):
+    for i in range(10, len(ag_matrix), 10):
         plt.axvline(x=i, linestyle="dashed", color="orange")
     plt.plot(mean_dist)
     plt.show()

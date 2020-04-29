@@ -11,7 +11,7 @@ from gym import spaces
 from gym.utils import colorize, seeding, EzPickle
 from Utils.Environments import EnvironmentInterface
 
-from Environments.CPPN_NEAT import CPPN_NEAT
+from Parameters import Configuration
 
 
 # Created by Oleg Klimov. Licensed on the same terms as the rest of OpenAI Gym.
@@ -149,14 +149,11 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
         GRASS, STUMP, STAIRS, PIT, _STATES_ = range(5)
         self.terrain   = []
         self.terrain_x = [i*TERRAIN_STEP for i in range(TERRAIN_LENGTH)]
-        self.draw_x = [12*i/TERRAIN_LENGTH - 6 for i in range(20, TERRAIN_LENGTH)]
-        terrain_y = (self.cppn.draw(self.draw_x)*8 + TERRAIN_HEIGHT*1.2).tolist()
-        self.terrain_y = []
-        # smooth start
-        for i in range(20):
-            self.terrain_y.append(terrain_y[0])
-        for i in range(TERRAIN_LENGTH-20):
-            self.terrain_y.append(terrain_y[i])
+        mid = TERRAIN_LENGTH * TERRAIN_STEP / 2.
+        self.draw_x = [(i*TERRAIN_STEP - mid) * np.pi / mid for i in range(TERRAIN_LENGTH)]
+        self.terrain_y = self.cppn.draw(self.draw_x).tolist()
+        for i in range(len(self.terrain_y)):
+            self.terrain_y[i] += TERRAIN_HEIGHT
 
         # plt.plot(self.terrain_y)
         # plt.show()
@@ -416,7 +413,7 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
         return dic
 
     def __setstate__(self, state):
-        cppn = CPPN_NEAT()
-        cppn.__setstate__(state)
+        cppn = Configuration.flatConfig
         self.__init__(cppn)
         self.terrain_y = state["as_vector"]
+        self.cppn.__setstate__(state)

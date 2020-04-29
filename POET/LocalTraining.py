@@ -2,7 +2,7 @@ import numpy as np
 from Parameters import Configuration
 
 
-def ES_Step(theta, E, args, verbose=0):
+def ES_Step(theta, E, args, allow_verbose=0):
     """Local optimization by Evolution Strategy steps, rank normalization and weight decay"""
     og_weights = theta.get_weights()
 
@@ -16,7 +16,7 @@ def ES_Step(theta, E, args, verbose=0):
 
     scores = Configuration.lview.map(E, thetas)
     scores = np.array(scores)
-    if verbose > 0:
+    if allow_verbose > 0 and args.verbose > 0:
         print(f"\n\tMean score : {round(scores.mean(), 2)}   Max score : {round(scores.max(), 2)}", end="", flush=True)
 
     for i in range(len(scores)):
@@ -30,19 +30,10 @@ def ES_Step(theta, E, args, verbose=0):
         summed_weights += scores[i] * shared_gaussian_table[i]
     grad_estimate = (1/(len(shared_gaussian_table))) * summed_weights
 
-    alpha = 1
-    t = 0
-    if len(theta.get_opt_state()) > 0:
-        alpha = theta.get_opt_state()[0]
-        t = theta.get_opt_state()[1]
-    
-    step = grad_estimate * alpha
-
-    alpha = max(args.lr_decay**t, args.lr_limit)
-    t += 1
+    step, new_state = Configuration.optimizer.step(grad_estimate, theta.get_opt_state(), args)
 
     new_ag = Configuration.agentFactory.new()
-    new_ag.set_opt_state([alpha, t])
+    new_ag.set_opt_state(new_state)
     new_ag.set_weights(og_weights + step)
     return new_ag
 

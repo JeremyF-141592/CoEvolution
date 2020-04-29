@@ -1,5 +1,6 @@
 import numpy as np
 from Utils.Agents import Agent, AgentFactory
+from Parameters import Configuration
 
 
 def sigmoid(x):
@@ -18,9 +19,9 @@ class NeuralAgentNumpy(Agent):
         self.n_hidden_layers = n_hidden_layers
         self.weights = None 
         self.n_weights = None
+        self.opt_state = Configuration.optimizer.default_state()
         self.randomize()
         self.out = np.zeros(n_out)
-        self.opt_state = []
         #print("Creating a simple mlp with %d inputs, %d outputs, %d hidden layers and %d neurons per layer"%(n_in, n_out,n_hidden_layers, n_neurons_per_hidden))
     
     def randomize(self):

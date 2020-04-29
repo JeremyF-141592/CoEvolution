@@ -107,7 +107,7 @@ for t in range(start_from, args.T):
     M = len(EA_List)
     for m in range(M):
         E, theta = EA_List[m]
-        theta = ES_Step(theta, E, args, verbose=1)
+        theta = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 
     if M > 1 and t > 0 and t % args.N_transfer == 0:
