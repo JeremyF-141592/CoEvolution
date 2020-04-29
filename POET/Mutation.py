@@ -18,7 +18,7 @@ def mutate_envs(ea_list, args):
     child_list = rank_by_score(child_list, args)
     admitted = 0
     for E_child, theta_child in child_list:
-        theta_child, score_child = Evaluate_Candidates(child_list, E_child, args)
+        theta_child, score_child = Evaluate_Candidates(parent_list, E_child, args)
         if args.mc_max > score_child > args.mc_min:
             ea_list.append((E_child, theta_child))
             admitted += 1

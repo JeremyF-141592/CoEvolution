@@ -61,7 +61,7 @@ parser.add_argument('--w_decay', type=float, default=0.01, help='Weight decay pe
 parser.add_argument('--n_mutate', type=int, default=10, help='Number of steps before attempting mutation')
 parser.add_argument('--n_transfer', type=int, default=10, help='Number of steps before attempting transfer')
 parser.add_argument('--max_children', type=int, default=100, help='Maximum number of children per reproduction')
-parser.add_argument('--max_admitted', type=int, default=6, help='Maximum number of children admitted per reproduction')
+parser.add_argument('--max_admitted', type=int, default=7, help='Maximum number of children admitted per reproduction')
 parser.add_argument('--capacity', type=int, default=8, help='Maximum number of active environments')
 parser.add_argument('--repro_threshold', type=int, default=200, help='Minimum score to be allowed to reproduce')
 

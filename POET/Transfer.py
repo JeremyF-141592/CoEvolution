@@ -21,7 +21,7 @@ def Evaluate_Candidates(ea_list, env, args, threshold=0):
 
     if len(fine_tuned_agents) == 0:
         return None, -float("inf")
-    scores = np.zeros(len(base_agents))
+    scores = np.zeros(len(fine_tuned_agents))
 
     scores += Configuration.lview.map(env, fine_tuned_agents)
     Configuration.budget_spent[-1] += len(base_agents)
