@@ -30,8 +30,8 @@ if not isinstance(Configuration.agentFactory, AgentFactory):
     raise RuntimeError("Configuration agentFactory is not an instance of AgentFactory.")
 if not isinstance(Configuration.agentFactory.new(), Agent):
     raise RuntimeError("Configuration agentFactory.new() is not an instance of Agent.")
-if not issubclass(Configuration.baseEnv, EnvironmentInterface):
-    raise RuntimeError("Configuration baseEnv is not inherited from EnvironmentInterface.")
+# if not issubclass(Configuration.baseEnv, EnvironmentInterface):
+#     raise RuntimeError("Configuration baseEnv is not inherited from EnvironmentInterface.")
 
 # Parse arguments ------------------------------------------------------------------------------------------------------
 

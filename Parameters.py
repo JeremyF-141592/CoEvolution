@@ -19,7 +19,6 @@ class Configuration:
 
     nb_rounds = 1
 
-    use_benchmark = False
     benchmark = None
 
     @staticmethod
@@ -32,19 +31,20 @@ class Configuration:
         import Utils.Metrics
         import Utils.Observers
 
-        # ----------------------------------------------------------------
-        from Utils.Benchmark import gramacy_lee
-
-        Configuration.use_benchmark = True
-        Configuration.benchmark = gramacy_lee
-        # ----------------------------------------------------------------
-
-        Configuration.baseEnv = BipedalWalkerCPPN
-        Configuration.flatConfig = CppnEnvParams()
-
-        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
+        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 1, 1)
 
         Configuration.observer = Utils.Observers.empty_observer
         Configuration.metric = Utils.Metrics.fitness_metric
 
         Configuration.optimizer = Adam()
+
+        # ----------------------------------------------------------------
+        from Utils.Benchmark import gramacy_lee, Benchmark
+
+        Configuration.benchmark = gramacy_lee
+        Configuration.baseEnv = Benchmark
+        Configuration.flatConfig = len(Configuration.agentFactory.new().get_weights())
+        # ----------------------------------------------------------------
+
+        # Configuration.baseEnv = BipedalWalkerCPPN
+        # Configuration.flatConfig = CppnEnvParams()
