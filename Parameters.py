@@ -19,6 +19,9 @@ class Configuration:
 
     nb_rounds = 1
 
+    use_benchmark = False
+    benchmark = None
+
     @staticmethod
     def make():
         """Edit this part to easily change configuration."""
@@ -28,6 +31,13 @@ class Configuration:
         from Optimizers.Adam import Adam
         import Utils.Metrics
         import Utils.Observers
+
+        # ----------------------------------------------------------------
+        from Utils.Benchmark import gramacy_lee
+
+        Configuration.use_benchmark = True
+        Configuration.benchmark = gramacy_lee
+        # ----------------------------------------------------------------
 
         Configuration.baseEnv = BipedalWalkerCPPN
         Configuration.flatConfig = CppnEnvParams()

@@ -13,6 +13,15 @@ class EnvironmentInterface(gym.Env):
         An observer is a function acting on the path taken by the agent, returning an observation.
         A metric is a function returning the final score for a given agent, total reward and observation.
         """
+
+        if Configuration.use_benchmark:
+            wei = agent.get_weights()
+            res = 0
+            for w in wei:
+                value, maximum = Configuration.benchmark(w)
+                res += value / maximum
+            return 100.0 * res / len(wei)
+
         total = 0
         for i in range(Configuration.nb_rounds):
             state = self.reset()

@@ -8,7 +8,7 @@ import regex as re
 Configuration.make()
 
 save = False
-pause_time = 0.4
+pause_time = 1
 
 # Resume execution -----------------------------------------------------------------------------------------------------
 
@@ -19,17 +19,16 @@ if folder != "":
     filenames.sort(key=lambda f: int(re.sub('\D', '', f)))
     if not save:
         plt.show()
-    for i in range(1, len(filenames), 10):
+    for i in range(550, len(filenames), 25):
         plt.clf()
         ea_path = filenames[i]
         with open(f"{ea_path}", "rb") as f:
             ea_list_resume = pickle.load(f)
         plt.title(f"Iteration {i}")
-        for k in range(8):
+        for k in range(len(ea_list_resume)):
             E, theta = ea_list_resume[k]
-            E.cppn.print()
             plt.plot(E.terrain_y, label=f"{k}")
-            # E(theta, render=True)
+            E(theta, render=True)
         plt.legend()
         if save:
             plt.savefig(f"Iteration {i}.png")
