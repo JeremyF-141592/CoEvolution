@@ -25,7 +25,7 @@ class Benchmark:
             return 100.0 * res / len(wei)
 
     def get_child(self):
-        child = Benchmark(self.size, self.max, self.argmax)
+        child = Benchmark((self.size, self.max, self.argmax))
         child.benchmark_frequency = self.benchmark_frequency + np.random.uniform(-0.01, 0.01, size=self.size)
         child.benchmark_offset = self.benchmark_offset + np.random.uniform(-0.01, 0.01, size=self.size)
         return child
@@ -40,7 +40,7 @@ class Benchmark:
         return dic
 
     def __setstate__(self, state):
-        self.__init__(state["size"], state["max"], state["argmax"])
+        self.__init__((state["size"], state["max"], state["argmax"]))
         self.benchmark_offset = np.array(state["Offset"])
         self.benchmark_frequency = np.array(state["Freq"])
 
