@@ -3,11 +3,13 @@ from Parameters import Configuration
 
 
 def non_dominated(elements):
+    if len(elements) == 0:
+        return elements
     res = list()
     for i in range(len(elements)):
         dominated = False
         for j in range(len(elements)):
-            if dominates(elements[i], elements[j]):
+            if dominates(elements[i].score, elements[j].score):
                 dominated = True
                 break
         if not dominated:

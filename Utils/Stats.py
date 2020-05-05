@@ -57,4 +57,23 @@ def unpack_stats(path):
         for line in f.readlines():
             dic = json.loads(line)
             res.append(dic)
-    return res
+
+    keys = res[0].keys()
+    end_res = dict()
+    for key in keys:
+        value = []
+        absciss = []
+        for i in range(len(res)):
+            if type(res[i][key]) != list:
+                res[i][key] = [res[i][key]]
+            if len(res[i][key]) > len(value):
+                for add in range(len(res[i][key]) - len(value)):
+                    value.append([])
+                    absciss.append([])
+            for j in range(len(res[i][key])):
+                value[j].append(res[i][key][j])
+                absciss[j].append(i)
+        end_res[key] = list()
+        for k in range(len(value)):
+            end_res[key].append((absciss[k], value[k]))
+    return end_res

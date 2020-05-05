@@ -107,6 +107,8 @@ for t in range(start_from, args.T):
     M = len(EA_List)
     for m in range(M):
         E, theta = EA_List[m]
+        if args.verbose > 0:
+            print(f"{m} : ", end="", flush=True)
         theta, threshold[m, t % 5] = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 
@@ -118,6 +120,8 @@ for t in range(start_from, args.T):
             thres = threshold[m].max()  # Max fitness over 5 last runs
             theta_top, score_top = Evaluate_Candidates(EA_List[:m] + EA_List[m+1:], E, args, threshold=thres)
             if score_top > thres:
+                if args.verbose > 0:
+                    print(f"Transfered onto {m} : {score_top} > {thres}.")
                 theta_top.set_opt_state(Configuration.optimizer.default_state())
                 new_ea_list.append((E, theta_top))
             else:
