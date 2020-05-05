@@ -108,7 +108,7 @@ for t in range(start_from, args.T):
     for m in range(M):
         E, theta = EA_List[m]
         if args.verbose > 0:
-            print(f"{m} : ", end="", flush=True)
+            print(f"\n\t{m} : ", end="", flush=True)
         theta, threshold[m, t % 5] = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 

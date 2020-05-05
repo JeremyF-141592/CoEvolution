@@ -21,7 +21,7 @@ def ES_Step(theta, E, args, allow_verbose=0):
 
     self_fitness = E(theta)
     if allow_verbose > 0 and args.verbose > 0:
-        print(f"\n\tFitness : {round(self_fitness, 2)}   Mean batch fitness : {round(scores.mean(), 2)}",
+        print(f"Fitness : {round(self_fitness, 2)}   Mean batch fitness : {round(scores.mean(), 2)}",
               end="", flush=True)
 
     for i in range(len(scores)):
