@@ -14,7 +14,7 @@ def agents_stats(agents):
             dist_mean += np.linalg.norm(weights[i] - weights[j])
     dist_mean /= (len(weights) * len(weights+1))/2
     w_mean = weights.mean(axis=0).tolist()
-    return dist_mean, w_mean
+    return float(dist_mean), w_mean
 
 
 def raw_fitness(agents, envs):
@@ -30,7 +30,7 @@ def raw_fitness(agents, envs):
 def benchmark_evolution(envs):
     res = list()
     for i in range(len(envs)):
-        res.append(envs[i].benchmark_offset * envs[i].argmax + envs[i].benchmark_offset)
+        res.append((envs[i].benchmark_offset.sum()-len(envs[i].benchmark_offset)) * envs[i].argmax + envs[i].benchmark_offset.sum())
     return res
 
 

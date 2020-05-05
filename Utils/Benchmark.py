@@ -8,7 +8,8 @@ def gramacy_lee(x):
 
 
 class Benchmark:
-    def __init__(self, size, maximum, argmax):
+    def __init__(self, config):
+        size, maximum, argmax = config
         self.benchmark_frequency = np.ones(size)
         self.benchmark_offset = np.zeros(size)
         self.size = size
