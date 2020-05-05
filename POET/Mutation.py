@@ -15,6 +15,8 @@ def mutate_envs(ea_list, args):
         return ea_list
     child_list = env_reproduce(parent_list, args.max_children)
     child_list = mc_satisfied(child_list, args)
+    if len(child_list) == 0 and args.verbose > 0:
+        print("No child environments passed the Minmal Criterion.")
     child_list = rank_by_score(child_list, args)
     admitted = 0
     for E_child, theta_child in child_list:

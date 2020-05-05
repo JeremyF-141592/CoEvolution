@@ -19,7 +19,7 @@ def Evaluate_Candidates(ea_list, env, args, threshold=0):
         if scores[i] > threshold:
             fine_tuned_agents.append(ES_Step(base_agents[i], env, args))
 
-    if len(fine_tuned_agents) == 0:
+    if len(fine_tuned_agents) == 0:  # No other agent has a fitness abose the threshold
         return None, -float("inf")
     scores = np.zeros(len(fine_tuned_agents))
 

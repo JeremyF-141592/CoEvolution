@@ -18,8 +18,11 @@ def ES_Step(theta, E, args, allow_verbose=0):
 
     scores = Configuration.lview.map(E, thetas)
     scores = np.array(scores)
+
+    self_fitness = E(theta)
     if allow_verbose > 0 and args.verbose > 0:
-        print(f"\n\tMean score : {round(scores.mean(), 2)}   Max score : {round(scores.max(), 2)}", end="", flush=True)
+        print(f"\n\tFitness : {round(self_fitness, 2)}   Mean batch fitness : {round(scores.mean(), 2)}",
+              end="", flush=True)
 
     for i in range(len(scores)):
         scores[i] -= args.w_decay * np.linalg.norm(og_weights + sigma * shared_gaussian_table[i])
@@ -37,7 +40,7 @@ def ES_Step(theta, E, args, allow_verbose=0):
     new_ag = Configuration.agentFactory.new()
     new_ag.set_opt_state(new_state)
     new_ag.set_weights(og_weights + step)
-    return new_ag
+    return new_ag, self_fitness
 
 
 def rank_normalize(arr):

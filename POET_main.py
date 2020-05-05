@@ -7,6 +7,7 @@ from Utils.Agents import AgentFactory, Agent
 from Utils.Environments import EnvironmentInterface
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats
+import numpy as np
 import ipyparallel as ipp
 import argparse
 import json
@@ -93,6 +94,7 @@ Configuration.nb_rounds = args.nb_rounds
 # POET Algorithm -------------------------------------------------------------------------------------------------------
 # This part is intended to be as close as possible as the pseudo-code presented in the original paper.
 
+threshold = np.zeros((args.capacity, 5))  # List of fitness thresholds, needed for transfer
 EA_List = ea_init(args) if folder == "" else ea_list_resume
 for t in range(start_from, args.T):
     print(f"Iteration {t} ...", end=" ", flush=True)
@@ -105,7 +107,7 @@ for t in range(start_from, args.T):
     M = len(EA_List)
     for m in range(M):
         E, theta = EA_List[m]
-        theta = ES_Step(theta, E, args, allow_verbose=1)
+        theta, threshold[m, t % 5] = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 
     if M > 1 and t > 0 and t % args.n_transfer == 0:
@@ -113,9 +115,9 @@ for t in range(start_from, args.T):
         new_ea_list = []
         for m in range(M):
             E, theta = EA_List[m]
-            threshold = E(theta)
-            theta_top, score_top = Evaluate_Candidates(EA_List[:m] + EA_List[m+1:], E, args, threshold=threshold)
-            if score_top > threshold:
+            thres = threshold[m].max()  # Max fitness over 5 last runs
+            theta_top, score_top = Evaluate_Candidates(EA_List[:m] + EA_List[m+1:], E, args, threshold=thres)
+            if score_top > thres:
                 theta_top.set_opt_state(Configuration.optimizer.default_state())
                 new_ea_list.append((E, theta_top))
             else:

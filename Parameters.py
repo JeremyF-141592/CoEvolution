@@ -31,7 +31,7 @@ class Configuration:
         import Utils.Metrics
         import Utils.Observers
 
-        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 1, 1)
+        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
 
         Configuration.observer = Utils.Observers.empty_observer
         Configuration.metric = Utils.Metrics.fitness_metric
@@ -43,7 +43,9 @@ class Configuration:
 
         Configuration.benchmark = gramacy_lee
         Configuration.baseEnv = Benchmark
-        Configuration.flatConfig = len(Configuration.agentFactory.new().get_weights())
+        Configuration.flatConfig = (len(Configuration.agentFactory.new().get_weights()),
+                                    0.869011134989500,
+                                    0.548563444114526)
         # ----------------------------------------------------------------
 
         # Configuration.baseEnv = BipedalWalkerCPPN

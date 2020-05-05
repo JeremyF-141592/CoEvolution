@@ -1,5 +1,6 @@
 import numpy as np
 import json
+from Parameters import Configuration
 
 
 def agents_stats(agents):
@@ -26,12 +27,21 @@ def raw_fitness(agents, envs):
     return res
 
 
+def benchmark_evolution(envs):
+    res = list()
+    for i in range(len(envs)):
+        res.append(envs[i].benchmark_offset * envs[i].argmax + envs[i].benchmark_offset)
+    return res
+
+
 def bundle_stats(agents, envs):
     dic = dict()
     ag_stats = agents_stats(agents)
     dic["Dist Mean"] = ag_stats[0]
     dic["Weight Mean"] = ag_stats[1]
     dic["Fitness"] = raw_fitness(agents, envs)
+    if Configuration.benchmark is not None:
+        dic["Benchmark"] = benchmark_evolution(envs)
     return dic
 
 
