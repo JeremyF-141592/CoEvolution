@@ -42,6 +42,10 @@ class EnvironmentInterface(gym.Env):
         return NotImplementedError
 
     @abstractmethod
+    def mate(self, other):
+        return NotImplementedError
+
+    @abstractmethod
     def __getstate__(self):
         return NotImplementedError
 

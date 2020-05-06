@@ -118,6 +118,17 @@ class CppnEnvParams:
         new.__setstate__(self.__getstate__())
         return new
 
+    def mate(self, other):
+        child = self.cppn_config.genome_type(0)
+        self.cppn_genome.fitness = 1
+        other.cppn_genome.fitness = 0
+        child.configure_crossover(self.cppn_genome, other.cppn_genome, self.cppn_config.genome_config)
+        child.mutate(self.cppn_config.genome_config)
+        new = CppnEnvParams()
+        new.cppn_genome = child
+        new.reset_altitude_fn()
+        return new
+
     def __getstate__(self):
         dic = dict()
         dic["genomeBytes"] = pickle.dumps(self.cppn_genome)

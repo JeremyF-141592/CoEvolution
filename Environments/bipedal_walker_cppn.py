@@ -128,6 +128,9 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
     def get_child(self):
         return BipedalWalkerCPPN(self.cppn.get_child())
 
+    def mate(self, other):
+        return BipedalWalkerCPPN(self.cppn.mate(other.cppn))
+
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]

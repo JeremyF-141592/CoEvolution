@@ -113,7 +113,10 @@ for t in range(start_from, args.T):
         EA_List[m] = (E, theta)
 
     if M > 1 and t > 0 and t % args.n_transfer == 0:
-        print("Transfer ...", end=" ", flush=True)
+        if args.verbose > 0:
+            print("Transfer ...")
+        else:
+            print("Transfer ...", end=" ", flush=True)
         new_ea_list = []
         for m in range(M):
             E, theta = EA_List[m]

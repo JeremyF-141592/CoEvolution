@@ -30,6 +30,12 @@ class Benchmark:
         child.benchmark_offset = self.benchmark_offset + np.random.uniform(-0.01, 0.01, size=self.size)
         return child
 
+    def mate(self, other):
+        child = Benchmark((self.size, self.max, self.argmax))
+        child.benchmark_frequency = (self.benchmark_frequency + other.benchmark_frequency)/2.0
+        child.benchmark_offset = (self.benchmark_offset + other.benchmark_offset)/2.0
+        return child
+
     def __getstate__(self):
         dic = dict()
         dic["Freq"] = self.benchmark_frequency.tolist()

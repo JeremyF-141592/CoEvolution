@@ -38,8 +38,9 @@ def bundle_stats(agents, envs):
     dic = dict()
     ag_stats = agents_stats(agents)
     dic["Dist Mean"] = ag_stats[0]
-    dic["Weight Mean"] = ag_stats[1]
-    dic["Fitness"] = raw_fitness(agents, envs)
+    # dic["Weight Mean"] = ag_stats[1]
+    if len(agents) == len(envs):
+        dic["Fitness"] = raw_fitness(agents, envs)
     if Configuration.benchmark is not None:
         dic["Benchmark"] = benchmark_evolution(envs)
     return dic
