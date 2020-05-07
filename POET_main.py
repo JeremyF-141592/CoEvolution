@@ -112,7 +112,7 @@ for t in range(start_from, args.T):
         theta, threshold[m, t % 5] = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 
-    if M > 1 and t > 0 and t % args.n_transfer == 0:
+    if M > 1 and t > 0 and t % args.n_transfer == 0 and t % args.n_mutate != 0:
         if args.verbose > 0:
             print("Transfer ...")
         else:

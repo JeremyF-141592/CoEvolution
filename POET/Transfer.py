@@ -27,7 +27,7 @@ def Evaluate_Candidates(ea_list, env, args, threshold=0):
             fine_tuned_agents.append(theta)
 
     if len(fine_tuned_agents) == 0:  # No other agent has a fitness above the threshold
-        return None, -float("inf")
+        return None, float("-inf")
     scores = np.zeros(len(fine_tuned_agents))
 
     scores += Configuration.lview.map(env, fine_tuned_agents)
