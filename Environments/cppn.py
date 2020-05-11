@@ -43,7 +43,9 @@ class PrettyGenome(neat.DefaultGenome):
 class CppnEnvParams:
     x = np.array([(i - 200 / 2.0) / (200 / 2.0) for i in range(200)])
 
-    def __init__(self, cppn_config_path='config-cppn', genome_path=None):
+    max_id = 0
+
+    def __init__(self, cppn_config_path='config-cppn', genome_path=None, id=-1):
         self.cppn_config_path = os.path.dirname(__file__) + '/' + cppn_config_path
         self.genome_path = genome_path
         self.hardcore = False
@@ -59,6 +61,13 @@ class CppnEnvParams:
             start_cppn_genome.nodes[0].activation = 'identity'
             self.cppn_genome = start_cppn_genome
         self.reset_altitude_fn()
+
+        if id == -1:
+            self.id = CppnEnvParams.max_id
+            CppnEnvParams.max_id += 1
+        else:
+            self.id = id
+        self.parent_list = []
 
     def reset_altitude_fn(self):
         net = neat.nn.FeedForwardNetwork.create(self.cppn_genome, self.cppn_config)
@@ -89,6 +98,8 @@ class CppnEnvParams:
             res = CppnEnvParams()
             res.cppn_genome = mutated
             res.reset_altitude_fn()
+            res.parent_list.append((self.id,))
+
             return res
 
     def save_xy(self, folder='/tmp'):
@@ -127,17 +138,21 @@ class CppnEnvParams:
         new = CppnEnvParams()
         new.cppn_genome = child
         new.reset_altitude_fn()
+        new.parent_list.append((self.id, other.id))
         return new
 
     def __getstate__(self):
         dic = dict()
         dic["genomeBytes"] = pickle.dumps(self.cppn_genome)
+        dic["id"] = self.id
+        dic["parents"] = self.parent_list
         return dic
 
     def __setstate__(self, state):
-        self.__init__()
+        self.__init__(id=state["id"])
         self.cppn_genome = pickle.loads(state["genomeBytes"])
         self.reset_altitude_fn()
+        self.parent_list = state["parents"]
 
 
 def is_genome_valid(g):

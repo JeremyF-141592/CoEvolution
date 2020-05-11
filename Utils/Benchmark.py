@@ -3,8 +3,13 @@ from Parameters import Configuration
 
 
 def gramacy_lee(x):
-    res = (x-1)**4 + np.sin(10*np.pi*x)/(2*x)
-    return -res
+    res = (10*x-1)**4 + np.sin(100*np.pi*x)/(2*(10*x))
+    return res
+
+
+def custom(x):
+    res = np.cos(10.0*(x-1)) + 0.2 * np.cos(200.0*(x-1)) - 0.1*(x-1)**2
+    return res
 
 
 class Benchmark:
