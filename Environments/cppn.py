@@ -45,7 +45,7 @@ class CppnEnvParams:
 
     max_id = 0
 
-    def __init__(self, cppn_config_path='config-cppn', genome_path=None, id=-1):
+    def __init__(self, cppn_config_path='config-cppn', genome_path=None, iden=-1):
         self.cppn_config_path = os.path.dirname(__file__) + '/' + cppn_config_path
         self.genome_path = genome_path
         self.hardcore = False
@@ -62,11 +62,11 @@ class CppnEnvParams:
             self.cppn_genome = start_cppn_genome
         self.reset_altitude_fn()
 
-        if id == -1:
+        if iden == -1:
             self.id = CppnEnvParams.max_id
             CppnEnvParams.max_id += 1
         else:
-            self.id = id
+            self.id = iden
         self.parent_list = []
 
     def reset_altitude_fn(self):
@@ -149,7 +149,7 @@ class CppnEnvParams:
         return dic
 
     def __setstate__(self, state):
-        self.__init__(id=state["id"])
+        self.__init__(iden=state["id"])
         self.cppn_genome = pickle.loads(state["genomeBytes"])
         self.reset_altitude_fn()
         self.parent_list = state["parents"]
