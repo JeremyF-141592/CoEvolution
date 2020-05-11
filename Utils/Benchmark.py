@@ -8,7 +8,7 @@ def gramacy_lee(x):
 
 
 def custom(x):
-    res = np.cos(10.0*(x-1)) + 0.2 * np.cos(200.0*(x-1)) - 0.1*(x-1)**2
+    res = 1.2*np.cos(8.0*(x-1)) - 0.1*(x-1)**2
     return res
 
 
