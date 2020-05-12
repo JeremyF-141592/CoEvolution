@@ -98,6 +98,7 @@ class CppnEnvParams:
             res = CppnEnvParams()
             res.cppn_genome = mutated
             res.reset_altitude_fn()
+            res.parent_list = self.parent_list.copy()
             res.parent_list.append((self.id,))
 
             return res
@@ -138,6 +139,7 @@ class CppnEnvParams:
         new = CppnEnvParams()
         new.cppn_genome = child
         new.reset_altitude_fn()
+        new.parent_list = self.parent_list.copy()
         new.parent_list.append((self.id, other.id))
         return new
 

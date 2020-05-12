@@ -8,7 +8,7 @@ def gramacy_lee(x):
 
 
 def custom(x):
-    res = 1.2*np.cos(8.0*(x-1)) - 0.1*(x-1)**2
+    res = -1.2*np.cos(8.0*(x-1)) + 0.1*(x-1)**2
     return res
 
 
@@ -43,6 +43,7 @@ class Benchmark:
         child = Benchmark((self.size, self.max, self.argmax))
         child.benchmark_frequency = self.benchmark_frequency + np.random.uniform(-0.1, 0.1, size=self.size)
         child.benchmark_offset = self.benchmark_offset + np.random.uniform(-0.1, 0.1, size=self.size)
+        child.parent_list = self.parent_list.copy()
         child.parent_list.append((self.id,))
         return child
 
@@ -50,6 +51,7 @@ class Benchmark:
         child = Benchmark((self.size, self.max, self.argmax))
         child.benchmark_frequency = (self.benchmark_frequency + other.benchmark_frequency)/2.0
         child.benchmark_offset = (self.benchmark_offset + other.benchmark_offset)/2.0
+        child.parent_list = self.parent_list.copy()
         child.parent_list.append((self.id, other.id))
         return child
 

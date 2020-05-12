@@ -12,14 +12,14 @@ pause_time = 1
 
 # Resume execution -----------------------------------------------------------------------------------------------------
 
-folder = "../POET_execution"
+folder = "../old_executions/POET_execution"
 
 if folder != "":
     filenames = glob(f"{folder}/*.pickle")[1:]
     filenames.sort(key=lambda f: int(re.sub('\D', '', f)))
     if not save:
         plt.show()
-    for i in range(550, len(filenames), 25):
+    for i in range(0, len(filenames), 25):
         plt.clf()
         ea_path = filenames[i]
         with open(f"{ea_path}", "rb") as f:

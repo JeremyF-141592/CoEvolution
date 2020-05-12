@@ -34,7 +34,7 @@ class EnvironmentInterface(gym.Env):
                     fitness += exceed_reward
                     break
 
-            total += Configuration.metric(agent, self, fitness, Configuration.observer(path), Configuration.archive)
+            total += Configuration.metric(agent, self, fitness, Configuration.observer(path))
         return total
 
     @abstractmethod

@@ -42,7 +42,7 @@ def mutate_envs(ea_list, args):
             Configuration.archive.append(ea_list[k])
         ea_list = ea_list[num_removals:]
     if args.verbose > 0:
-        print(f"\n{ea_len} Current active environments.")
+        print(f"\n{len(ea_list)} Current active environments.")
     return ea_list
 
 

@@ -39,16 +39,16 @@ class Configuration:
         Configuration.optimizer = Adam()
 
         # ----------------------------------------------------------------
-        from Utils.Benchmark import gramacy_lee, custom, Benchmark
-
-        Configuration.benchmark = custom
-        Configuration.baseEnv = Benchmark
-
-        Configuration.flatConfig = (len(Configuration.agentFactory.new().get_weights()),
-                                    1.2,
-                                    1.0)
+        # from Utils.Benchmark import gramacy_lee, custom, Benchmark
+        #
+        # Configuration.benchmark = custom
+        # Configuration.baseEnv = Benchmark
+        #
+        # Configuration.flatConfig = (len(Configuration.agentFactory.new().get_weights()),
+        #                             1.2,
+        #                             1.0)
 
         # ----------------------------------------------------------------
 
-        # Configuration.baseEnv = BipedalWalkerCPPN
-        # Configuration.flatConfig = CppnEnvParams()
+        Configuration.baseEnv = BipedalWalkerCPPN
+        Configuration.flatConfig = CppnEnvParams()
