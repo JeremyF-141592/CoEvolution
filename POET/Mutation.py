@@ -23,7 +23,12 @@ def mutate_envs(ea_list, args):
     elif args.verbose > 0:
         print(f"Environments that passed MC : {len(child_list)} / {args.max_children}")
 
-    child_list = rank_by_score(child_list, args)
+    original_thetas = list()  # extracting parent agents
+    for ea_pair in parent_list:
+        E, theta = ea_pair
+        original_thetas.append(theta)
+
+    child_list = rank_by_score(child_list, original_thetas, args)
     admitted = 0
     for E_child, theta_child in child_list:
         theta_child, score_child = Evaluate_Candidates(parent_list, E_child, args, threshold=args.mc_min)
@@ -61,17 +66,16 @@ def mc_satisfied(child_list, args):
     return new_list
 
 
-def rank_by_score(child_list, args):
+def rank_by_score(child_list, original_thetas, args):
     if len(child_list) == 0:
         return child_list
     results = np.zeros(len(child_list))
 
     full_env_list = list()
-    theta_list = list()
+    theta_list = original_thetas
     for ea_pair in child_list:
         E, theta = ea_pair
         full_env_list.append(E)
-        theta_list.append(theta)
     for ea_pair in Configuration.archive:
         E, theta = ea_pair
         full_env_list.append(E)
@@ -86,10 +90,7 @@ def rank_by_score(child_list, args):
         dist_list = np.ones(len(full_env_list))
         env_vec = points[i]
         for j in range(len(full_env_list)):
-            if j == i:
-                dist_list[j] = float("inf")
-            else:
-                dist_list[j] += np.linalg.norm(env_vec - points[j])
+            dist_list[j] += np.linalg.norm(env_vec - points[j])
 
         dist_list.sort()
         results[i] = dist_list[:args.knn].mean()
@@ -135,7 +136,7 @@ def normalize(arr):
     uniques.sort()
     dic = dict()
     for i in range(len(uniques)):
-        dic[uniques[i]] = i
+        dic[uniques[i]] = len(uniques) - i
     for i in range(len(arr)):
         res[i] = dic[res[i]]
     res /= res.max()
