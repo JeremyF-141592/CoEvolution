@@ -30,7 +30,7 @@ def raw_fitness(agents, envs):
 def benchmark_evolution(envs):
     res = list()
     for i in range(len(envs)):
-        res.append((envs[i].benchmark_offset.sum()-len(envs[i].benchmark_offset)) * envs[i].argmax + envs[i].benchmark_offset.sum())
+        res.append(envs[i].y_value)
     return res
 
 

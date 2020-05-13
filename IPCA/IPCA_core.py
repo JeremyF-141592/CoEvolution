@@ -91,9 +91,9 @@ def generate_learners(old_learners, args):
         action = np.random.random()
         if len(old_learners) == 0:
             action = 1  # Ensure new tests only if there are currently no tests
-        if action < args.p_mut_env:
+        if action < args.p_mut_ag:
             new_learners.append(mutate_ag(old_learners[np.random.randint(0, len(old_learners))], args))
-        elif action < args.p_cross_env:
+        elif action < args.p_cross_ag:
             choices = np.random.choice(np.arange(len(old_learners)), 2)
             new_learners.append(mate_ag(old_learners[choices[0]], old_learners[choices[1]]))
         else:
