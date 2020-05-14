@@ -14,4 +14,6 @@ def nsga_fitness_bc(agent, environment, fitness, observation):
             c = np.array(Configuration.archive[i])
             dist += np.linalg.norm(observation - c)
         dist /= 10
+    else:
+        Configuration.archive.append(observation)
     return fitness, dist

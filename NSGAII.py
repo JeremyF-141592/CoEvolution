@@ -77,7 +77,6 @@ for t in range(start_from, args.T):
     pop = list()
 
     results = Configuration.lview.map(env, new_pop)
-    print(results)
 
     nd_sort = np.array(fast_non_dominated_sort(results))
 
@@ -86,10 +85,12 @@ for t in range(start_from, args.T):
     for i in range(len(new_pop)):
         fronts[nd_sort[i]].append(new_pop[i])
 
+    count = -1
     for i in range(len(fronts)):
         if len(pop) > args.pop_size:
             break
         pop = pop + fronts[i]
+        count += 1
     pop = pop[:args.pop_size]
 
     if args.verbose > 0:
@@ -105,5 +106,3 @@ for t in range(start_from, args.T):
         json.dump(budget_dic, f)
     if args.verbose > 0:
         print(f"\tExecution saved at {args.save_to}.")
-
-

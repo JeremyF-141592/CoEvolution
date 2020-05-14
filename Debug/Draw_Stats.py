@@ -1,40 +1,56 @@
-from Environments.bipedal_walker_cppn import BipedalWalkerCPPN
-from Environments.cppn import CppnEnvParams
 import matplotlib.pyplot as plt
-import pickle
-import numpy as np
-from Parameters import Configuration
-from Utils.Stats import unpack_stats
+from Utils.Stats import unpack_stats, mean_std
+import os
 
-stats = list()
-for i in range(1, 4):
-    stats.append(unpack_stats(f"temp/Stats{i}.json"))
+file_selected = False
+stat = dict()
+path = ""
+bonus = None
 
-for k in range(len(stats)):
-    for tup in stats[k]["Dist_Mean"]:
-        plt.plot(tup[0], tup[1])
-    plt.title("Mean agent distance")
-    plt.ylabel("Euclidean Distance")
-    plt.xlabel("Iterations")
-    for i in range(40, 400, 20):
-        plt.axvline(i, ls=":", color="black")
-    plt.show()
+print("Type exit to exit, + after your key choice for a mean+std plot. \n")
+while True:
+    if not file_selected:
+        path = input("Path to stat file : ")
+        if path == "exit":
+            break
+        if not os.path.exists(path):
+            continue
+        stat = unpack_stats(path)
+        file_selected = True
 
-for k in range(len(stats)):
-    for tup in stats[k]["Benchmark"]:
-        plt.plot(tup[0], tup[1])
-    plt.title("Environment diversity")
-    for i in range(40, 400, 20):
-        plt.axvline(i, ls=":", color="black")
-    plt.show()
+    print("0 : change file", end="")
+    keys = [*stat.keys()]
+    for k in range(len(keys)):
+        print(f" - {k+1} : {keys[k]}", end="")
+    choice = input("\n -> ")
+    if len(choice.split()) == 2:
+        choice, bonus = choice.split()
 
-for k in range(len(stats)):
-    for tup in stats[k]["Fitness"]:
-        plt.plot(tup[0], tup[1])
-    plt.title("Agent fitness")
-    for i in range(40, 400, 20):
-        plt.axvline(i, ls=":", color="black")
-    plt.axhline(40, ls=":", color="red")
-    plt.ylabel("Raw Fitness")
-    plt.xlabel("Iterations")
-    plt.show()
+    try:
+        choice = int(choice)
+    except ValueError:
+        print("Invalid input :", choice)
+        continue
+    if choice > len(keys) or choice < 0:
+        print("Invalid input :", choice)
+        continue
+
+    if choice == 0:
+        file_selected = False
+        continue
+    else:
+        count = 0
+        for tup in stat[keys[choice-1]]:
+            plt.plot(tup[0], tup[1], label=count)
+            count += 1
+        plt.legend()
+        plt.title(keys[choice-1])
+        plt.show()
+
+        if bonus is not None:
+            if bonus == "+":
+                x, m, s = mean_std(path, keys[choice-1])
+                plt.fill_between(x, m+s, m-s, color=(0, 0.5, 1, 0.5))
+                plt.plot(x, m, "r")
+                plt.title(keys[choice-1])
+                plt.show()

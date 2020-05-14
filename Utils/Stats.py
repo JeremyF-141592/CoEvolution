@@ -78,3 +78,24 @@ def unpack_stats(path):
         for k in range(len(value)):
             end_res[key].append((absciss[k], value[k]))
     return end_res
+
+
+def mean_std(path, key):
+    res = list()
+    with open(path, "r") as f:
+        for line in f.readlines():
+            dic = json.loads(line)
+            res.append(dic)
+
+    value1 = []
+    value2 = []
+    absciss = []
+    for i in range(len(res)):
+        if type(res[i][key]) != list:
+            res[i][key] = [res[i][key]]
+
+        me = np.array(res[i][key])
+        value1.append(me.mean())
+        value2.append(me.std())
+        absciss.append(i)
+    return np.array(absciss), np.array(value1), np.array(value2)
