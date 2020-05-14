@@ -7,6 +7,11 @@ def env_map(x, y):
     return 100 * (np.cos(2. * np.pi * x) / (1. + 0.1*abs(x * y)))
 
 
+def convoluted_map(x, y):
+    slide = 0.2*np.cos(15*np.pi*x*(1/(abs(y)+1)))
+    return np.cos(2 * np.pi * x)/(1.+abs(x) + 0.5 * abs(y)) + slide
+
+
 class Benchmark:
     def __init__(self, config):
         self.y_value = config
@@ -70,3 +75,15 @@ class BenchmarkAg(Agent):
 class BenchmarkFactory(AgentFactory):
     def new(self):
         return BenchmarkAg()
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    size = 200
+    k = np.linspace(-2, 2, num=size)
+    a = np.zeros((size, size))
+    for i in range(size):
+        for j in range(size):
+            a[j, i] = convoluted_map(k[i], k[j])
+    plt.imshow(a, cmap='hot', interpolation='nearest')
+    plt.show()

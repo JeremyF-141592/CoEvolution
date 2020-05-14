@@ -85,12 +85,10 @@ for t in range(start_from, args.T):
     for i in range(len(new_pop)):
         fronts[nd_sort[i]].append(new_pop[i])
 
-    count = -1
     for i in range(len(fronts)):
         if len(pop) > args.pop_size:
             break
         pop = pop + fronts[i]
-        count += 1
     pop = pop[:args.pop_size]
 
     if args.verbose > 0:
