@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import sys
 sys.path.insert(1, "../")
@@ -46,7 +47,19 @@ while True:
     else:
         count = 0
         for tup in stat[keys[choice-1]]:
-            plt.plot(tup[0], tup[1], label=count)
+            if keys[choice-1] == "x_benchmark":
+                bidule0 = list()
+                bidule1 = list()
+                for k in range(1, len(tup[1])):
+                    if abs(tup[1][k] - tup[1][k-1]) > 0.1:
+                        bidule1.append(np.nan)
+                        bidule0.append(np.nan)
+                    bidule1.append(tup[1][k])
+                    bidule0.append(tup[0][k])
+                plt.plot(bidule0, bidule1, "b", label=count)
+
+            else:
+                plt.plot(tup[0], tup[1], label=count)
             count += 1
         plt.legend()
 

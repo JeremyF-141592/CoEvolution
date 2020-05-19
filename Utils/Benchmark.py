@@ -50,7 +50,7 @@ class Benchmark:
         return Configuration.benchmark(agent.value, self.y_value)
 
     def get_child(self):
-        child = Benchmark(self.y_value + np.random.uniform(-1, 1))
+        child = Benchmark(self.y_value + np.random.uniform(-3, 3))
         return child
 
     def mate(self, other):
@@ -114,6 +114,6 @@ if __name__ == "__main__":
     a = np.zeros((size, size))
     for i in range(size):
         for j in range(size):
-            a[j, i] = noise(k[i], k[j])
+            a[j, i] = cross_cosinus_gaussian(k[i], k[j])
     plt.imshow(a, cmap='hot', interpolation='nearest')
     plt.show()
