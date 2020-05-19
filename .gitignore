@@ -1,7 +1,6 @@
 __pycache__/*
-POET_execution/*
-IPCA_execution/*
-old_executions/*
+*_execution/*
 benchmark/*
-*.pyc
+temp/*
 Tests.py
+*.pyc

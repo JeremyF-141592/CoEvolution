@@ -1,3 +1,8 @@
+# NSGA2 Implementation as in Deb, K., Pratap, A., Agarwal, S., & Meyarivan,
+# T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II
+#
+# Author : FERSULA Jeremy
+
 from Parameters import Configuration
 from Utils.Loader import resume_from_folder, prepare_folder
 from Baseline.NSGAII_core import *

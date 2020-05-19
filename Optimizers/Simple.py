@@ -1,4 +1,4 @@
-from Utils.Optimizers import Optimizer
+from Templates.Optimizers import Optimizer
 
 
 class Simple(Optimizer):

@@ -1,7 +1,5 @@
-from Parameters import Configuration
 from IPCA.IPCA_core import *
-from Utils.Agents import AgentFactory, Agent
-from Utils.Environments import EnvironmentInterface
+from Templates.Agents import AgentFactory, Agent
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats
 import ipyparallel as ipp

@@ -1,18 +1,47 @@
 import numpy as np
 from Parameters import Configuration
-from Utils.Agents import Agent, AgentFactory
+from Templates.Agents import Agent, AgentFactory
+from Utils.Perlin import PerlinNoiseFactory
+import random
 
 
-def env_map(x, y):
-    return 100 * (np.cos(2. * np.pi * x) / (1. + 0.1*abs(x * y)))
+def cross_cosinus_gaussian(x, y):
+    sigma = 0.2
+    gauss = np.exp(-x**2 / (2*sigma**2))*2 - 1
+    crossed = np.cos(np.pi * (-abs(x) + abs(y)))
+    return max(gauss, crossed / (abs(0.2*x) + 1))
 
 
-def convoluted_map(x, y):
-    slide = 0.2*np.cos(15*np.pi*x*(1/(abs(y)+1)))
-    return np.cos(2 * np.pi * x)/(1.+abs(x) + 0.5 * abs(y)) + slide
+def cross_gaussian(x, y):
+    sigma = 0.2
+    gauss = np.exp(-(x+y)**2 / (2*sigma**2))*2 - 1
+    crossed = np.cos(np.pi * (x - y))
+    return max(gauss, crossed / (abs(0.2*(x+y)) + 1))
+
+
+def cross_cosinus(x, y):
+    crossed = np.cos(np.pi * (-abs(x) + abs(y)))
+    return crossed / (abs(0.2*x) + 1)
+
+
+def cosinus_cosinus(x, y):
+    crossed = np.cos(np.pi * (x + y))
+    crossed2 = np.cos(np.pi * (x - y))
+    return (crossed + crossed2)/2
+
+
+def cosx(x, y):
+    return np.cos(np.pi * abs(x)) / (abs(0.2*x) + 1)
+
+
+def noise(x, y):
+    return Benchmark.pnoise(0.5*x, 0.5*y)
 
 
 class Benchmark:
+    random.seed(42)
+    pnoise = PerlinNoiseFactory(2)
+
     def __init__(self, config):
         self.y_value = config
         self.map = Configuration.benchmark
@@ -39,14 +68,14 @@ class Benchmark:
 
 class BenchmarkAg(Agent):
     def __init__(self):
-        self.value = np.random.uniform(-100.0, 100.0)
+        self.value = np.random.uniform(-50.0, 50.0)
         self.opt_state = Configuration.optimizer.default_state()
 
     def choose_action(self, state):
         return self.value
 
     def randomize(self):
-        return np.random.uniform(-100.0, 100.0)
+        return np.random.uniform(-50.0, 50.0)
 
     def get_weights(self):
         return np.array([self.value])
@@ -79,11 +108,12 @@ class BenchmarkFactory(AgentFactory):
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
+
     size = 200
-    k = np.linspace(-2, 2, num=size)
+    k = np.linspace(-50, 50, num=size)
     a = np.zeros((size, size))
     for i in range(size):
         for j in range(size):
-            a[j, i] = convoluted_map(k[i], k[j])
+            a[j, i] = noise(k[i], k[j])
     plt.imshow(a, cmap='hot', interpolation='nearest')
     plt.show()

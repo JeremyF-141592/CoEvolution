@@ -1,11 +1,15 @@
 import matplotlib.pyplot as plt
-from Utils.Stats import unpack_stats, mean_std
 import os
+import sys
+sys.path.insert(1, "../")
+
+from Utils.Stats import unpack_stats, mean_std
 
 file_selected = False
 stat = dict()
 path = ""
-bonus = None
+
+folder_mode = False
 
 print("Type exit to exit, + after your key choice for a mean+std plot. \n")
 while True:
@@ -23,6 +27,7 @@ while True:
     for k in range(len(keys)):
         print(f" - {k+1} : {keys[k]}", end="")
     choice = input("\n -> ")
+    bonus = None
     if len(choice.split()) == 2:
         choice, bonus = choice.split()
 
@@ -44,7 +49,21 @@ while True:
             plt.plot(tup[0], tup[1], label=count)
             count += 1
         plt.legend()
-        plt.title(keys[choice-1])
+
+        if bonus is not None:
+            if bonus == "save":
+                title = input("Title :")
+                xlab = input("X label :")
+                ylab = input("Y label :")
+                out = input("Output file :")
+                plt.title(title)
+                plt.xlabel(xlab)
+                plt.ylabel(ylab)
+                plt.savefig(out)
+                print("Figure saved at :", out)
+                continue
+        else:
+            plt.title(keys[choice-1])
         plt.show()
 
         if bonus is not None:

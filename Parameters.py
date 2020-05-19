@@ -7,7 +7,6 @@ class Configuration:
     baseEnv = None
     flatConfig = None
     agentFactory = None
-    observer = None
     metric = None
     optimizer = None
 
@@ -29,20 +28,18 @@ class Configuration:
         from Agents.NumpyAgent import NeuralAgentNumpyFactory
         from Optimizers.Adam import Adam
         import Utils.Metrics
-        import Utils.Observers
 
         # Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
 
-        Configuration.observer = Utils.Observers.empty_observer
         Configuration.metric = Utils.Metrics.fitness_metric
 
         Configuration.optimizer = Adam()
 
         # ----------------------------------------------------------------
-        from Utils.Benchmark import BenchmarkFactory, Benchmark, env_map, convoluted_map
+        from Utils.Benchmark import BenchmarkFactory, Benchmark, cosx
 
         Configuration.agentFactory = BenchmarkFactory()
-        Configuration.benchmark = convoluted_map
+        Configuration.benchmark = cosx
         Configuration.baseEnv = Benchmark
 
         Configuration.flatConfig = 14

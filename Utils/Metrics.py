@@ -1,10 +1,11 @@
 import numpy as np
-from Parameters import Configuration
 
 
-def fitness_metric(agent, environment, fitness, observation):
+def fitness_metric(agent, environment, fitness, path):
     return fitness
 
 
-def fitness_bc(agent, environment, fitness, observation):
-    return fitness, observation
+def fitness_bc(agent, environment, fitness, path):
+    p = np.array(path).T
+    obs = p.mean(axis=1) + np.diag(np.cov(p))
+    return fitness, obs

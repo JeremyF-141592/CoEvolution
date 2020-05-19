@@ -1,7 +1,7 @@
 from keras import Sequential
 from keras.layers import Dense
 import numpy as np
-from Utils.Agents import Agent, AgentFactory
+from Templates.Agents import Agent, AgentFactory
 
 
 class NeuralAgent(Agent):

@@ -1,15 +1,12 @@
-import sys
 import math
 
 import numpy as np
 import Box2D
 from Box2D.b2 import (edgeShape, circleShape, fixtureDef, polygonShape, revoluteJointDef, contactListener)
 
-import matplotlib.pyplot as plt
-
 from gym import spaces
-from gym.utils import colorize, seeding, EzPickle
-from Utils.Environments import EnvironmentInterface
+from gym.utils import seeding, EzPickle
+from Templates.Environments import EnvironmentInterface
 
 from Parameters import Configuration
 

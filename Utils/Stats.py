@@ -27,11 +27,14 @@ def raw_fitness(agents, envs):
     return res
 
 
-def benchmark_evolution(envs):
+def benchmark_evolution(ags, envs):
     res = list()
     for i in range(len(envs)):
         res.append(envs[i].y_value)
-    return res
+    res2 = list()
+    for i in range(len(ags)):
+        res2.append(ags[i].value)
+    return res, res2
 
 
 def bundle_stats(agents, envs):
@@ -42,7 +45,7 @@ def bundle_stats(agents, envs):
     if len(agents) == len(envs):
         dic["Fitness"] = raw_fitness(agents, envs)
     if Configuration.benchmark is not None:
-        dic["Benchmark"] = benchmark_evolution(envs)
+        dic["y_benchmark"], dic["x_benchmark"] = benchmark_evolution(agents, envs)
     return dic
 
 

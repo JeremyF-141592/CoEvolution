@@ -32,7 +32,7 @@ class EnvironmentInterface(gym.Env):
                 fitness += exceed_reward
                 break
 
-        return Configuration.metric(agent, self, fitness, Configuration.observer(path))
+        return Configuration.metric(agent, self, fitness, path)
 
     @abstractmethod
     def get_child(self):

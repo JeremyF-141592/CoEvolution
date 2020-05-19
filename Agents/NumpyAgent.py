@@ -1,5 +1,5 @@
 import numpy as np
-from Utils.Agents import Agent, AgentFactory
+from Templates.Agents import Agent, AgentFactory
 from Parameters import Configuration
 
 

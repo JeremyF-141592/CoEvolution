@@ -13,7 +13,7 @@ from Box2D.b2 import (edgeShape, circleShape, fixtureDef,
 from gym import spaces
 from gym.utils import seeding
 from collections import namedtuple
-from Utils.Environments import EnvironmentInterface
+from Templates.Environments import EnvironmentInterface
 
 # This is simple 4-joints walker robot environment.
 #

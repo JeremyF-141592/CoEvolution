@@ -1,10 +1,14 @@
+# POET Enhanced Implementation as in Wang, rui and Lehman, Joel, and Clune,
+# Jeff, and Stanley, Kenneth O. 2020 Uber AI Labs.
+#
+# Author : FERSULA Jeremy
+
 from Parameters import Configuration
 from POET.EA_Init import ea_init
 from POET.Mutation import mutate_envs
 from POET.LocalTraining import ES_Step
 from POET.Transfer import Evaluate_Candidates
-from Utils.Agents import AgentFactory, Agent
-from Utils.Environments import EnvironmentInterface
+from Templates.Agents import AgentFactory, Agent
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats
 import numpy as np
@@ -15,7 +19,8 @@ import pickle
 import warnings
 warnings.filterwarnings("ignore")
 
-Configuration.make()
+Configuration.make()  # Differed imports
+
 # Ipyparallel --------------------------------------------------------------------------------------------------
 # Local parallelism, make sure that ipcluster is started beforehand otherwise this will raise an error.
 Configuration.rc = ipp.Client()
@@ -44,7 +49,6 @@ parser.add_argument('--T', type=int, default=400, help='Iterations limit')
 parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
 parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
-parser.add_argument('--nb_rounds', type=int, default=1, help='Number of episodes to evaluate any agent')
 # Population
 parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
@@ -89,8 +93,6 @@ else:
     with open(f"{args.save_to}/commandline_args.txt", 'w') as f:
         json.dump(args.__dict__, f, indent=2)
 
-Configuration.nb_rounds = args.nb_rounds
-
 # POET Algorithm -------------------------------------------------------------------------------------------------------
 # This part is intended to be as close as possible as the pseudo-code presented in the original paper.
 
@@ -100,10 +102,12 @@ for t in range(start_from, args.T):
     print(f"Iteration {t} ...", end=" ", flush=True)
     Configuration.budget_spent.append(0)
 
+    # Mutation --------------------------------------------------------
     if t > 0 and t % args.n_mutate == 0:
         print("Mutate ...", end=" ", flush=True)
         EA_List = mutate_envs(EA_List, args)
 
+    # Local optimization ----------------------------------------------
     M = len(EA_List)
     for m in range(M):
         E, theta = EA_List[m]
@@ -112,6 +116,7 @@ for t in range(start_from, args.T):
         theta, threshold[m, t % 5] = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 
+    # Transfer  -------------------------------------------------------
     if M > 1 and t > 0 and t % args.n_transfer == 0 and t % args.n_mutate != 0:
         if args.verbose > 0:
             print("Transfer ...")
@@ -133,7 +138,7 @@ for t in range(start_from, args.T):
 
     print(" Done.")
 
-    # Save current execution -------------------------------------------------------------------------------------------
+    # Save current execution ------------------------------------------
     with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
         pickle.dump(EA_List, f)
     with open(f'{args.save_to}/Archive.pickle', 'wb') as f:
