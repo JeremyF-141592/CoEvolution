@@ -8,10 +8,10 @@ from Utils.Stats import unpack_stats, mean_std
 
 
 def name_save_fig():
-    title = input("Title :")
-    xlab = input("X label :")
-    ylab = input("Y label :")
-    out = input("Output file :")
+    title = input("Title : ")
+    xlab = input("X label : ")
+    ylab = input("Y label : ")
+    out = input("Output file : ")
     plt.title(title)
     plt.xlabel(xlab)
     plt.ylabel(ylab)
@@ -72,14 +72,13 @@ while True:
                     bidule1.append(tup[1][k])
                     bidule0.append(tup[0][k])
                 plt.plot(bidule0, bidule1, "b", label=count)
-
             else:
                 plt.plot(tup[0], tup[1], label=count)
                 plt.legend()
             count += 1
 
         if bonus is not None:
-            if "save" in bonus:
+            if "save" in bonus and "+" not in bonus:
                 name_save_fig()
         else:
             plt.title(keys[choice-1])
