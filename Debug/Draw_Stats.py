@@ -6,6 +6,19 @@ sys.path.insert(1, "../")
 
 from Utils.Stats import unpack_stats, mean_std
 
+
+def name_save_fig():
+    title = input("Title :")
+    xlab = input("X label :")
+    ylab = input("Y label :")
+    out = input("Output file :")
+    plt.title(title)
+    plt.xlabel(xlab)
+    plt.ylabel(ylab)
+    plt.savefig(out)
+    print("Figure saved at :", out)
+
+
 file_selected = False
 stat = dict()
 path = ""
@@ -29,8 +42,10 @@ while True:
         print(f" - {k+1} : {keys[k]}", end="")
     choice = input("\n -> ")
     bonus = None
-    if len(choice.split()) == 2:
-        choice, bonus = choice.split()
+    if len(choice.split()) > 1:
+        bonus = choice.split()
+        choice = bonus[0]
+        bonus = bonus[1:]
 
     try:
         choice = int(choice)
@@ -60,29 +75,22 @@ while True:
 
             else:
                 plt.plot(tup[0], tup[1], label=count)
+                plt.legend()
             count += 1
-        plt.legend()
 
         if bonus is not None:
-            if bonus == "save":
-                title = input("Title :")
-                xlab = input("X label :")
-                ylab = input("Y label :")
-                out = input("Output file :")
-                plt.title(title)
-                plt.xlabel(xlab)
-                plt.ylabel(ylab)
-                plt.savefig(out)
-                print("Figure saved at :", out)
-                continue
+            if "save" in bonus:
+                name_save_fig()
         else:
             plt.title(keys[choice-1])
         plt.show()
 
         if bonus is not None:
-            if bonus == "+":
+            if "+" in bonus:
                 x, m, s = mean_std(path, keys[choice-1])
                 plt.fill_between(x, m+s, m-s, color=(0, 0.5, 1, 0.5))
                 plt.plot(x, m, "r")
                 plt.title(keys[choice-1])
+                if "save" in bonus:
+                    name_save_fig()
                 plt.show()

@@ -6,6 +6,7 @@ sys.path.insert(1, "../")
 
 from Utils.Stats import unpack_stats, mean_std
 from Parameters import Configuration
+from Utils.Benchmark import *
 
 Configuration.make()
 
@@ -26,20 +27,21 @@ while True:
         stat = unpack_stats(path)
         file_selected = True
 
-    k = np.linspace(-20, 20, num=100)
-    a = np.zeros((100, 100))
-    for i in range(100):
-        for j in range(100):
-            a[j, i] = Configuration.benchmark(k[i], k[j])
+    k = np.linspace(-20, 20, num=200)
+    a = np.zeros((200, 200))
+    for i in range(200):
+        for j in range(200):
+            a[j, i] = cross_cosinus(k[i], k[j])
 
     plt.xlim(-20, 20)
     plt.ylim(-20, 20)
-    plt.show()
     for i in range(0, len(stat["x_benchmark"][0][0]), 5):
         plt.clf()
         for j in range(len(stat["x_benchmark"])):
-            plt.plot(stat["x_benchmark"][j][1][i]+20, stat["y_benchmark"][j][1][i]+20, "o")
-        plt.imshow(a, cmap='hot', interpolation='nearest', origin='lower')
+            plt.plot(stat["x_benchmark"][j][1][i], stat["y_benchmark"][j][1][i], "o")
+        plt.imshow(a, cmap='hot', interpolation='nearest', extent=[-20, 20, -20, 20])
+        plt.xlim(-20, 20)
+        plt.ylim(-20, 20)
         plt.title(f"Iteration {i}")
         plt.pause(0.01)
 

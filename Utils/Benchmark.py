@@ -9,33 +9,36 @@ def cross_cosinus_gaussian(x, y):
     sigma = 0.2
     gauss = np.exp(-x**2 / (2*sigma**2))*2 - 1
     crossed = np.cos(np.pi * (-abs(x) + abs(y)))
-    return max(gauss, crossed / (abs(0.2*x) + 1))
+    return 100*max(gauss, crossed / (abs(0.2*x) + 1))
 
 
 def cross_gaussian(x, y):
     sigma = 0.2
     gauss = np.exp(-(x+y)**2 / (2*sigma**2))*2 - 1
     crossed = np.cos(np.pi * (x - y))
-    return max(gauss, crossed / (abs(0.2*(x+y)) + 1))
+    return 100*max(gauss, crossed / (abs(0.2*(x+y)) + 1))
+
+
+def pata_ec_test(x, y):
+    sigma = 0.2
+    gauss = np.exp(-x**2 / (2*sigma**2))*2 - 1
+    crossed = np.cos(np.pi * (-abs(x) + abs(y)))
+    if 12 > y > 11:
+        return 200*np.random.random() - 100
+    return 100*max(gauss, crossed / (abs(0.2*x) + 1))
 
 
 def cross_cosinus(x, y):
     crossed = np.cos(np.pi * (-abs(x) + abs(y)))
-    return crossed / (abs(0.2*x) + 1)
-
-
-def cosinus_cosinus(x, y):
-    crossed = np.cos(np.pi * (x + y))
-    crossed2 = np.cos(np.pi * (x - y))
-    return (crossed + crossed2)/2
+    return 100*crossed / (abs(0.2*x) + 1)
 
 
 def cosx(x, y):
-    return np.cos(np.pi * abs(x)) / (abs(0.2*x) + 1)
+    return 100*np.cos(np.pi * abs(x)) / (abs(0.2*x) + 1)
 
 
 def noise(x, y):
-    return Benchmark.pnoise(0.5*x, 0.5*y)
+    return 100*Benchmark.pnoise(0.5*x, 0.5*y)
 
 
 class Benchmark:
@@ -110,10 +113,10 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     size = 200
-    k = np.linspace(-50, 50, num=size)
+    k = np.linspace(-20, 20, num=size)
     a = np.zeros((size, size))
     for i in range(size):
         for j in range(size):
-            a[j, i] = cross_cosinus_gaussian(k[i], k[j])
+            a[j, i] = pata_ec_test(k[i], k[j])
     plt.imshow(a, cmap='hot', interpolation='nearest')
     plt.show()
