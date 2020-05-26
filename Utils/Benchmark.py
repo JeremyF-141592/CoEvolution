@@ -11,6 +11,9 @@ def cross_cosinus_gaussian(x, y):
     crossed = np.cos(np.pi * (-abs(x) + abs(y)))
     return 100*max(gauss, crossed / (abs(0.2*x) + 1))
 
+def diag_gaussian(x, y):
+    return 33.33*(np.exp(-9*x**2) + 2*np.exp(-1/9.0 * (x-y)**2))
+
 
 def cross_gaussian(x, y):
     sigma = 0.2
@@ -117,6 +120,6 @@ if __name__ == "__main__":
     a = np.zeros((size, size))
     for i in range(size):
         for j in range(size):
-            a[j, i] = pata_ec_test(k[i], k[j])
+            a[j, i] = diag_gaussian(k[i], k[j])
     plt.imshow(a, cmap='hot', interpolation='nearest')
     plt.show()
