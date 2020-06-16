@@ -17,7 +17,8 @@ def resume_from_folder(folder, args):
     filenames.sort(key=lambda k: int(re.sub('\D', '', k)))
     # assume we only have relevant files in the folder, take the last sorted .pickle file
     ea_path = filenames[-1]
-    resume_from = len(filenames)
+    numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
+    resume_from = int(numbers.split()[-1])
     with open(f"{ea_path}", "rb") as f:
         iteration_resume = pickle.load(f)
     with open(f"{folder}/Archive.pickle", "rb") as f:
