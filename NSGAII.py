@@ -76,8 +76,7 @@ with open(args.env_path, "rb") as f:
 
 pop = list()
 for t in range(start_from, args.T):
-    if args.verbose > 0:
-        print(f"Iteration {t} ...", flush=True)
+    print(f"Iteration {t} ...", flush=True)
 
     new_pop = pop + new_population(pop, args)
 
@@ -90,21 +89,31 @@ for t in range(start_from, args.T):
         dists = np.zeros(len(new_pop))
         for j in range(len(new_pop)):
             dists[j] = np.linalg.norm(w - new_pop[j].get_weights())
-        results[i] = (results[i][0], dists.sort()[:args.knn].mean())
+        dists.sort()
+        results[i] = (results[i][0], dists[:args.knn].mean())
 
     nd_sort = np.array(fast_non_dominated_sort(results))
 
-    fronts = [list() for i in range(nd_sort.max() + 1)]
+    fronts = [list() for i in range(nd_sort.max() + 1)]         # store agents
+    fronts_objectives = [list() for i in range(nd_sort.max() + 1)] # store agents indexes
 
     for i in range(len(new_pop)):
         fronts[nd_sort[i]].append(new_pop[i])
+        fronts_objectives[nd_sort[i]].append(results[i])
 
     pop = list()
+    last_front = 0
     for i in range(len(fronts)):
         if len(pop) > args.pop_size:
             break
         pop = pop + fronts[i]
-    pop = pop[:args.pop_size]
+        last_front = i
+
+    cdistance = np.array(crowding_distance(fronts_objectives[last_front]))
+    cdist_sort = cdistance.argsort()[::-1]
+
+    for i in range(args.pop_size - len(pop)):  # fill the population with less crowded individuals of the last front
+        pop.append(fronts[last_front][cdist_sort[i]])
 
     if args.verbose > 0:
         print(f"\tOne of the first agent has objectives : {results[nd_sort.argmin()]}", flush=True)
