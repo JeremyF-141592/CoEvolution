@@ -87,7 +87,7 @@ def rank_by_score(child_list, original_thetas, args):
         # KNN Novelty score
         if len(Configuration.archive) == 0:
             break
-        dist_list = np.ones(len(full_env_list))
+        dist_list = np.zeros(len(full_env_list))
         env_vec = points[i]
         for j in range(len(full_env_list)):
             dist_list[j] += np.linalg.norm(env_vec - points[j])

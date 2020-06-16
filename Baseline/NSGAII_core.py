@@ -1,4 +1,5 @@
 import numpy as np
+import random
 from Parameters import Configuration
 
 
@@ -67,7 +68,7 @@ def crowding_distance(elements):
 def new_population(old_learners, args):
     # Mutation, reproduction & new ones
     new_learners = list()
-    for i in range(args.pop_size):
+    for i in range(args.gen_size):
         action = np.random.random()
         if len(old_learners) == 0:
             action = 1  # Ensure new tests only if there are currently no tests
@@ -105,3 +106,86 @@ def mate_ag(agent1, agent2):
     new = Configuration.agentFactory.new()
     new.set_weights(new_wei)
     return new
+
+
+def mutPolynomialBounded(individual, eta, low, up, indpb):
+    """Polynomial mutation as implemented in original NSGA-II algorithm in
+    C by Deb.
+    :param individual: :term:`Sequence <sequence>` individual to be mutated.
+    :param eta: Crowding degree of the mutation. A high eta will produce
+                a mutant resembling its parent, while a small eta will
+                produce a solution much more different.
+    :param low: A value or a :term:`python:sequence` of values that
+                is the lower bound of the search space.
+    :param up: A value or a :term:`python:sequence` of values that
+               is the upper bound of the search space.
+    :returns: A tuple of one individual.
+    """
+    weights = individual.get_weights()
+    size = len(weights)
+    xl = low
+    xu = up
+    for i in range(size):
+        if random.random() <= indpb:
+            x = weights[i]
+            delta_1 = (x - xl) / (xu - xl)
+            delta_2 = (xu - x) / (xu - xl)
+            rand = random.random()
+            mut_pow = 1.0 / (eta + 1.)
+
+            if rand < 0.5:
+                xy = 1.0 - delta_1
+                val = 2.0 * rand + (1.0 - 2.0 * rand) * xy ** (eta + 1)
+                delta_q = val ** mut_pow - 1.0
+            else:
+                xy = 1.0 - delta_2
+                val = 2.0 * (1.0 - rand) + 2.0 * (rand - 0.5) * xy ** (eta + 1)
+                delta_q = 1.0 - val ** mut_pow
+
+            x = x + delta_q * (xu - xl)
+            x = min(max(x, xl), xu)
+            weights[i] = x
+    new = Configuration.agentFactory.new()
+    new.set_weights(weights)
+    return new
+
+
+def cxSimulatedBinary(ind1, ind2, eta):
+    """Executes a simulated binary crossover that modify in-place the input
+    individuals. The simulated binary crossover expects :term:`sequence`
+    individuals of floating point numbers.
+    :param ind1: The first individual participating in the crossover.
+    :param ind2: The second individual participating in the crossover.
+    :param eta: Crowding degree of the crossover. A high eta will produce
+                children resembling to their parents, while a small eta will
+                produce solutions much more different.
+    :returns: A tuple of two individuals.
+    This function uses the :func:`~random.random` function from the python base
+    :mod:`random` module.
+    """
+    w1 = ind1.get_weights()
+    w2 = ind2.get_weights()
+    for i, (x1, x2) in enumerate(zip(w1, w2)):
+        rand = random.random()
+        if rand <= 0.5:
+            beta = 2. * rand
+        else:
+            beta = 1. / (2. * (1. - rand))
+        beta **= 1. / (eta + 1.)
+        w1[i] = 0.5 * (((1 + beta) * x1) + ((1 - beta) * x2))
+
+    new = Configuration.agentFactory.new()
+    new.set_weights(w1)
+    return new
+
+
+if __name__ == "__main__":
+    Configuration.make()
+    ag = Configuration.agentFactory.new()
+
+    ag2 = mutPolynomialBounded(ag, 0.5, -1, 1, 0.1)
+    ag3 = cxSimulatedBinary(ag, ag2, 0.5)
+
+    print(ag.get_weights())
+    print(ag2.get_weights())
+    print(ag3.get_weights())

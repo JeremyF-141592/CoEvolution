@@ -66,7 +66,7 @@ while True:
                 bidule0 = list()
                 bidule1 = list()
                 for k in range(1, len(tup[1])):
-                    if abs(tup[1][k] - tup[1][k-1]) > 0.1:
+                    if abs(tup[1][k] - tup[1][k-1]) > 0.2:
                         bidule1.append(np.nan)
                         bidule0.append(np.nan)
                     bidule1.append(tup[1][k])
@@ -87,6 +87,12 @@ while True:
         if bonus is not None:
             if "+" in bonus:
                 x, m, s = mean_std(path, keys[choice-1])
+                if "l" in bonus:
+                    x = [x[i] for i in range(10, len(x)-10)]
+                    m = [m[i-10:i+10].mean() for i in range(10, len(m)-10)]
+                    m = np.array(m)
+                    s = [s[i-10:i+10].mean() for i in range(10, len(s)-10)]
+                    s = np.array(s)
                 plt.fill_between(x, m+s, m-s, color=(0, 0.5, 1, 0.5))
                 plt.plot(x, m, "r")
                 plt.title(keys[choice-1])

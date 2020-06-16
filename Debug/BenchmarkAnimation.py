@@ -35,7 +35,7 @@ while True:
 
     plt.xlim(-20, 20)
     plt.ylim(-20, 20)
-    for i in range(0, len(stat["x_benchmark"][0][0]), 5):
+    for i in range(0, len(stat["x_benchmark"][0][0])):
         plt.clf()
         for j in range(len(stat["x_benchmark"])):
             plt.plot(stat["x_benchmark"][j][1][i], stat["y_benchmark"][j][1][i], "o")
@@ -44,4 +44,3 @@ while True:
         plt.ylim(-20, 20)
         plt.title(f"Iteration {i}")
         plt.pause(0.01)
-

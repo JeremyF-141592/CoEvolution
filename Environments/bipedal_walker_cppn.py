@@ -40,6 +40,8 @@ TERRAIN_GRASS    = 10    # low long are grass spots, in steps
 TERRAIN_STARTPAD = 20    # in steps
 FRICTION = 2.5
 
+RESCALE = 50
+
 HULL_FD = fixtureDef(
                 shape=polygonShape(vertices=[ (x/SCALE,y/SCALE) for x,y in HULL_POLY ]),
                 density=5.0,
@@ -181,7 +183,7 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
             t.color2 = color
             self.terrain.append(t)
             color = (0.4, 0.6, 0.3)
-            poly += [ (poly[1][0], 0), (poly[0][0], 0) ]
+            poly += [ (poly[1][0], -RESCALE), (poly[0][0], -RESCALE) ]
             self.terrain_poly.append( (poly, color) )
         self.terrain.reverse()
 
@@ -364,12 +366,12 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
         from gym.envs.classic_control import rendering
         if self.viewer is None:
             self.viewer = rendering.Viewer(VIEWPORT_W, VIEWPORT_H)
-        self.viewer.set_bounds(self.scroll, VIEWPORT_W/SCALE + self.scroll, 0, VIEWPORT_H/SCALE)
+        self.viewer.set_bounds(self.scroll, VIEWPORT_W/SCALE + self.scroll + RESCALE, -RESCALE, VIEWPORT_H/SCALE)
 
         self.viewer.draw_polygon( [
-            (self.scroll,                  0),
-            (self.scroll+VIEWPORT_W/SCALE, 0),
-            (self.scroll+VIEWPORT_W/SCALE, VIEWPORT_H/SCALE),
+            (self.scroll,                  -RESCALE),
+            (self.scroll+VIEWPORT_W/SCALE + RESCALE, -RESCALE),
+            (self.scroll+VIEWPORT_W/SCALE + RESCALE, VIEWPORT_H/SCALE),
             (self.scroll,                  VIEWPORT_H/SCALE),
             ], color=(0.9, 0.9, 1.0) )
         for poly,x1,x2 in self.cloud_poly:
@@ -378,7 +380,7 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
             self.viewer.draw_polygon( [(p[0]+self.scroll/2, p[1]) for p in poly], color=(1,1,1))
         for poly, color in self.terrain_poly:
             if poly[1][0] < self.scroll: continue
-            if poly[0][0] > self.scroll + VIEWPORT_W/SCALE: continue
+            if poly[0][0] > self.scroll + VIEWPORT_W/SCALE + RESCALE: continue
             self.viewer.draw_polygon(poly, color=color)
 
         self.lidar_render = (self.lidar_render+1) % 100

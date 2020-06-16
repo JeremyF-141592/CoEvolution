@@ -1,6 +1,4 @@
-# NSGA2 Implementation as in Deb, K., Pratap, A., Agarwal, S., & Meyarivan,
-# T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II
-#
+# NSGA2 Inspired co-evolution of policies and environments
 # Author : FERSULA Jeremy
 
 from Parameters import Configuration
@@ -26,9 +24,7 @@ Configuration.lview.block = True
 
 # Parse arguments ------------------------------------------------------------------------------------------------------
 
-parser = argparse.ArgumentParser(description='NSGA2 Implementation as in Deb, K., Pratap, A., Agarwal, S., & Meyarivan,'
-                                             'T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: '
-                                             'NSGA-II')
+parser = argparse.ArgumentParser(description='NSGA2 Inspired co-evolution of policies and environments')
 
 # General
 parser.add_argument('--T', type=int, default=400, help='Iterations limit')
@@ -37,9 +33,10 @@ parser.add_argument('--save_to', type=str, default="./NSGA_execution", help="Exe
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 parser.add_argument('--nb_rounds', type=int, default=1, help='Number of episodes to evaluate any agent')
 # Population
-parser.add_argument('--pop_size', type=int, default=25, help='Population size')
+parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
+parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
+parser.add_argument('--pop_size', type=int, default=100, help='Population size')
 # NSGA2
-parser.add_argument('--gen_size', type=int, default=75, help='Population generation size')
 parser.add_argument('--env_path', type=str, default="./Baseline/NSGA_env.pickle", help='Path to the pickled environment')
 parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of mutation')
 parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of crossover')
@@ -79,7 +76,8 @@ for t in range(start_from, args.T):
     if args.verbose > 0:
         print(f"Iteration {t} ...", flush=True)
 
-    new_pop = pop + new_population(pop, args)
+    new_pop = new_population(pop, args)
+    pop = list()
 
     results = Configuration.lview.map(env, new_pop)
 
@@ -99,7 +97,6 @@ for t in range(start_from, args.T):
     for i in range(len(new_pop)):
         fronts[nd_sort[i]].append(new_pop[i])
 
-    pop = list()
     for i in range(len(fronts)):
         if len(pop) > args.pop_size:
             break
