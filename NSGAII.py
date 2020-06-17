@@ -115,12 +115,11 @@ for t in range(start_from, args.T):
     cdistance = np.array(crowding_distance(fronts_objectives[last_front]))
     cdist_sort = cdistance.argsort()[::-1]
 
+    print("Keep", last_front, "fronts and add", args.pop_size - len(pop), "individuals via crowding distance.")
+
     for i in range(args.pop_size - len(pop)):  # fill the population with less crowded individuals of the last front
         pop.append(fronts[last_front][cdist_sort[i]])
         objs.append(fronts_objectives[last_front][cdist_sort[i]])
-
-    if args.verbose > 0:
-        print(f"\tOne of the first agent has objectives : {results[nd_sort.argmin()]}", flush=True)
 
     # Save execution ----------------------------------------------------------------------------------
     with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
