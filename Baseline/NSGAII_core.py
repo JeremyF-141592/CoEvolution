@@ -58,8 +58,8 @@ def crowding_distance(elements):
         sorted_elements = sorted(elements, key=lambda x: x[i])
         distance[0] = float("inf")
         distance[-1] = float("inf")
-        maxi = max(sorted_elements, key=lambda x: x[i])
-        mini = min(sorted_elements, key=lambda x: x[i])
+        maxi = max(sorted_elements, key=lambda x: x[i])[i]
+        mini = min(sorted_elements, key=lambda x: x[i])[i]
         for k in range(1, len(elements) - 1):
             distance[k] += (sorted_elements[k + 1][i] - sorted_elements[k - 1][i]) / (maxi - mini)
     return distance

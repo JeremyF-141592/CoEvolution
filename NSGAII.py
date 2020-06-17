@@ -5,6 +5,7 @@
 
 from Parameters import Configuration
 from Utils.Loader import resume_from_folder, prepare_folder
+from Utils.Stats import bundle_stats, append_stats
 from Baseline.NSGAII_core import *
 import numpy as np
 import ipyparallel as ipp
@@ -94,26 +95,29 @@ for t in range(start_from, args.T):
 
     nd_sort = np.array(fast_non_dominated_sort(results))
 
-    fronts = [list() for i in range(nd_sort.max() + 1)]         # store agents
-    fronts_objectives = [list() for i in range(nd_sort.max() + 1)] # store agents indexes
+    fronts = [list() for i in range(nd_sort.max() + 1)]             # store agents
+    fronts_objectives = [list() for i in range(nd_sort.max() + 1)]  # store agents objectives
 
     for i in range(len(new_pop)):
         fronts[nd_sort[i]].append(new_pop[i])
         fronts_objectives[nd_sort[i]].append(results[i])
 
-    pop = list()
+    pop = list()    # New population
+    objs = list()   # Corresponding objectives
     last_front = 0
     for i in range(len(fronts)):
-        if len(pop) > args.pop_size:
+        if len(pop) + len(fronts[i]) > args.pop_size:
             break
         pop = pop + fronts[i]
-        last_front = i
+        objs = objs + fronts_objectives[i]
+        last_front = i + 1
 
     cdistance = np.array(crowding_distance(fronts_objectives[last_front]))
     cdist_sort = cdistance.argsort()[::-1]
 
     for i in range(args.pop_size - len(pop)):  # fill the population with less crowded individuals of the last front
         pop.append(fronts[last_front][cdist_sort[i]])
+        objs.append(fronts_objectives[last_front][cdist_sort[i]])
 
     if args.verbose > 0:
         print(f"\tOne of the first agent has objectives : {results[nd_sort.argmin()]}", flush=True)
@@ -126,5 +130,11 @@ for t in range(start_from, args.T):
         budget_dic["Budget_per_step"] = Configuration.budget_spent
         budget_dic["Total"] = sum(Configuration.budget_spent)
         json.dump(budget_dic, f)
+    bundle = bundle_stats(pop, env)
+    for k in range(len(objs[0])):   # reformat objectives from list of tuple to lists for each objective
+        bundle[f"Objective_{k}"] = list()
+        for i in range(len(objs)):
+            bundle[f"Objective_{k}"].append(objs[i][k])
+    append_stats(f"{args.save_to}/Stats.json", bundle)
     if args.verbose > 0:
         print(f"\tExecution saved at {args.save_to}.")
