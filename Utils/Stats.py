@@ -25,8 +25,6 @@ def mean_ag_dist(agents, envs):
 
 
 def paired_fitness(agents, envs):
-    if len(agents) != len(envs):
-        return [-1]
     res = list()
     for i in range(len(agents)):
         mini_res = 0
@@ -37,13 +35,16 @@ def paired_fitness(agents, envs):
 
 
 def benchmark_evolution(ags, envs):
-    res = list()
+    res_xy = list()
+    res_x = list()
+    res_y = list()
+    if len(ags) != len(envs):
+        return [(-1, -1)]
     for i in range(len(envs)):
-        res.append(envs[i].y_value)
-    res2 = list()
-    for i in range(len(ags)):
-        res2.append(ags[i].value)
-    return res, res2
+        res_xy.append((ags[i].value, envs[i].y_value))
+        res_x.append(ags[i].value)
+        res_y.append(envs[i].y_value)
+    return res_xy, res_x, res_y
 
 
 # Stats bundle manipulation --------------------------------------------------------------------------------------------
@@ -63,12 +64,18 @@ def unpack_stats(path):
             dic = json.loads(line)
             res.append(dic)
 
-    keys = res[0].keys()
+    keys = list(res[0].keys())
+    for i in range(len(res)):
+        for key in res[i].keys():
+            if key not in keys:
+                keys.append(key)
     end_res = dict()
     for key in keys:
         value = []
         absciss = []
         for i in range(len(res)):
+            if key not in res[i]:
+                continue
             if type(res[i][key]) != list:
                 res[i][key] = [res[i][key]]
             if len(res[i][key]) > len(value):
@@ -109,14 +116,15 @@ def mean_std(path, key):
 # Stats bundle creation  -----------------------------------------------------------------------------------------------
 def bundle_stats(agents, envs):
     saved_stats = {
-        "Dist_Mean": mean_ag_dist,
-        "Paired fitness": paired_fitness
+        "Dist_Mean": mean_ag_dist
     }
 
     dic = dict()
     for key in saved_stats.keys():
         dic[key] = saved_stats[key](agents, envs)
 
+    if len(agents) == len(envs):
+        dic["Paired_fitness"] = paired_fitness(agents, envs)
     if Configuration.benchmark is not None:
-        dic["y_benchmark"], dic["x_benchmark"] = benchmark_evolution(agents, envs)
+        dic["xy_benchmark"], dic["x_benchmark"], dic["y_benchmark"] = benchmark_evolution(agents, envs)
     return dic

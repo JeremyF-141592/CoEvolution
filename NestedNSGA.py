@@ -4,6 +4,7 @@
 from Parameters import Configuration
 from Utils.Loader import resume_from_folder, prepare_folder
 from Baseline.NSGAII_core import *
+from Utils.Stats import bundle_stats, append_stats
 from NNSGA.NNSGA_core import *
 import numpy as np
 import ipyparallel as ipp
@@ -46,11 +47,11 @@ parser.add_argument('--knn', type=int, default=5, help='KNN agent novelty')
 parser.add_argument('--knn_env', type=int, default=5, help='KNN environment novelty')
 
 # NNSGA
-parser.add_argument('--pop_size', type=int, default=2, help='Population size on each environment')
-parser.add_argument('--gen_size', type=int, default=4, help='Amount of newly generated individuals')
+parser.add_argument('--pop_size', type=int, default=4, help='Population size on each environment')
+parser.add_argument('--gen_size', type=int, default=10, help='Amount of newly generated individuals')
 parser.add_argument('--pop_env_size', type=int, default=6, help='Amount of actives environments')
 parser.add_argument('--pop_general_size', type=int, default=6, help='Population size on each environment')
-parser.add_argument('--t_local', type=int, default=2, help='Iterations spent locally')
+parser.add_argument('--t_local', type=int, default=20, help='Iterations spent locally')
 parser.add_argument('--t_global', type=int, default=1, help='Iterations spent globally')
 parser.add_argument('--p_mean', type=float, default=-2, help='Generalisation p-mean novelty')
 
@@ -73,7 +74,6 @@ ea_load = None
 if folder != "":
     ea_load, start_from = resume_from_folder(folder, args)
 else:
-    pop_agent = list()
     prepare_folder(args)  # checks if folder exist and propose to erase it
     with open(f"{args.save_to}/commandline_args.txt", 'w') as f:
         json.dump(args.__dict__, f, indent=2)
@@ -90,26 +90,11 @@ else:
     pop_env = generate_environments([], args)
     pop_generalist = list()
 
-front_objs = [list() for i in range(args.pop_env_size)]
+objs_local = [list() for i in range(args.pop_env_size)]
+objs_general = list()
 for t in range(start_from, args.T):
     local = t % (args.t_local + args.t_global) < args.t_local
-    gen_env = t % (args.t_local + args.t_global) == args.t_local + args.t_global - 1
-
-    if local:
-        print(f"Local iteration {t} ...")
-        for i in range(args.pop_env_size):
-            pop_ag[i], front_objs[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_genotypic_novelty], args)
-    else:
-        print(f"Global iteration {t} ...")
-        if len(pop_generalist) == 0:
-            # For each environment, extract pop_general_size / pop_env_size individuals
-            for i in range(args.pop_env_size):
-                c_dists = crowding_distance(front_objs[i])
-                extraction_size = int(np.floor(args.pop_general_size / args.pop_env_size))
-                c_sorted = np.array(c_dists).argsort()
-                for k in range(extraction_size):
-                    pop_generalist.append(pop_ag[i][c_sorted[k]])
-        pop_generalist, _ = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty], args)
+    gen_env = t % (args.t_local + args.t_global) == 0 and t != 0
 
     if gen_env:
         print(f"Generating new environments ...")
@@ -120,6 +105,22 @@ for t in range(start_from, args.T):
 
         pop_generalist = list()  # reset generalists
 
+    if local:
+        print(f"Local iteration {t} ...")
+        for i in range(args.pop_env_size):
+            pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_genotypic_novelty], args)
+    else:
+        print(f"Global iteration {t} ...")
+        if len(pop_generalist) == 0:
+            # For each environment, extract pop_general_size / pop_env_size individuals
+            for i in range(args.pop_env_size):
+                c_dists = crowding_distance(objs_local[i])
+                extraction_size = int(np.floor(args.pop_general_size / args.pop_env_size))
+                c_sorted = np.array(c_dists).argsort()
+                for k in range(extraction_size):
+                    pop_generalist.append(pop_ag[i][c_sorted[k]])
+        pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty], args)
+
     # Save execution ----------------------------------------------------------------------------------
     with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
         pickle.dump((pop_ag, pop_env, pop_generalist), f)
@@ -128,5 +129,20 @@ for t in range(start_from, args.T):
         budget_dic["Budget_per_step"] = Configuration.budget_spent
         budget_dic["Total"] = sum(Configuration.budget_spent)
         json.dump(budget_dic, f)
+
+    bundle = bundle_stats_NNSGA(local, objs_local, objs_general, args)
+    # Benchmark saving
+    if Configuration.benchmark is not None:
+        bundle["xy_benchmark"] = list()
+        if local:
+            for i in range(args.pop_env_size):
+                for j in range(args.pop_size):
+                    bundle["xy_benchmark"].append((pop_ag[i][j].value, pop_env[i].y_value))
+        else:
+            for i in range(args.pop_env_size):
+                for j in range(len(pop_generalist)):
+                    bundle["xy_benchmark"].append((pop_generalist[j].value, pop_env[i].y_value))
+
+    append_stats(f"{args.save_to}/Stats.json", bundle)
     if args.verbose > 0:
         print(f"\tExecution saved at {args.save_to}.")
