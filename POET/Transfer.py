@@ -11,7 +11,7 @@ def Evaluate_Candidates(ea_list, env, args, threshold=0):
 
     scores = np.zeros(len(base_agents))
 
-    fitness, _ = Configuration.lview.map(env, base_agents)
+    fitness = Configuration.lview.map(env, base_agents)
     scores += fitness
     Configuration.budget_spent[-1] += len(base_agents)
 
@@ -31,7 +31,7 @@ def Evaluate_Candidates(ea_list, env, args, threshold=0):
         return None, float("-inf")
     scores = np.zeros(len(fine_tuned_agents))
 
-    fitness, _ = Configuration.lview.map(env, fine_tuned_agents)
+    fitness = Configuration.lview.map(env, fine_tuned_agents)
     scores += fitness
     Configuration.budget_spent[-1] += len(base_agents)
 

@@ -16,7 +16,7 @@ def ES_Step(theta, E, args, allow_verbose=0):
         new_theta.set_weights(og_weights + sigma * shared_gaussian_table[i])
         thetas.append(new_theta)
 
-    scores, _ = Configuration.lview.map(E, thetas)
+    scores = Configuration.lview.map(E, thetas)
     scores = np.array(scores)
 
     self_fitness = E(theta)

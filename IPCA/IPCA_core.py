@@ -129,7 +129,7 @@ def cross_evaluation(learners, tests, args):
     overall_max = -float("inf")
 
     for i in range(len(tests)):
-        res, _ = Configuration.lview.map(tests[i], learners)
+        res = Configuration.lview.map(tests[i], learners)
         for j in res:
             if j > overall_max:
                 overall_max = j

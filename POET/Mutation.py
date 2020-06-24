@@ -120,7 +120,7 @@ def pata_ec(envs, individuals, args):
     """Returns a list of vectors representing environments by ranking individuals on them."""
     res = list()
     for i in range(len(envs)):
-        result, _ = Configuration.lview.map(envs[i], individuals)
+        result = Configuration.lview.map(envs[i], individuals)
         result = np.array(result)
         result = normalize(result, args)
         res.append(result)
