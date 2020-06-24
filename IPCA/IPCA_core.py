@@ -115,7 +115,7 @@ def generate_tests(old_tests, args):
             choices = np.random.choice(np.arange(len(old_tests)), 2)
             new_tests.append(old_tests[choices[0]].mate(old_tests[choices[1]]))
         else:
-            new = Configuration.baseEnv(Configuration.flatConfig)
+            new = Configuration.baseEnv(Configuration.envInit)
             for i in range(10):
                 new = new.get_child()
             new_tests.append(new)
@@ -129,7 +129,7 @@ def cross_evaluation(learners, tests, args):
     overall_max = -float("inf")
 
     for i in range(len(tests)):
-        res = Configuration.lview.map(tests[i], learners)
+        res, _ = Configuration.lview.map(tests[i], learners)
         for j in res:
             if j > overall_max:
                 overall_max = j

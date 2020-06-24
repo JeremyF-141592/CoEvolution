@@ -1,9 +1,17 @@
+# Stats are made by saving a dict "name_of_stat" : list(float) at each iteration
+# doing so requires the choice of a set of information to be saved, each stat is therefore defined by a function of
+# agents and environments at a given iteration.
+#
+# This way of saving makes it so that there might be different size of stats on consecutive iterations, combining
+# the information back together requires a bit of manipulation.
+
 import numpy as np
 import json
 from Parameters import Configuration
 
 
-def agents_stats(agents):
+# Measure functions ----------------------------------------------------------------------------------------------------
+def mean_ag_dist(agents, envs):
     weights = np.zeros((len(agents), len(agents[0].get_weights())))
     for i in range(len(agents)):
         weights[i] = agents[i].get_weights()
@@ -13,11 +21,12 @@ def agents_stats(agents):
         for j in range(i, len(weights)):
             dist_mean += np.linalg.norm(weights[i] - weights[j])
     dist_mean /= (len(weights) * len(weights+1))/2
-    w_mean = weights.mean(axis=0).tolist()
-    return float(dist_mean), w_mean
+    return float(dist_mean)
 
 
-def raw_fitness(agents, envs):
+def paired_fitness(agents, envs):
+    if len(agents) != len(envs):
+        return [-1]
     res = list()
     for i in range(len(agents)):
         mini_res = 0
@@ -37,18 +46,7 @@ def benchmark_evolution(ags, envs):
     return res, res2
 
 
-def bundle_stats(agents, envs):
-    dic = dict()
-    ag_stats = agents_stats(agents)
-    dic["Dist_Mean"] = ag_stats[0]
-    # dic["Weight Mean"] = ag_stats[1]
-    if len(agents) == len(envs):
-        dic["Fitness"] = raw_fitness(agents, envs)
-    if Configuration.benchmark is not None:
-        dic["y_benchmark"], dic["x_benchmark"] = benchmark_evolution(agents, envs)
-    return dic
-
-
+# Stats bundle manipulation --------------------------------------------------------------------------------------------
 def append_stats(path, bundle):
     with open(path, "a") as f:
         f.write(json.dumps(bundle))
@@ -56,6 +54,9 @@ def append_stats(path, bundle):
 
 
 def unpack_stats(path):
+    """Reads a pickled stat bundle and returns an unique dictionary of stats, containing for each
+    stats tuples of the form (iteration_number, corresponding_stat_value). Therefore, if one information was
+    kept only at iteration 50, there will be a tuple (50, the information)."""
     res = list()
     with open(path, "r") as f:
         for line in f.readlines():
@@ -84,6 +85,7 @@ def unpack_stats(path):
 
 
 def mean_std(path, key):
+    """Reads a pickled stat bundle, and return (iterations, mean, std) of a stat."""
     res = list()
     with open(path, "r") as f:
         for line in f.readlines():
@@ -102,3 +104,19 @@ def mean_std(path, key):
         value2.append(me.std())
         absciss.append(i)
     return np.array(absciss), np.array(value1), np.array(value2)
+
+
+# Stats bundle creation  -----------------------------------------------------------------------------------------------
+def bundle_stats(agents, envs):
+    saved_stats = {
+        "Dist_Mean": mean_ag_dist,
+        "Paired fitness": paired_fitness
+    }
+
+    dic = dict()
+    for key in saved_stats.keys():
+        dic[key] = saved_stats[key](agents, envs)
+
+    if Configuration.benchmark is not None:
+        dic["y_benchmark"], dic["x_benchmark"] = benchmark_evolution(agents, envs)
+    return dic

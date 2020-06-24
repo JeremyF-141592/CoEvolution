@@ -5,7 +5,7 @@ class Configuration:
     .make() was executed at the beginning of the program.
     """
     baseEnv = None
-    flatConfig = None
+    envInit = None
     agentFactory = None
     metric = None
     optimizer = None
@@ -15,8 +15,6 @@ class Configuration:
 
     archive = []
     budget_spent = []
-
-    nb_rounds = 1
 
     benchmark = None
 
@@ -29,22 +27,24 @@ class Configuration:
         from Optimizers.Adam import Adam
         import Utils.Metrics
 
-        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
+        # Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
+        #
+        # Configuration.baseEnv = BipedalWalkerCPPN
+        # Configuration.envInit = CppnEnvParams()
 
-        Configuration.metric = Utils.Metrics.fitness_metric
+        Configuration.metric = Utils.Metrics.fitness_bc
 
         Configuration.optimizer = Adam()
 
         # ----------------------------------------------------------------
-        from Utils.Benchmark import BenchmarkFactory, Benchmark, cross_cosinus_gaussian
+        from Utils.Benchmark import BenchmarkFactory, Benchmark, diag_gaussian
 
-        # Configuration.agentFactory = BenchmarkFactory()
-        # Configuration.benchmark = cross_cosinus_gaussian
-        # Configuration.baseEnv = Benchmark
-        #
-        # Configuration.flatConfig = 14
+        Configuration.agentFactory = BenchmarkFactory()
+        Configuration.benchmark = diag_gaussian
+        Configuration.baseEnv = Benchmark
+
+        Configuration.envInit = 14
 
         # ----------------------------------------------------------------
 
-        Configuration.baseEnv = BipedalWalkerCPPN
-        Configuration.flatConfig = CppnEnvParams()
+

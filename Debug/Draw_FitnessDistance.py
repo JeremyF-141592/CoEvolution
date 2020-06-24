@@ -55,7 +55,7 @@ for i in range(400):
     #     off += sommation[k] * it[k][0].benchmark_offset
     # freq /= sommation.sum()
     # off /= sommation.sum()
-    # ev = Configuration.baseEnv(Configuration.flatConfig)
+    # ev = Configuration.baseEnv(Configuration.envInit)
     # ev.benchmark_frequency = freq
     # ev.benchmark_offset = off
     # new_envs.append(ev)

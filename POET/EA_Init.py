@@ -9,7 +9,7 @@ def ea_init(args):
     envs = []
     if args.e_init == "flat":
         for i in range(args.pop_size):
-            envs.append(Configuration.baseEnv(Configuration.flatConfig))
+            envs.append(Configuration.baseEnv(Configuration.envInit))
     else:
         raise(argparse.ArgumentTypeError(f"Unknown Environment Inititialization strategy : {args.e_init}"))
 

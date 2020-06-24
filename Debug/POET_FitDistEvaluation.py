@@ -46,7 +46,8 @@ for i in range(nb_points):
         E, theta = ea_pair
         dists[-1].append(np.linalg.norm(np.array(E.terrain_y) - np.array(new.terrain_y)))
 
-    res.append(Configuration.lview.map(new, theta_list))
+    fitness, _ = Configuration.lview.map(new, theta_list)
+    res.append(fitness)
 
 with open("FitDist_fit.pickle", "wb") as f:
     pickle.dump(res, f)

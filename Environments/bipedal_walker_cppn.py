@@ -424,7 +424,7 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
         return dic
 
     def __setstate__(self, state):
-        cppn = Configuration.flatConfig
+        cppn = Configuration.envInit
         self.__init__(cppn)
         self.terrain_y = state["as_vector"]
         self.cppn.__setstate__(state)

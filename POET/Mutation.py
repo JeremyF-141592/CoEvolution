@@ -81,7 +81,7 @@ def rank_by_score(child_list, original_thetas, args):
         full_env_list.append(E)
         theta_list.append(theta)
 
-    points = pata_ec(full_env_list, theta_list)
+    points = pata_ec(full_env_list, theta_list, args)
 
     for i in range(len(child_list)):
         # KNN Novelty score
@@ -116,22 +116,25 @@ def paired_execution(ea_pair):
     return E(theta)
 
 
-def pata_ec(envs, individuals):
+def pata_ec(envs, individuals, args):
     """Returns a list of vectors representing environments by ranking individuals on them."""
     res = list()
     for i in range(len(envs)):
-        result = Configuration.lview.map(envs[i], individuals)
+        result, _ = Configuration.lview.map(envs[i], individuals)
         result = np.array(result)
-        result = normalize(result)
+        result = normalize(result, args)
         res.append(result)
     return res
 
 
-def normalize(arr):
-    tol = 5
+def normalize(arr, args):
+    tol = args.pata_ec_tol
     res = np.zeros(len(arr))
     for i in range(len(arr)):
-        res[i] = min(250, max(-50, arr[i]))//tol
+        if abs(tol) > 1e-4:
+            res[i] = min(args.pata_ec_clipmax, max(args.pata_ec_clipmin, arr[i]))//tol
+        else:
+            res[i] = min(args.pata_ec_clipmax, max(args.pata_ec_clipmin, arr[i]))
     uniques = np.unique(res)
     uniques.sort()
     dic = dict()

@@ -36,7 +36,6 @@ parser.add_argument('--T', type=int, default=400, help='Iterations limit')
 parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
 parser.add_argument('--save_to', type=str, default="./NSGA_execution", help="Execution save-to folder.")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
-parser.add_argument('--nb_rounds', type=int, default=1, help='Number of episodes to evaluate any agent')
 # Population
 parser.add_argument('--pop_size', type=int, default=25, help='Population size')
 # NSGA2
@@ -56,26 +55,24 @@ args = parser.parse_args()
 
 folder = ""
 start_from = 0
-ea_list_resume = []
+pop = list()
 if args.resume_from != "":
     #  if we load arguments, args is going to change so we need a variable to store the folder name
     folder = args.resume_from
 
 if folder != "":
-    ea_list_resume, start_from = resume_from_folder(folder, args)
+    pop, start_from = resume_from_folder(folder, args)
 else:
     prepare_folder(args)  # checks if folder exist and propose to erase it
     with open(f"{args.save_to}/commandline_args.txt", 'w') as f:
         json.dump(args.__dict__, f, indent=2)
 
-Configuration.nb_rounds = args.nb_rounds
 
 # NSGAII Algorithm -----------------------------------------------------------------------------------------------------
 
 with open(args.env_path, "rb") as f:
     env = pickle.load(f)
 
-pop = list()
 for t in range(start_from, args.T):
     print(f"Iteration {t} ...", flush=True)
 
@@ -83,7 +80,7 @@ for t in range(start_from, args.T):
 
     results = Configuration.lview.map(env, new_pop)
 
-    # GENOTYPIC NOVELTY ---- todo : parallelism
+    # GENOTYPIC NOVELTY ---- todo : clean up, add the option of BC novelty
     for i in range(len(results)):
         w = new_pop[i].get_weights()
         n_score = 0
@@ -129,7 +126,7 @@ for t in range(start_from, args.T):
         budget_dic["Budget_per_step"] = Configuration.budget_spent
         budget_dic["Total"] = sum(Configuration.budget_spent)
         json.dump(budget_dic, f)
-    bundle = bundle_stats(pop, env)
+    bundle = bundle_stats(pop, [env])
     for k in range(len(objs[0])):   # reformat objectives from list of tuple to lists for each objective
         bundle[f"Objective_{k}"] = list()
         for i in range(len(objs)):

@@ -53,7 +53,7 @@ class Benchmark:
         self.map = Configuration.benchmark
 
     def __call__(self, agent, render=False, max_steps=2000, exceed_reward=0):
-        return Configuration.benchmark(agent.value, self.y_value)
+        return Configuration.benchmark(agent.value, self.y_value), [agent.value]
 
     def get_child(self):
         child = Benchmark(self.y_value + np.random.uniform(-3, 3))

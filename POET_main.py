@@ -75,6 +75,11 @@ parser.add_argument('--mc_max', type=int, default=340, help='Maximal fitness to 
 
 parser.add_argument('--knn', type=int, default=5, help='Amount of neighbors evaluating knn Environment Novelty')
 
+
+parser.add_argument('--pata_ec_tol', type=float, default=2, help='Ranking tolerance for PATA_EC diversity')
+parser.add_argument('--pata_ec_clipmax', type=float, default=250, help='Upper fitness bound for PATA_EC diversity')
+parser.add_argument('--pata_ec_clipmin', type=float, default=-50, help='Lower fitness bound for PATA_EC diversity')
+
 args = parser.parse_args()
 
 # Resume execution -----------------------------------------------------------------------------------------------------
