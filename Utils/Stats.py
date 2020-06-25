@@ -103,12 +103,38 @@ def mean_std(path, key):
     value2 = []
     absciss = []
     for i in range(len(res)):
+        if key not in res[i]:
+            continue
         if type(res[i][key]) != list:
             res[i][key] = [res[i][key]]
 
         me = np.array(res[i][key])
         value1.append(me.mean())
         value2.append(me.std())
+        absciss.append(i)
+    return np.array(absciss), np.array(value1), np.array(value2)
+
+
+def min_max(path, key):
+    """Reads a pickled stat bundle, and return (iterations, mean, std) of a stat."""
+    res = list()
+    with open(path, "r") as f:
+        for line in f.readlines():
+            dic = json.loads(line)
+            res.append(dic)
+
+    value1 = []
+    value2 = []
+    absciss = []
+    for i in range(len(res)):
+        if key not in res[i]:
+            continue
+        if type(res[i][key]) != list:
+            res[i][key] = [res[i][key]]
+
+        me = np.array(res[i][key])
+        value1.append(me.min())
+        value2.append(me.max())
         absciss.append(i)
     return np.array(absciss), np.array(value1), np.array(value2)
 

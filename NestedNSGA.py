@@ -95,6 +95,7 @@ objs_general = list()
 for t in range(start_from, args.T):
     local = t % (args.t_local + args.t_global) < args.t_local
     gen_env = t % (args.t_local + args.t_global) == 0 and t != 0
+    transition_global = t % (args.t_local + args.t_global) == args.t_local
 
     if gen_env:
         print(f"Generating new environments ...")
@@ -103,15 +104,13 @@ for t in range(start_from, args.T):
         for i in range(args.pop_env_size):
             pop_ag[i] += pop_generalist
 
-        pop_generalist = list()  # reset generalists
-
     if local:
         print(f"Local iteration {t} ...")
         for i in range(args.pop_env_size):
             pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_genotypic_novelty], args)
     else:
         print(f"Global iteration {t} ...")
-        if len(pop_generalist) == 0:
+        if transition_global:
             # For each environment, extract pop_general_size / pop_env_size individuals
             for i in range(args.pop_env_size):
                 c_dists = crowding_distance(objs_local[i])
