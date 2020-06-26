@@ -47,12 +47,12 @@ parser.add_argument('--knn', type=int, default=5, help='KNN agent novelty')
 parser.add_argument('--knn_env', type=int, default=5, help='KNN environment novelty')
 
 # NNSGA
-parser.add_argument('--pop_size', type=int, default=4, help='Population size on each environment')
-parser.add_argument('--gen_size', type=int, default=10, help='Amount of newly generated individuals')
+parser.add_argument('--pop_size', type=int, default=10, help='Population size on each environment')
+parser.add_argument('--gen_size', type=int, default=20, help='Amount of newly generated individuals')
 parser.add_argument('--pop_env_size', type=int, default=6, help='Amount of actives environments')
-parser.add_argument('--pop_general_size', type=int, default=6, help='Population size on each environment')
-parser.add_argument('--t_local', type=int, default=20, help='Iterations spent locally')
-parser.add_argument('--t_global', type=int, default=1, help='Iterations spent globally')
+parser.add_argument('--pop_general_size', type=int, default=10, help='Population size on each environment')
+parser.add_argument('--t_local', type=int, default=15, help='Iterations spent locally')
+parser.add_argument('--t_global', type=int, default=15, help='Iterations spent globally')
 parser.add_argument('--p_mean', type=float, default=-2, help='Generalisation p-mean novelty')
 
 parser.add_argument('--pata_ec_tol', type=float, default=2, help='Ranking tolerance for PATA_EC diversity')
