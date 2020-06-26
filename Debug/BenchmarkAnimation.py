@@ -18,10 +18,10 @@ t_global = 15
 archive = list()
 full_ev2 = list()
 env_ogs = None
-stats = unpack_stats("./NNSGA_Stats.json")
+stats = unpack_stats("./NNSGA_stats.json")
 
 
-# plt.show()
+plt.show()
 for iteration in range(0, 300):
     local = iteration % (t_local + t_global) < t_local
 
@@ -59,5 +59,5 @@ for iteration in range(0, 300):
         plt.plot(ags[a], env_ogs[a], "or")
     plt.xlabel("Agent")
     plt.ylabel("Environment")
-    # plt.pause(0.01)
+    plt.pause(0.01)
     plt.savefig(f"../anim1/{iteration}.png")

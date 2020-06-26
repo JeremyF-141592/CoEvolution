@@ -53,16 +53,15 @@ def dominates(a, b):
 
 def crowding_distance(elements):
     """elements is expected to be an array (m, n) of n objectives for m agents"""
-    distance = [0 for i in range(len(elements))]
+    distance = [0.0 for i in range(len(elements))]
     for i in range(len(elements[0])):
         sorted_elements = sorted(elements, key=lambda x: x[i])
-        sorted_args = sorted(range(len(elements)), key=lambda x: elements[x][i])
-        distance[sorted_args[0]] = float("inf")
-        distance[sorted_args[-1]] = float("inf")
-        maxi = sorted_elements[-1][i]
-        mini = sorted_elements[0][i]
+        distance[0] = float("inf")
+        distance[-1] = float("inf")
+        maxi = max(sorted_elements, key=lambda x: x[i])[i]
+        mini = min(sorted_elements, key=lambda x: x[i])[i]
         for k in range(1, len(elements) - 1):
-            distance[sorted_args[k]] += (sorted_elements[k + 1][i] - sorted_elements[k - 1][i]) / (maxi - mini)
+            distance[k] += (sorted_elements[k + 1][i] - sorted_elements[k - 1][i]) / (maxi - mini)
     return distance
 
 
@@ -181,18 +180,12 @@ def cxSimulatedBinary(ind1, ind2, eta):
 
 
 if __name__ == "__main__":
-    # Configuration.make()
-    # ag = Configuration.agentFactory.new()
-    #
-    # ag2 = mutPolynomialBounded(ag, 0.5, -1, 1, 0.1)
-    # ag3 = cxSimulatedBinary(ag, ag2, 0.5)
-    #
-    # print(ag.get_weights())
-    # print(ag2.get_weights())
-    # print(ag3.get_weights())
-    vals = [[10, 0], [0, 10], [5, 5], [4, 2], [4, 4], [8, 2]]
-    import matplotlib.pyplot as plt
-    for v in vals:
-        plt.plot(v[0], v[1], "o")
-    plt.show()
-    print(crowding_distance(vals))
+    Configuration.make()
+    ag = Configuration.agentFactory.new()
+
+    ag2 = mutPolynomialBounded(ag, 0.5, -1, 1, 0.1)
+    ag3 = cxSimulatedBinary(ag, ag2, 0.5)
+
+    print(ag.get_weights())
+    print(ag2.get_weights())
+    print(ag3.get_weights())
