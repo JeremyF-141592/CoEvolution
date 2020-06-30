@@ -97,6 +97,8 @@ def new_population(old_learners, args):
 
 
 def mutate_ag(agent, args):
+    if Configuration.benchmark is not None:
+        return mutPolynomialBounded(agent, args.eta_mut, -100, 100, args.p_mut_gene)
     return mutPolynomialBounded(agent, args.eta_mut, -1, 1, args.p_mut_gene)
 
     # # Uniform mutation
@@ -146,7 +148,6 @@ def mutPolynomialBounded(individual, eta, low, up, indpb):
 
             if rand < 0.5:
                 xy = 1.0 - delta_1
-                print(xy, eta, rand)
                 val = 2.0 * rand + (1.0 - 2.0 * rand) * xy ** (eta + 1)
                 delta_q = val ** mut_pow - 1.0
             else:
