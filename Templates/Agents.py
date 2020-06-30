@@ -20,6 +20,7 @@ class Agent(ABC):
 
     @abstractmethod
     def get_opt_state(self):
+        """Communicate with the optimizer."""
         return NotImplementedError
 
     @abstractmethod
@@ -40,5 +41,5 @@ class Agent(ABC):
 class AgentFactory(ABC):
     @abstractmethod
     def new(self):
-        """Must return an Agent object"""
+        """Returns an Agent object"""
         return NotImplementedError

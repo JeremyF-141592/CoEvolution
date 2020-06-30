@@ -130,7 +130,7 @@ class CppnEnvParams:
         new.__setstate__(self.__getstate__())
         return new
 
-    def mate(self, other):
+    def crossover(self, other):
         child = self.cppn_config.genome_type(0)
         self.cppn_genome.fitness = 1
         other.cppn_genome.fitness = 0

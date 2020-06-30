@@ -4,8 +4,7 @@ class Configuration:
     From any script, it is enough to just import Configuration and call its variables when needed, as long as
     .make() was executed at the beginning of the program.
     """
-    baseEnv = None
-    envInit = None
+    envFactory = None
     agentFactory = None
     metric = None
     optimizer = None
@@ -21,29 +20,25 @@ class Configuration:
     @staticmethod
     def make():
         """Edit this part to easily change configuration."""
-        from Environments.cppn import CppnEnvParams
-        from Environments.bipedal_walker_cppn import BipedalWalkerCPPN
+        from Environments.bipedal_walker_cppn import BipedalWalkerFactory
         from Agents.NumpyAgent import NeuralAgentNumpyFactory
         from Optimizers.Adam import Adam
         import Utils.Metrics
 
-        # Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
-        #
-        # Configuration.baseEnv = BipedalWalkerCPPN
-        # Configuration.envInit = CppnEnvParams()
+        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
+
+        Configuration.envFactory = BipedalWalkerFactory()
 
         Configuration.metric = Utils.Metrics.fitness_bc
 
         Configuration.optimizer = Adam()
 
         # ----------------------------------------------------------------
-        from Utils.Benchmark import BenchmarkFactory, Benchmark, diag_gaussian
+        from Utils.Benchmark import BenchmarkFactory, BenchmarkEnvFactory, diag_gaussian
 
         Configuration.agentFactory = BenchmarkFactory()
         Configuration.benchmark = diag_gaussian
-        Configuration.baseEnv = Benchmark
-
-        Configuration.envInit = 14
+        Configuration.envFactory = BenchmarkEnvFactory()
 
         # ----------------------------------------------------------------
 

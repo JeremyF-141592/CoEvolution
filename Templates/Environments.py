@@ -1,17 +1,43 @@
 import gym
 from Parameters import Configuration
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 
-class EnvironmentInterface(gym.Env):
-    """"
-    Allows a gym environment to be called like a function to run a whole episode.
-    """
+class Environment(ABC):
+    @abstractmethod
+    def __call__(self, agent, *args, **kwargs):
+        """Runs an entire episode of one agent over this environment."""
+        return NotImplementedError
 
-    def __call__(self, agent, render=False, max_steps=2000, exceed_reward=0):
+    @abstractmethod
+    def get_child(self):
+        return NotImplementedError
+
+    @abstractmethod
+    def crossover(self, other):
+        return NotImplementedError
+
+    @abstractmethod
+    def __getstate__(self):
+        return NotImplementedError
+
+    @abstractmethod
+    def __setstate__(self, state):
+        return NotImplementedError
+
+
+class GymInterface(gym.Env):
+    def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
         """
+        Runs an entire episode of one agent over this environment.
+
+        This method works in compliance with gym.Env methods such as
+            .reset()
+            .render()
+            .step(action)
+
+        The execution stops at 'max_steps' iterations if not stopped otherwise, giving 'exceed_reward' to the agent.
         An observer is a function acting on the path taken by the agent, returning an observation.
-        A metric is a function returning the final score for a given agent, total reward and observation.
         """
         state = self.reset()
         done = False
@@ -25,7 +51,10 @@ class EnvironmentInterface(gym.Env):
 
             action = agent.choose_action(state)
             state, reward, done, info = self.step(action)
-            # path.append(state)
+
+            if use_state_path:
+                path.append(state)
+
             fitness += reward
             count += 1
             if count > max_steps:
@@ -34,18 +63,9 @@ class EnvironmentInterface(gym.Env):
 
         return Configuration.metric(agent, self, fitness, path)
 
-    @abstractmethod
-    def get_child(self):
-        return NotImplementedError
 
+class EnvironmentFactory(ABC):
     @abstractmethod
-    def mate(self, other):
-        return NotImplementedError
-
-    @abstractmethod
-    def __getstate__(self):
-        return NotImplementedError
-
-    @abstractmethod
-    def __setstate__(self, state):
+    def new(self):
+        """Returns an Environment object."""
         return NotImplementedError

@@ -1,6 +1,7 @@
 import numpy as np
 from Parameters import Configuration
 from Templates.Agents import Agent, AgentFactory
+from Templates.Environments import Environment, EnvironmentFactory
 from Utils.Perlin import PerlinNoiseFactory
 import random
 
@@ -10,6 +11,7 @@ def cross_cosinus_gaussian(x, y):
     gauss = np.exp(-x**2 / (2*sigma**2))*2 - 1
     crossed = np.cos(np.pi * (-abs(x) + abs(y)))
     return 100*max(gauss, crossed / (abs(0.2*x) + 1))
+
 
 def diag_gaussian(x, y):
     return 33.33*(np.exp(-9*x**2) + 2*np.exp(-1/9.0 * (x-y)**2))
@@ -41,26 +43,26 @@ def cosx(x, y):
 
 
 def noise(x, y):
-    return 100*Benchmark.pnoise(0.5*x, 0.5*y)
+    return 100*BenchmarkEnv.pnoise(0.5*x, 0.5*y)
 
 
-class Benchmark:
+class BenchmarkEnv(Environment):
     random.seed(42)
     pnoise = PerlinNoiseFactory(2)
 
-    def __init__(self, config):
-        self.y_value = config
+    def __init__(self, y):
+        self.y_value = y
         self.map = Configuration.benchmark
 
     def __call__(self, agent, render=False, max_steps=2000, exceed_reward=0):
         return Configuration.benchmark(agent.value, self.y_value), [agent.value]
 
     def get_child(self):
-        child = Benchmark(self.y_value + np.random.uniform(-3, 3))
+        child = BenchmarkEnv(self.y_value + np.random.uniform(-3, 3))
         return child
 
-    def mate(self, other):
-        child = Benchmark((self.y_value + other.y_value) / 2.0)
+    def crossover(self, other):
+        child = BenchmarkEnv((self.y_value + other.y_value) / 2.0)
         return child
 
     def __getstate__(self):
@@ -70,6 +72,14 @@ class Benchmark:
 
     def __setstate__(self, state):
         self.__init__(state["y"])
+
+
+class BenchmarkEnvFactory(EnvironmentFactory):
+    def _init(self, y_init):
+        self.y = y_init
+
+    def new(self):
+        return BenchmarkEnv(self.y)
 
 
 class BenchmarkAg(Agent):

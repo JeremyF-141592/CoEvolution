@@ -19,15 +19,6 @@ Configuration.rc[:].execute("Configuration.make()")
 Configuration.lview = Configuration.rc.load_balanced_view()
 Configuration.lview.block = True
 
-# Check Parameters.py --------------------------------------------------------------------------------------------------
-
-if not isinstance(Configuration.agentFactory, AgentFactory):
-    raise RuntimeError("Configuration agentFactory is not an instance of AgentFactory.")
-if not isinstance(Configuration.agentFactory.new(), Agent):
-    raise RuntimeError("Configuration agentFactory.new() is not an instance of Agent.")
-# if not issubclass(Configuration.baseEnv, EnvironmentInterface):
-#     raise RuntimeError("Configuration baseEnv is not inherited from EnvironmentInterface.")
-
 # Parse arguments ------------------------------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description='nothing yet')

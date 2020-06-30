@@ -4,11 +4,9 @@
 # Author : FERSULA Jeremy
 
 from Parameters import Configuration
-from POET.EA_Init import ea_init
 from POET.Mutation import mutate_envs
 from POET.LocalTraining import ES_Step
 from POET.Transfer import Evaluate_Candidates
-from Templates.Agents import AgentFactory, Agent
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats
 import numpy as np
@@ -30,15 +28,6 @@ Configuration.rc[:].execute("Configuration.make()")
 Configuration.lview = Configuration.rc.load_balanced_view()
 Configuration.lview.block = True
 
-# Check Parameters.py --------------------------------------------------------------------------------------------------
-
-if not isinstance(Configuration.agentFactory, AgentFactory):
-    raise RuntimeError("Configuration agentFactory is not an instance of AgentFactory.")
-if not isinstance(Configuration.agentFactory.new(), Agent):
-    raise RuntimeError("Configuration agentFactory.new() is not an instance of Agent.")
-# if not issubclass(Configuration.baseEnv, EnvironmentInterface):
-#     raise RuntimeError("Configuration baseEnv is not inherited from EnvironmentInterface.")
-
 # Parse arguments ------------------------------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description='POET Enhanced Implementation as in Wang, rui and Lehman, Joel, and Clune,'
@@ -50,8 +39,6 @@ parser.add_argument('--resume_from', type=str, default="", help="Resume executio
 parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 # Population
-parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
-parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
 parser.add_argument('--pop_size', type=int, default=1, help='Initial population size')
 # Local optimization
 parser.add_argument('--lr_init', type=float, default=0.01, help="Learning rate initial value")
@@ -102,7 +89,13 @@ else:
 # This part is intended to be as close as possible as the pseudo-code presented in the original paper.
 
 threshold = np.zeros((args.capacity, 5))  # List of fitness thresholds, needed for transfer
-EA_List = ea_init(args) if folder == "" else ea_list_resume
+
+EA_List = list()
+if folder == "":
+    # Generate new pairs agent, environment
+    EA_List = [(Configuration.envFactory.new(), Configuration.agentFactory.new()) for i in range(args.pop_size)]
+else:
+    EA_List = ea_list_resume
 for t in range(start_from, args.T):
     print(f"Iteration {t} ...", end=" ", flush=True)
     Configuration.budget_spent.append(0)

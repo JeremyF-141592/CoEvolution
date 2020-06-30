@@ -5,8 +5,9 @@ from Parameters import Configuration
 
 def fast_non_dominated_sort(elements):
     """
-    elements is expected to be an array (m, n) of n objectives for m agents.
-    Returns ranks as a list.
+    Fast non-dominated sort in the sens of Pareto, as in the original NSGA-II algorithm.
+    :param elements: array (m, n) of n objectives for m agents.
+    :return: front ranks as a list.
     """
     S = [list() for i in range(len(elements))]
     n = [0 for i in range(len(elements))]
@@ -67,17 +68,27 @@ def crowding_distance(elements):
 
 
 def new_population(old_learners, args):
+    """
+    Create a new agent population from a parent one.
+    If the parent population does not contain any agent, returns a new random one.
+    The strategy is mutation with probability p1, crossover with probability p2, random agent with probability 1-p1-p2.
+    Mutants and crossover parents are chosen with equal probability from the parent list.
+
+    :param old_learners: parent agent population
+    :param args: argparse object
+    :return: agent population as a list
+    """
     # Mutation, reproduction & new ones
     new_learners = list()
     for i in range(args.gen_size):
         action = np.random.random()
         if len(old_learners) == 0:
-            action = 1  # Ensure new tests only if there are currently no tests
+            action = 1  # Ensure new agents only if there are currently no agents
         if action < args.p_mut_ag:
             new_learners.append(mutate_ag(old_learners[np.random.randint(0, len(old_learners))], args))
         elif action < args.p_cross_ag:
             choices = np.random.choice(np.arange(len(old_learners)), 2)
-            new_learners.append(mate_ag(old_learners[choices[0]], old_learners[choices[1]]))
+            new_learners.append(mate_ag(old_learners[choices[0]], old_learners[choices[1]], args))
         else:
             new = Configuration.agentFactory.new()
             new.randomize()
@@ -86,41 +97,40 @@ def new_population(old_learners, args):
 
 
 def mutate_ag(agent, args):
-    new_wei = agent.get_weights()
-    for i in range(len(new_wei)):
-        if np.random.random() < args.p_mut_gene:
-            new_wei[i] += np.random.uniform(-1, 1) * args.mut_step
-    new = Configuration.agentFactory.new()
-    new.set_weights(new_wei)
-    return new
+    return mutPolynomialBounded(agent, args.eta_mut, -1, 1, args.p_mut_gene)
+
+    # # Uniform mutation
+    # new_wei = agent.get_weights()
+    # for i in range(len(new_wei)):
+    #     if np.random.random() < args.p_mut_gene:
+    #         new_wei[i] += np.random.uniform(-1, 1) * args.mut_step
+    # new = Configuration.agentFactory.new()
+    # new.set_weights(new_wei)
+    # return new
 
 
-def mate_ag(agent1, agent2):
-    wei_1 = agent1.get_weights()
-    wei_2 = agent2.get_weights()
-    new_wei = list()
-    for i in range(len(wei_1)):
-        if np.random.random() < 0.5:
-            new_wei.append(wei_1[i])
-        else:
-            new_wei.append(wei_2[i])
-    new = Configuration.agentFactory.new()
-    new.set_weights(new_wei)
-    return new
+def mate_ag(agent1, agent2, args):
+    return cxSimulatedBinary(agent1, agent2, args.eta_cross)
+
+    # # Uniform crossover
+    # wei_1 = agent1.get_weights()
+    # wei_2 = agent2.get_weights()
+    # new_wei = list()
+    # for i in range(len(wei_1)):
+    #     if np.random.random() < 0.5:
+    #         new_wei.append(wei_1[i])
+    #     else:
+    #         new_wei.append(wei_2[i])
+    # new = Configuration.agentFactory.new()
+    # new.set_weights(new_wei)
+    # return new
 
 
 def mutPolynomialBounded(individual, eta, low, up, indpb):
-    """Polynomial mutation as implemented in original NSGA-II algorithm in
-    C by Deb.
-    :param individual: :term:`Sequence <sequence>` individual to be mutated.
-    :param eta: Crowding degree of the mutation. A high eta will produce
-                a mutant resembling its parent, while a small eta will
-                produce a solution much more different.
-    :param low: A value or a :term:`python:sequence` of values that
-                is the lower bound of the search space.
-    :param up: A value or a :term:`python:sequence` of values that
-               is the upper bound of the search space.
-    :returns: A tuple of one individual.
+    """
+    Polynomial mutation as implemented in original NSGA-II algorithm in
+    C by Deb, returns a new agent.
+    This function is in parts taken from the DEAP package for python.
     """
     weights = individual.get_weights()
     size = len(weights)
@@ -136,6 +146,7 @@ def mutPolynomialBounded(individual, eta, low, up, indpb):
 
             if rand < 0.5:
                 xy = 1.0 - delta_1
+                print(xy, eta, rand)
                 val = 2.0 * rand + (1.0 - 2.0 * rand) * xy ** (eta + 1)
                 delta_q = val ** mut_pow - 1.0
             else:
@@ -152,17 +163,9 @@ def mutPolynomialBounded(individual, eta, low, up, indpb):
 
 
 def cxSimulatedBinary(ind1, ind2, eta):
-    """Executes a simulated binary crossover that modify in-place the input
-    individuals. The simulated binary crossover expects :term:`sequence`
-    individuals of floating point numbers.
-    :param ind1: The first individual participating in the crossover.
-    :param ind2: The second individual participating in the crossover.
-    :param eta: Crowding degree of the crossover. A high eta will produce
-                children resembling to their parents, while a small eta will
-                produce solutions much more different.
-    :returns: A tuple of two individuals.
-    This function uses the :func:`~random.random` function from the python base
-    :mod:`random` module.
+    """
+    Executes a simulated binary crossover, returns a new agent.
+    This function is in parts taken from the DEAP package for python.
     """
     w1 = ind1.get_weights()
     w2 = ind2.get_weights()
@@ -181,18 +184,19 @@ def cxSimulatedBinary(ind1, ind2, eta):
 
 
 if __name__ == "__main__":
-    # Configuration.make()
-    # ag = Configuration.agentFactory.new()
-    #
-    # ag2 = mutPolynomialBounded(ag, 0.5, -1, 1, 0.1)
-    # ag3 = cxSimulatedBinary(ag, ag2, 0.5)
-    #
-    # print(ag.get_weights())
-    # print(ag2.get_weights())
-    # print(ag3.get_weights())
-    vals = [[10, 0], [0, 10], [5, 5], [4, 2], [4, 4], [8, 2]]
-    import matplotlib.pyplot as plt
-    for v in vals:
-        plt.plot(v[0], v[1], "o")
-    plt.show()
-    print(crowding_distance(vals))
+    Configuration.make()
+    for k in range(50):
+        ag = Configuration.agentFactory.new()
+
+        ag2 = mutPolynomialBounded(ag, 0.5, -1, 1, 1)
+        ag3 = cxSimulatedBinary(ag, ag2, 0.5)
+
+        print(ag.get_weights())
+        print(ag2.get_weights())
+        print(ag3.get_weights())
+    # vals = [[10, 0], [0, 10], [5, 5], [4, 2], [4, 4], [8, 2]]
+    # import matplotlib.pyplot as plt
+    # for v in vals:
+    #     plt.plot(v[0], v[1], "o")
+    # plt.show()
+    # print(crowding_distance(vals))

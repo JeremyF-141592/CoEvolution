@@ -6,7 +6,8 @@ from Box2D.b2 import (edgeShape, circleShape, fixtureDef, polygonShape, revolute
 
 from gym import spaces
 from gym.utils import seeding, EzPickle
-from Templates.Environments import EnvironmentInterface
+from Templates.Environments import GymInterface, Environment, EnvironmentFactory
+from Environments.cppn import CppnEnvParams
 
 from Parameters import Configuration
 
@@ -80,7 +81,7 @@ class ContactDetector(contactListener):
                 leg.ground_contact = False
 
 
-class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
+class BipedalWalkerCPPN(GymInterface, Environment, EzPickle):
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second' : FPS
@@ -127,8 +128,8 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
     def get_child(self):
         return BipedalWalkerCPPN(self.cppn.get_child())
 
-    def mate(self, other):
-        return BipedalWalkerCPPN(self.cppn.mate(other.cppn))
+    def crossover(self, other):
+        return BipedalWalkerCPPN(self.cppn.crossover(other.cppn))
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -424,7 +425,15 @@ class BipedalWalkerCPPN(EnvironmentInterface, EzPickle):
         return dic
 
     def __setstate__(self, state):
-        cppn = Configuration.envInit
+        cppn = CppnEnvParams()
         self.__init__(cppn)
         self.terrain_y = state["as_vector"]
         self.cppn.__setstate__(state)
+
+
+class BipedalWalkerFactory(EnvironmentFactory):
+    def __init__(self):
+        pass
+
+    def new(self):
+        return BipedalWalkerCPPN(CppnEnvParams())

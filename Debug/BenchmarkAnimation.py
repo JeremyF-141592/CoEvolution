@@ -18,7 +18,7 @@ t_global = 15
 archive = list()
 full_ev2 = list()
 env_ogs = None
-stats = unpack_stats("./NNSGA_Stats.json")
+stats = unpack_stats("./NNSGA_Stats2.json")
 
 
 # plt.show()
@@ -60,4 +60,4 @@ for iteration in range(0, 300):
     plt.xlabel("Agent")
     plt.ylabel("Environment")
     # plt.pause(0.01)
-    plt.savefig(f"../anim1/{iteration}.png")
+    plt.savefig(f"../anim2/{iteration}.png")

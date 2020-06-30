@@ -3,7 +3,7 @@ from Parameters import Configuration
 
 
 def ES_Step(theta, E, args, allow_verbose=0):
-    """Local optimization by Evolution Strategy steps, rank normalization and weight decay"""
+    """Local optimization by Evolution Strategy steps, rank normalization and weight decay."""
     og_weights = theta.get_weights()
 
     shared_gaussian_table = [np.random.normal(0, 1, size=len(og_weights)) for i in range(args.batch_size)]

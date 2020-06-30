@@ -19,13 +19,13 @@ class NeuralAgentNumpy(Agent):
         self.n_hidden_layers = n_hidden_layers
         self.weights = None 
         self.n_weights = None
+        self.bias = None
         self.opt_state = Configuration.optimizer.default_state()
-        self.randomize()
         self.out = np.zeros(n_out)
-        #print("Creating a simple mlp with %d inputs, %d outputs, %d hidden layers and %d neurons per layer"%(n_in, n_out,n_hidden_layers, n_neurons_per_hidden))
-    
+        self.randomize()
+
     def randomize(self):
-        if(self.n_hidden_layers > 0):
+        if self.n_hidden_layers > 0:
             self.weights = [2*np.random.random((self.dim_in,self.n_per_hidden))-1] # In -> first hidden
             self.bias = [2*np.random.random(self.n_per_hidden)-1] # In -> first hidden
             for i in range(self.n_hidden_layers-1): # Hidden -> hidden
@@ -49,17 +49,16 @@ class NeuralAgentNumpy(Agent):
         """
         Set all network parameters from a single array
         """
-        if (np.nan in flat_parameters):
+        if np.nan in flat_parameters:
             print("WARNING: NaN in the parameters of the NN: "+str(list(flat_parameters)))
-        if (max(flat_parameters)>1000):
+        if max(flat_parameters) > 1000:
             print("WARNING: max value of the parameters of the NN >1000: "+str(list(flat_parameters)))
-            
-                
+
         i = 0 # index
         to_set = []
         self.weights = list()
         self.bias = list()
-        if(self.n_hidden_layers > 0):
+        if self.n_hidden_layers > 0:
             # In -> first hidden
             w0 = np.array(flat_parameters[i:(i+self.dim_in*self.n_per_hidden)])
             self.weights.append(w0.reshape(self.dim_in,self.n_per_hidden))

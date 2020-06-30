@@ -44,7 +44,8 @@ parser.add_argument('--env_path', type=str, default="./Baseline/NSGA_env.pickle"
 parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of mutation')
 parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of crossover')
 
-parser.add_argument('--mut_step', type=float, default=0.1, help='Step for agent mutation')
+parser.add_argument('--eta_mut', type=float, default=0.5, help='Eta in polynomial bounded mutation')
+parser.add_argument('--eta_cross', type=float, default=0.5, help='Eta in SimulatedBinary crossover')
 parser.add_argument('--p_mut_gene', type=float, default=0.1, help='Probability of agent gene mutation')
 
 parser.add_argument('--knn', type=int, default=5, help='KNN novelty')

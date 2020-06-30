@@ -130,7 +130,7 @@ def generate_environments(envs, args):
     new_list = list()
     if len(envs) == 0:
         for i in range(args.pop_env_size):
-            new_list.append(Configuration.baseEnv(Configuration.envInit))
+            new_list.append(Configuration.envFactory.new())
         return new_list
     for i in range(args.pop_env_size):
         new_list.append(envs[i].get_child())

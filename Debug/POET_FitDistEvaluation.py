@@ -41,7 +41,7 @@ for i in range(nb_points):
 
     env1 = last_iteration[choices[0]][0]
     env2 = last_iteration[choices[1]][0]
-    new = env1.mate(env2)
+    new = env1.crossover(env2)
     for ea_pair in last_iteration:
         E, theta = ea_pair
         dists[-1].append(np.linalg.norm(np.array(E.terrain_y) - np.array(new.terrain_y)))

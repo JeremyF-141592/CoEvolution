@@ -113,9 +113,9 @@ def generate_tests(old_tests, args):
             new_tests.append(old_tests[np.random.randint(0, len(old_tests))].get_child())
         elif action < args.p_cross_env:
             choices = np.random.choice(np.arange(len(old_tests)), 2)
-            new_tests.append(old_tests[choices[0]].mate(old_tests[choices[1]]))
+            new_tests.append(old_tests[choices[0]].crossover(old_tests[choices[1]]))
         else:
-            new = Configuration.baseEnv(Configuration.envInit)
+            new = Configuration.envFactory.new()
             for i in range(10):
                 new = new.get_child()
             new_tests.append(new)
