@@ -10,6 +10,7 @@ This repository includes python re-implementation of Evolutionary algorithms suc
  
  # Dependencies
  
+ 
  Main package dependencies are as follow :
  * Numpy
  * Ipyparallel (https://github.com/ipython/ipyparallel)
@@ -18,6 +19,7 @@ This repository includes python re-implementation of Evolutionary algorithms suc
  * Argparse
  
  Sci-kit Learn and Keras also appear in the code, although they are not used by default.
+ **Python 3.4 is required**, due to the frequent use of f-strings.
  
   # Quick-start
   
