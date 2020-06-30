@@ -34,11 +34,11 @@ class Configuration:
         Configuration.optimizer = Adam()
 
         # ----------------------------------------------------------------
-        from Utils.Benchmark import BenchmarkFactory, BenchmarkEnvFactory, diag_gaussian
-
-        Configuration.agentFactory = BenchmarkFactory()
-        Configuration.benchmark = diag_gaussian
-        Configuration.envFactory = BenchmarkEnvFactory()
+        # from Utils.Benchmark import BenchmarkFactory, BenchmarkEnvFactory, diag_gaussian
+        #
+        # Configuration.agentFactory = BenchmarkFactory(14)
+        # Configuration.benchmark = diag_gaussian
+        # Configuration.envFactory = BenchmarkEnvFactory()
 
         # ----------------------------------------------------------------
 

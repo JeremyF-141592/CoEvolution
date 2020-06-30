@@ -40,8 +40,9 @@ parser.add_argument('--theta_init', type=str, default="random", help='Initial po
 parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of agent mutation')
 parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of agent crossover')
 
-parser.add_argument('--mut_step', type=float, default=0.1, help='Step for agent mutation')
 parser.add_argument('--p_mut_gene', type=float, default=0.1, help='Probability of agent gene mutation')
+parser.add_argument('--eta_mut', type=float, default=0.5, help='Eta in polynomial bounded mutation')
+parser.add_argument('--eta_cross', type=float, default=0.5, help='Eta in SimulatedBinary crossover')
 
 parser.add_argument('--knn', type=int, default=5, help='KNN agent novelty')
 parser.add_argument('--knn_env', type=int, default=5, help='KNN environment novelty')

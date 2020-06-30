@@ -75,7 +75,7 @@ class BenchmarkEnv(Environment):
 
 
 class BenchmarkEnvFactory(EnvironmentFactory):
-    def _init(self, y_init):
+    def __init__(self, y_init):
         self.y = y_init
 
     def new(self):
