@@ -56,6 +56,8 @@ parser.add_argument('--t_local', type=int, default=15, help='Iterations spent lo
 parser.add_argument('--t_global', type=int, default=15, help='Iterations spent globally')
 parser.add_argument('--p_mean', type=float, default=-2, help='Generalisation p-mean novelty')
 
+parser.add_argument('--max_env_children', type=int, default=100, help='Maximum number of env children per reproduction')
+
 parser.add_argument('--pata_ec_tol', type=float, default=2, help='Ranking tolerance for PATA_EC diversity')
 parser.add_argument('--pata_ec_clipmax', type=float, default=250, help='Upper fitness bound for PATA_EC diversity')
 parser.add_argument('--pata_ec_clipmin', type=float, default=-50, help='Lower fitness bound for PATA_EC diversity')

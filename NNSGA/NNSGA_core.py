@@ -129,11 +129,11 @@ def generate_environments(envs, args):
     """Generate new environments by mutating old environments"""
     new_list = list()
     if len(envs) == 0:
-        for i in range(args.pop_env_size):
-            new_list.append(Configuration.envFactory.new())
+        new_list.append(Configuration.envFactory.new())
         return new_list
-    for i in range(args.pop_env_size):
-        new_list.append(envs[i].get_child())
+    for i in range(args.max_env_children):
+        choice = np.random.randint(0, len(envs))
+        new_list.append(envs[choice].get_child())
     return new_list
 
 
