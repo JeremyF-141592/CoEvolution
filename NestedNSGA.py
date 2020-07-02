@@ -93,13 +93,14 @@ else:
     pop_env = generate_environments([], args)
     pop_generalist = list()
 
-objs_local = [list() for i in range(args.pop_env_size)]
-objs_general = list()
+
 for t in range(start_from, args.T):
     local = t % (args.t_local + args.t_global) < args.t_local
     gen_env = t % (args.t_local + args.t_global) == 0 and t != 0
     transition_global = t % (args.t_local + args.t_global) == args.t_local
 
+    objs_local = [list() for i in range(len(pop_env))]
+    objs_general = list()
     if gen_env:
         print(f"Generating new environments ...")
         proposed_environments = generate_environments(pop_env, args)
