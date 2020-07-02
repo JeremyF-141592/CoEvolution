@@ -109,13 +109,13 @@ for t in range(start_from, args.T):
 
     if local:
         print(f"Local iteration {t} ...")
-        for i in range(len(args.pop_ag)):
+        for i in range(len(pop_ag)):
             pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_genotypic_novelty], args)
     else:
         print(f"Global iteration {t} ...")
         if transition_global:
             # For each environment, extract pop_general_size / pop_env_size individuals
-            for i in range(len(args.pop_ag)):
+            for i in range(len(pop_ag)):
                 c_dists = crowding_distance(objs_local[i])
                 extraction_size = int(np.floor(args.pop_general_size / args.pop_env_size))
                 c_sorted = np.array(c_dists).argsort()
