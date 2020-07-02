@@ -137,11 +137,11 @@ for t in range(start_from, args.T):
     if Configuration.benchmark is not None:
         bundle["xy_benchmark"] = list()
         if local:
-            for i in range(args.pop_env_size):
+            for i in range(len(pop_env)):
                 for j in range(args.pop_size):
                     bundle["xy_benchmark"].append((pop_ag[i][j].value, pop_env[i].y_value))
         else:
-            for i in range(args.pop_env_size):
+            for i in range(len(pop_env)):
                 for j in range(len(pop_generalist)):
                     bundle["xy_benchmark"].append((pop_generalist[j].value, pop_env[i].y_value))
 
