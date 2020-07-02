@@ -112,7 +112,9 @@ def mutate_ag(agent, args):
 
 
 def mate_ag(agent1, agent2, args):
-    return cxSimulatedBinary(agent1, agent2, args.eta_cross)
+    if Configuration.benchmark is not None:
+        return cxSimulatedBinaryBounded(agent1, agent2, args.eta_cross, -100, 100)
+    return cxSimulatedBinaryBounded(agent1, agent2, args.eta_cross, -1, 1)
 
     # # Uniform crossover
     # wei_1 = agent1.get_weights()
@@ -128,13 +130,13 @@ def mate_ag(agent1, agent2, args):
     # return new
 
 
-def mutPolynomialBounded(individual, eta, low, up, indpb):
+def mutPolynomialBounded(agent, eta, low, up, indpb):
     """
     Polynomial mutation as implemented in original NSGA-II algorithm in
     C by Deb, returns a new agent.
     This function is in parts taken from the DEAP package for python.
     """
-    weights = individual.get_weights()
+    weights = agent.get_weights()
     size = len(weights)
     xl = low
     xu = up
@@ -163,22 +165,47 @@ def mutPolynomialBounded(individual, eta, low, up, indpb):
     return new
 
 
-def cxSimulatedBinary(ind1, ind2, eta):
+def cxSimulatedBinaryBounded(ind1, ind2, eta, xl, xu):
     """
-    Executes a simulated binary crossover, returns a new agent.
-    This function is in parts taken from the DEAP package for python.
-    """
+        Executes a simulated binary crossover, returns a new agent.
+        This function is in parts taken from the DEAP package for python.
+        """
     w1 = ind1.get_weights()
     w2 = ind2.get_weights()
-    for i, (x1, x2) in enumerate(zip(w1, w2)):
-        rand = random.random()
-        if rand <= 0.5:
-            beta = 2. * rand
-        else:
-            beta = 1. / (2. * (1. - rand))
-        beta **= 1. / (eta + 1.)
-        w1[i] = 0.5 * (((1 + beta) * x1) + ((1 - beta) * x2))
+    for i in range(len(w1)):
+        c1 = 0
+        c2 = 0
+        # This epsilon should probably be changed for 0 since
+        # floating point arithmetic in Python is safer
+        if abs(w1[i] - w2[i]) > 1e-14:
+            x1 = min(w1[i], w2[i])
+            x2 = max(w1[i], w2[i])
+            rand = random.random()
 
+            beta = 1.0 + (2.0 * (x1 - xl) / (x2 - x1))
+            alpha = 2.0 - beta ** -(eta + 1)
+            if rand <= 1.0 / alpha:
+                beta_q = (rand * alpha) ** (1.0 / (eta + 1))
+            else:
+                beta_q = (1.0 / (2.0 - rand * alpha)) ** (1.0 / (eta + 1))
+
+            c1 = 0.5 * (x1 + x2 - beta_q * (x2 - x1))
+
+            beta = 1.0 + (2.0 * (xu - x2) / (x2 - x1))
+            alpha = 2.0 - beta ** -(eta + 1)
+            if rand <= 1.0 / alpha:
+                beta_q = (rand * alpha) ** (1.0 / (eta + 1))
+            else:
+                beta_q = (1.0 / (2.0 - rand * alpha)) ** (1.0 / (eta + 1))
+            c2 = 0.5 * (x1 + x2 + beta_q * (x2 - x1))
+
+            c1 = min(max(c1, xl), xu)
+            c2 = min(max(c2, xl), xu)
+
+        if random.random() <= 0.5:
+            w1[i] = c2
+        else:
+            w1[i] = c1
     new = Configuration.agentFactory.new()
     new.set_weights(w1)
     return new
@@ -186,15 +213,24 @@ def cxSimulatedBinary(ind1, ind2, eta):
 
 if __name__ == "__main__":
     Configuration.make()
-    for k in range(50):
+    for k in range(500):
         ag = Configuration.agentFactory.new()
 
-        ag2 = mutPolynomialBounded(ag, 0.5, -1, 1, 1)
-        ag3 = cxSimulatedBinary(ag, ag2, 0.5)
+        ag2 = mutPolynomialBounded(ag, 0.5, -100, 100, 1)
+        ag3 = cxSimulatedBinaryBounded(ag, ag2, 0.1, -100, 100)
 
         print(ag.get_weights())
+        if abs(ag.get_weights()[0]) > 100:
+            print("Error 1 ! ")
+            assert False
         print(ag2.get_weights())
+        if abs(ag2.get_weights()[0]) > 100:
+            print("Error 2 ! ")
+            assert False
         print(ag3.get_weights())
+        if abs(ag3.get_weights()[0]) > 100:
+            print("Error 3 ! ")
+            assert False
     # vals = [[10, 0], [0, 10], [5, 5], [4, 2], [4, 4], [8, 2]]
     # import matplotlib.pyplot as plt
     # for v in vals:

@@ -18,8 +18,9 @@ t_global = 15
 archive = list()
 full_ev2 = list()
 env_ogs = None
-stats = unpack_stats("./NNSGA_Stats2.json")
+stats = unpack_stats("../NewStats.json")
 
+best_colors = ["green", "yellow", "cyan"]
 
 # plt.show()
 for iteration in range(0, 300):
@@ -28,6 +29,19 @@ for iteration in range(0, 300):
     plt.clf()
     plt.title("Iteration {} {:>5}".format("locale" if local else "globale", iteration))
     print(iteration)
+
+    best_args = [list(), list()]
+    for i in range(2):
+        for k in range(len(stats[f'Objective_{i}-argmax'])):
+            if iteration in stats[f'Objective_{i}-argmax'][k][0]:
+                ajusted = iteration - stats[f'Objective_{i}-argmax'][k][0][0]
+                best_args[i].append(stats[f'Objective_{i}-argmax'][k][1][ajusted])
+
+    for i in range(2):
+        for k in range(len(stats[f'Objective_general-arg{i}'])):
+            if iteration in stats[f'Objective_general-arg{i}'][k][0]:
+                ajusted = iteration - stats[f'Objective_general-arg{i}'][k][0][0]
+                best_args[i].append(stats[f'Objective_general-arg{i}'][k][1][ajusted])
 
     env_ogs = list()
     for k in range(len(stats['xy_benchmark'])):
@@ -53,11 +67,24 @@ for iteration in range(0, 300):
             a[j, i] = bench(k[i], k[j])
 
     plt.imshow(a, cmap='Greys', interpolation='nearest', extent=[bounds[0], bounds[1], bounds[2], bounds[3]])
+    plt.xlim(bounds[0], bounds[1])
+    plt.ylim(bounds[2], bounds[3])
     for env_og in env_ogs:
         plt.axhline(env_og, linestyle="dashed")
+
+    ev_best_counter = 0
+    for a in range(1, len(ags)):
+        if env_ogs[a] == env_ogs[a-1]:
+            plt.plot(ags[a], env_ogs[a], "or")
     for a in range(len(ags)):
-        plt.plot(ags[a], env_ogs[a], "or")
+        if a == 0 or env_ogs[a] != env_ogs[a-1]:
+            ev_best_counter = min(ev_best_counter, len(best_args[0]) -1)
+            print(len(best_args[0]), ev_best_counter)
+            print(len(ags), best_args[0][ev_best_counter])
+            plt.plot(ags[best_args[0][ev_best_counter]], env_ogs[a], "o", color=best_colors[0])
+            plt.plot(ags[best_args[1][ev_best_counter]], env_ogs[a], "o", color=best_colors[1])
+            ev_best_counter += 1
     plt.xlabel("Agent")
     plt.ylabel("Environment")
-    # plt.pause(0.01)
-    plt.savefig(f"../anim2/{iteration}.png")
+    plt.pause(0.01)
+    # plt.savefig(f"../anim2/{iteration}.png")
