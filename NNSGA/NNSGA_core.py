@@ -208,7 +208,7 @@ def bundle_stats_NNSGA(local_bool, objs_local, objs_general, args):
             bundle[f"Objective_{k}-med"] = list()
             bundle[f"Objective_{k}-argmax"] = list()
 
-        for i in range(args.pop_env_size):
+        for i in range(len(objs_local)):
             for k in range(len(objs_local[i][0])):  # reformat objectives from list of tuple to lists for each objective
                 obj_list = list()
                 for j in range(len(objs_local[i])):
