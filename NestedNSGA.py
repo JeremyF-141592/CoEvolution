@@ -93,20 +93,20 @@ else:
     pop_env = generate_environments([], args)
     pop_generalist = list()
 
-
+objs_local = [list() for i in range(len(pop_env))]
+objs_general = list()
 for t in range(start_from, args.T):
     local = t % (args.t_local + args.t_global) < args.t_local
     gen_env = t % (args.t_local + args.t_global) == 0 and t != 0
     transition_global = t % (args.t_local + args.t_global) == args.t_local
 
-    objs_local = [list() for i in range(len(pop_env))]
-    objs_general = list()
     if gen_env:
         print(f"Generating new environments ...")
         proposed_environments = generate_environments(pop_env, args)
         pop_env = NSGAII_env(pop_generalist, proposed_environments, [obj_env_pata_ec, obj_env_forwarding], args)
         for i in range(len(pop_env)):
             pop_ag[i] += pop_generalist
+        objs_local = [list() for i in range(len(pop_env))]
 
     if local:
         print(f"Local iteration {t} ...")
@@ -118,7 +118,7 @@ for t in range(start_from, args.T):
             # For each environment, extract pop_general_size / pop_env_size individuals
             for i in range(len(pop_env)):
                 c_dists = crowding_distance(objs_local[i])
-                extraction_size = int(np.floor(args.pop_general_size / args.pop_env_size))
+                extraction_size = int(np.floor(args.pop_general_size / len(pop_env)))
                 c_sorted = np.array(c_dists).argsort()
                 for k in range(extraction_size):
                     pop_generalist.append(pop_ag[i][c_sorted[k]])
