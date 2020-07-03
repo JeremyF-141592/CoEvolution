@@ -42,8 +42,6 @@ numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
 resume_from = int(numbers.split()[-1])
 with open(f"{ea_path}", "rb") as f:
     NNSGA_resume = pickle.load(f)
-with open(f"{folder}/Archive.pickle", "rb") as f:
-    NNSGA_archive = pickle.load(f)
 print(f"Execution successfully loaded from {folder} .")
 
 folder = ""
