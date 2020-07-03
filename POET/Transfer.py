@@ -33,7 +33,7 @@ def Evaluate_Candidates(ea_list, env, args, threshold=0):
 
     fitness = Configuration.lview.map(env, fine_tuned_agents)
     scores += fitness
-    Configuration.budget_spent[-1] += len(base_agents)
+    Configuration.budget_spent[-1] += len(fine_tuned_agents)
 
     for i in range(len(fine_tuned_agents)):
         if scores[i] > threshold:
