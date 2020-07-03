@@ -121,6 +121,7 @@ def pata_ec(envs, individuals, args):
     res = list()
     for i in range(len(envs)):
         result = Configuration.lview.map(envs[i], individuals)
+        Configuration.budget_spent[-1] += len(result)
         result = np.array(result)
         result = normalize(result, args)
         res.append(result)
