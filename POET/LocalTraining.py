@@ -17,6 +17,7 @@ def ES_Step(theta, E, args, allow_verbose=0):
         thetas.append(new_theta)
 
     scores = Configuration.lview.map(E, thetas)
+    Configuration.budget_spent[-1] += len(thetas)
     scores = np.array(scores)
 
     self_fitness = E(theta)
@@ -28,7 +29,6 @@ def ES_Step(theta, E, args, allow_verbose=0):
         scores[i] -= args.w_decay * np.linalg.norm(og_weights + sigma * shared_gaussian_table[i])
 
     scores = rank_normalize(scores)
-    Configuration.budget_spent[-1] += len(thetas)
 
     summed_weights = np.zeros(og_weights.shape)
     for i in range(len(scores)):

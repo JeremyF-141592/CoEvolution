@@ -77,12 +77,13 @@ with open(args.env_path, "rb") as f:
 
 for t in range(start_from, args.T):
     print(f"Iteration {t} ...", flush=True)
+    Configuration.budget_spent.append(0)
 
     new_pop = pop + new_population(pop, args)
 
     results = Configuration.lview.map(env, new_pop)
 
-    Configuration.budget_spent += len(results)
+    Configuration.budget_spent[-1] += len(results)
 
     # GENOTYPIC NOVELTY ---- todo : clean up, add the option of BC novelty
     for i in range(len(results)):
