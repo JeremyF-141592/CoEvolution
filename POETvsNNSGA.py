@@ -23,64 +23,69 @@ Configuration.lview.block = True
 
 # Loading --------------------------------------------------------------------------------------------------------------
 
+def load_NNSGA_agents(path):
+    ags = list()
+    for p in os.listdir(path):
+        folder = os.path.join(path, p)
+        if not os.path.isdir(folder):
+            continue
+        filenames = glob(f"{folder}/*.pickle")
+        filenames = list(filter(lambda x: "Iteration" in x, filenames))
+        filenames.sort(key=lambda k: int(re.sub('\D', '', k)))
+        # assume we only have relevant files in the folder, take the last sorted .pickle file
+        ea_path = filenames[-1]
+        numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
+        resume_from = int(numbers.split()[-1])
+        with open(f"{ea_path}", "rb") as f:
+            NNSGA_resume = pickle.load(f)
+        print(f"Execution successfully loaded from {folder} .")
+        for ag in NNSGA_resume[2]:
+            ags.append(ag)
+    return ags
+
+def load_POET_agents(path):
+    ags = list()
+    for p in os.listdir(path):
+        folder = os.path.join(path, p)
+        if not os.path.isdir(folder):
+            continue
+        filenames = glob(f"{folder}/*.pickle")
+        filenames = list(filter(lambda x: "Iteration" in x, filenames))
+        filenames.sort(key=lambda k: int(re.sub('\D', '', k)))
+        # assume we only have relevant files in the folder, take the last sorted .pickle file
+        ea_path = filenames[-1]
+        numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
+        resume_from = int(numbers.split()[-1])
+        with open(f"{ea_path}", "rb") as f:
+            POET_resume = pickle.load(f)
+        with open(f"{folder}/Archive.pickle", "rb") as f:
+            POET_archive = pickle.load(f)
+        print(f"Execution successfully loaded from {folder} .")
+        for ea_pair in POET_resume:
+            E, theta = ea_pair
+            ags.append(theta)
+    return ags
+
+
 folder = ""
 file_selected = False
 while not file_selected:
-    folder = input("Path to NNSGA execution folder : ")
+    folder = input("Path to NNSGA executions folder : ")
     if not os.path.exists(folder):
         continue
-    stat = unpack_stats(folder + "/Stats.json")
     file_selected = True
 
+NNSGA_ags = load_NNSGA_agents(folder)
 
-filenames = glob(f"{folder}/*.pickle")
-filenames = list(filter(lambda x: "Iteration" in x, filenames))
-filenames.sort(key=lambda k: int(re.sub('\D', '', k)))
-# assume we only have relevant files in the folder, take the last sorted .pickle file
-ea_path = filenames[-1]
-numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
-resume_from = int(numbers.split()[-1])
-with open(f"{ea_path}", "rb") as f:
-    NNSGA_resume = pickle.load(f)
-print(f"Execution successfully loaded from {folder} .")
 
 folder = ""
 file_selected = False
 while not file_selected:
-    folder = input("Path to POET execution folder : ")
+    folder = input("Path to POET executions folder : ")
     if not os.path.exists(folder):
         continue
-    stat = unpack_stats(folder + "/Stats.json")
     file_selected = True
-
-
-filenames = glob(f"{folder}/*.pickle")
-filenames = list(filter(lambda x: "Iteration" in x, filenames))
-filenames.sort(key=lambda k: int(re.sub('\D', '', k)))
-# assume we only have relevant files in the folder, take the last sorted .pickle file
-ea_path = filenames[-1]
-numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
-resume_from = int(numbers.split()[-1])
-with open(f"{ea_path}", "rb") as f:
-    POET_resume = pickle.load(f)
-with open(f"{folder}/Archive.pickle", "rb") as f:
-    POET_archive = pickle.load(f)
-print(f"Execution successfully loaded from {folder} .")
-
-# NNSGA ----------------------------------------------------------------------------------------------------------------
-
-NNSGA_ag = NNSGA_resume[0]
-NNSGA_env = NNSGA_resume[1]
-NNSGA_ag_general = NNSGA_resume[2]
-
-# POET -----------------------------------------------------------------------------------------------------------------
-
-POET_ag = list()
-POET_env = list()
-for ea_pair in POET_resume:
-    E, theta = ea_pair
-    POET_ag.append(theta)
-    POET_env.append(E)
+POET_ags = load_POET_agents(folder)
 
 # Generating environments ----------------------------------------------------------------------------------------------
 
@@ -96,8 +101,8 @@ cross_res_POET = [list() for i in range(nb_envs)]
 cross_res_NNSGA = [list() for i in range(nb_envs)]
 
 for i in range(nb_envs):
-    cross_res_POET[i] = Configuration.lview.map(test_envs[i], POET_ag)
-    cross_res_NNSGA[i] = Configuration.lview.map(test_envs[i], NNSGA_ag)
+    cross_res_POET[i] = Configuration.lview.map(test_envs[i], POET_ags)
+    cross_res_NNSGA[i] = Configuration.lview.map(test_envs[i], NNSGA_ags)
 
 cross_res_POET = np.array(cross_res_POET)
 cross_res_NNSGA = np.array(cross_res_NNSGA)
