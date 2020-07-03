@@ -82,6 +82,8 @@ for t in range(start_from, args.T):
 
     results = Configuration.lview.map(env, new_pop)
 
+    Configuration.budget_spent += len(results)
+
     # GENOTYPIC NOVELTY ---- todo : clean up, add the option of BC novelty
     for i in range(len(results)):
         w = new_pop[i].get_weights()

@@ -11,6 +11,7 @@ def NSGAII(pop, envs, additional_objectives, args):
     obs = [list() for i in range(len(envs))]
     for i in range(len(envs)):
         res = Configuration.lview.map(envs[i], new_pop)
+        Configuration.budget_spent += len(res)
         if type(res[0]) != tuple and type(res[0]) != list:
             raise TypeError("Current fitness metric returns a scalar instead of a tuple.")
         for r in res:
@@ -144,6 +145,7 @@ def NSGAII_env(pop, envs, additional_objectives, args):
     obs = [list() for i in range(len(envs))]
     for i in range(len(envs)):
         res = Configuration.lview.map(envs[i], pop)
+        Configuration.budget_spent += len(res)
         if type(res[0]) != tuple and type(res[0]) != list:
             raise TypeError("Current fitness metric returns a scalar instead of a tuple.")
         for r in res:
