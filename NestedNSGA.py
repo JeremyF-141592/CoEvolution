@@ -10,6 +10,7 @@ import numpy as np
 import ipyparallel as ipp
 import argparse
 import json
+import os
 import pickle
 import warnings
 warnings.filterwarnings("ignore")
@@ -34,6 +35,7 @@ parser.add_argument('--resume_from', type=str, default="", help="Resume executio
 parser.add_argument('--save_to', type=str, default="./NNSGA_execution", help="Execution save-to folder")
 parser.add_argument('--verbose', type=int, default=0, help="Print information")
 parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number of environment evaluations.")
+parser.add_argument('--save_mode', type=str, default="all", help="'all' or 'last'")
 # Population
 parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
@@ -127,6 +129,8 @@ for t in range(start_from, args.T):
         pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty], args)
 
     # Save execution ----------------------------------------------------------------------------------
+    if args.save_mode == "last" and t > 0:
+        os.remove(f'{args.save_to}/Iteration_{t-1}.pickle')
     with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
         pickle.dump((pop_ag, pop_env, pop_generalist), f)
     with open(f"{args.save_to}/TotalBudget.json", 'w') as f:
