@@ -32,7 +32,7 @@ class CustomCartPoleEnv(GymInterface, Environment):
     Actions:
         Type: Discrete(2)
         Num   Action
-        0     Push cart to the left
+        -1     Push cart to the left
         1     Push cart to the right
         Note: The amount the velocity that is reduced or increased is not
         fixed; it depends on the angle the pole is pointing. This is because
@@ -117,8 +117,9 @@ class CustomCartPoleEnv(GymInterface, Environment):
         return [seed]
 
     def step(self, action):
-        err_msg = "%r (%s) invalid" % (action, type(action))
-        assert self.action_space.contains(action), err_msg
+        # err_msg = "%r (%s) invalid" % (action, type(action))
+        # assert self.action_space.contains(action), err_msg
+        action = int(np.round(action[0]))
 
         x, x_dot, theta, theta_dot = self.state
         force = self.force_mag if action == 1 else -self.force_mag
