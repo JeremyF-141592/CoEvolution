@@ -36,6 +36,7 @@ parser.add_argument('--T', type=int, default=400, help='Iterations limit')
 parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
 parser.add_argument('--save_to', type=str, default="./NSGA_execution", help="Execution save-to folder.")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
+parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number of environment evaluations.")
 # Population
 parser.add_argument('--pop_size', type=int, default=25, help='Population size')
 # NSGA2
@@ -135,3 +136,6 @@ for t in range(start_from, args.T):
     append_stats(f"{args.save_to}/Stats.json", bundle)
     if args.verbose > 0:
         print(f"\tExecution saved at {args.save_to}.")
+    if 0 < args.max_budget < sum(Configuration.budget_spent):
+        print(f"\nMaximum budget exceeded : {sum(Configuration.budget_spent)} > {args.max_budget}.\n")
+        break
