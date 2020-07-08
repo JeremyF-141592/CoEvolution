@@ -25,20 +25,27 @@ class Configuration:
         from Optimizers.Adam import Adam
         import Utils.Metrics
 
-        # Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
-        #
+        # Configuration.agentFactory = NeuralAgentNumpyFactory(4, 1, 2, 20)
+        # #
         # Configuration.envFactory = BipedalWalkerFactory()
 
-        Configuration.metric = Utils.Metrics.fitness_bc
+        Configuration.metric = Utils.Metrics.fitness_metric
 
         Configuration.optimizer = Adam()
 
         # ----------------------------------------------------------------
-        from Utils.Benchmark import BenchmarkFactory, BenchmarkEnvFactory, diag_gaussian
+        from Environments.KNN_Benchmark import KNNBenchmarkAgFactory, KNNBenchmarkEnvFactory
 
-        Configuration.agentFactory = BenchmarkFactory()
-        Configuration.benchmark = diag_gaussian
-        Configuration.envFactory = BenchmarkEnvFactory(14)
+        Configuration.envFactory = KNNBenchmarkEnvFactory(
+            2,
+            [0 for i in range(15)] + [10, 30, 50, 70, 100],
+            [20, 40, 60, 80],
+            [-1, 1]
+        )
+        Configuration.agentFactory = KNNBenchmarkAgFactory(
+            2,
+            [-1, 1]
+        )
 
         # ----------------------------------------------------------------
 

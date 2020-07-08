@@ -18,14 +18,23 @@ def resume_from_folder(folder, args):
     # assume we only have relevant files in the folder, take the last sorted .pickle file
     ea_path = filenames[-1]
     numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
-    resume_from = int(numbers.split()[-1])
+    resume_from = int(numbers.split()[-1]) + 1
+    if not os.path.exists(f"{ea_path}"):
+        return OSError(f"No file was found at : {ea_path}")
     with open(f"{ea_path}", "rb") as f:
         iteration_resume = pickle.load(f)
-    with open(f"{folder}/Archive.pickle", "rb") as f:
-        Configuration.archive = pickle.load(f)
-    with open(f"{args.save_to}/TotalBudget.json", 'r') as f:
-        budget_dic = json.load(f)
-        Configuration.budget_spent = budget_dic["Budget_per_step"]
+    if os.path.exists(f"{folder}/Archive.pickle"):
+        with open(f"{folder}/Archive.pickle", "rb") as f:
+            Configuration.archive = pickle.load(f)
+    else:
+        print(f"\t No archive was found at : {folder}/Archive.pickle")
+
+    if os.path.exists(f"{folder}/TotalBudget.json"):
+        with open(f"{args.save_to}/TotalBudget.json", 'r') as f:
+            budget_dic = json.load(f)
+            Configuration.budget_spent = budget_dic["Budget_per_step"]
+    else:
+        print(f"\t No budget log was found at : {folder}/TotalBudget.json")
     print(f"Execution successfully resumed from {folder} .")
     return iteration_resume, resume_from
 

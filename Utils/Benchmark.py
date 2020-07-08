@@ -91,7 +91,7 @@ class BenchmarkAg(Agent):
         return self.value
 
     def randomize(self):
-        return np.random.uniform(-40.0, 40.0)
+        self.value = np.random.uniform(-40.0, 40.0)
 
     def get_weights(self):
         return np.array([self.value])
