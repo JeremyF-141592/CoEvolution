@@ -2,10 +2,22 @@ import numpy as np
 from Parameters import Configuration
 from Templates.Agents import Agent, AgentFactory
 from Templates.Environments import Environment, EnvironmentFactory
+import os
 
 
 class KNNBenchmarkEnv(Environment):
+    """
+    This environment is a N-dimensional space in which some reference points are uniformly distributed with a
+    predefined fitness.
+    Any agent in this environment is a N-dimensional point, which fitness is the total sum of every reference point
+    fitness pondered by the inverse squared distance to the agent.
 
+    A good analogy in 3D is gravity, think each reference point as a planet and an agent as an astronaut,
+    its fitness is the total magnitude of the forces that applies to him.
+
+    (Note that this analogy only holds in 3D because in N dimensions each reference fitness should be multiplied
+    by the -(N-1) power of distance to conserve energy.)
+    """
     def __init__(self, dimension, spec_fit, gen_fit, gen_points, bounds):
         self.dim = dimension
         self.bounds = bounds
@@ -62,13 +74,17 @@ class KNNBenchmarkEnv(Environment):
 
 
 class KNNBenchmarkEnvFactory(EnvironmentFactory):
-    def __init__(self, dimension, spec_fitness, general_fitness, bounds):
+    def __init__(self, dimension, spec_fitness, general_fitness, bounds, gen_path="./generalist_benchmark.npy"):
         self.dim = dimension
         self.spec_fit = spec_fitness
         self.gen_fit = general_fitness
         self.bounds = bounds
 
-        self.generalist_points = np.random.uniform(bounds[0], bounds[1], size=(len(general_fitness), dimension))
+        if os.path.exists(gen_path):
+            self.generalist_points = np.load(gen_path)
+        else:
+            self.generalist_points = np.random.uniform(bounds[0], bounds[1], size=(len(general_fitness), dimension))
+            np.save(gen_path, self.generalist_points)
 
     def new(self):
         return KNNBenchmarkEnv(self.dim, self.spec_fit, self.gen_fit, self.generalist_points, self.bounds)
@@ -133,7 +149,7 @@ def print_points(points, finess):
             fit = 0
             dist = 0
             for p in range(len(points)):
-                d_inv = (np.linalg.norm(points[p] - np.array([k[i], k[j]])) + 1e-9)**-3
+                d_inv = (np.linalg.norm(points[p] - np.array([k[i], k[j]])) + 1e-9)**-2
                 fit += d_inv * finess[p]
                 dist += d_inv
             fit /= dist
