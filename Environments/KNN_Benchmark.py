@@ -2,6 +2,7 @@ import numpy as np
 from Parameters import Configuration
 from Templates.Agents import Agent, AgentFactory
 from Templates.Environments import Environment, EnvironmentFactory
+import matplotlib.pyplot as plt
 import os
 
 
@@ -138,11 +139,13 @@ class KNNBenchmarkAgFactory(AgentFactory):
         return KNNBenchmarkAg(self.dim, self.bounds)
 
 
-def print_points(points, finess, bounds):
-    for p in points:
-        plt.plot(p[0], p[1], "ob")
+def print_points(points, finess, bounds, cut=-1):
+    if cut == -1:
+        cut = len(points)
+    for i in range(cut):
+        plt.plot(points[i][0], points[i][1], "ob")
     size = 100
-    k = np.linspace(-1, 1, num=size)
+    k = np.linspace(bounds[0], bounds[1], num=size)
     a = np.zeros((size, size))
     for i in range(size):
         for j in range(size):
@@ -158,7 +161,6 @@ def print_points(points, finess, bounds):
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
     finess = [0 for i in range(15)] + [10, 30, 50, 70, 90]
     points = np.random.uniform(-1, 1, size=(len(finess), 2))
     plt.show()

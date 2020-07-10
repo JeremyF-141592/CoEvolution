@@ -19,20 +19,22 @@ with open(poet_file, "rb") as f:
 with open(nnsga_file, "rb") as f:
     nnsga_ags = pickle.load(f)
 
+print(len(poet_ags))
+print(len(nnsga_ags))
 plt.show()
 for env in envs:
     if len(poet_ags[0].get_weights()) != 2:
         raise AssertionError("Something went wrong, the agents are not 2 dimensional.")
 
-    full_points = env.generalist_points + env.specialist_points
+    full_points = np.vstack((env.generalist_points,env.specialist_points))
     full_fit = env.generalist_fit + env.specialist_fit
     bounds = env.bounds
 
     plt.clf()
-    print_points(full_points, full_fit, bounds)
     for ag in poet_ags:
         plt.plot(ag.value[0], ag.value[1], "og")
     for ag in nnsga_ags:
         plt.plot(ag.value[0], ag.value[1], "oy")
-    plt.pause(0.25)
+    print_points(full_points, full_fit, [-2, 2], cut=len(env.generalist_points))
+    plt.pause(2)
 
