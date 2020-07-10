@@ -46,7 +46,7 @@ class KNNBenchmarkEnv(Environment):
     def get_child(self):
         child = KNNBenchmarkEnv(self.dim, self.specialist_fit, self.generalist_fit, self.generalist_points, self.bounds)
 
-        delta_points = np.random.uniform(self.bounds[0]/100.0, self.bounds[1]/100.0,
+        delta_points = np.random.uniform(self.bounds[0]/10.0, self.bounds[1]/10.0,
                                          size=(len(self.specialist_points), self.dim))
         child.specialist_points = self.specialist_points + delta_points
         return child
