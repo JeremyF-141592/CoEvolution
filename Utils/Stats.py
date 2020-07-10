@@ -115,6 +115,32 @@ def mean_std(path, key):
     return np.array(absciss), np.array(value1), np.array(value2)
 
 
+def med_qtile(path, key):
+    """Reads a pickled stat bundle, and return (iterations, median, 1 quartile, 3 quartile) of a stat."""
+    res = list()
+    with open(path, "r") as f:
+        for line in f.readlines():
+            dic = json.loads(line)
+            res.append(dic)
+
+    value1 = []
+    value2 = []
+    value3 = []
+    absciss = []
+    for i in range(len(res)):
+        if key not in res[i]:
+            continue
+        if type(res[i][key]) != list:
+            res[i][key] = [res[i][key]]
+
+        me = np.array(res[i][key])
+        value1.append(np.median(me))
+        value2.append(np.quantile(0.25))
+        value3.append(np.quantile(0.75))
+        absciss.append(i)
+    return np.array(absciss), np.array(value1), np.array(value2), np.array(value3)
+
+
 def min_max(path, key):
     """Reads a pickled stat bundle, and return (iterations, mean, std) of a stat."""
     res = list()

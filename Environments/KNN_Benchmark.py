@@ -138,7 +138,7 @@ class KNNBenchmarkAgFactory(AgentFactory):
         return KNNBenchmarkAg(self.dim, self.bounds)
 
 
-def print_points(points, finess):
+def print_points(points, finess, bounds):
     for p in points:
         plt.plot(p[0], p[1], "ob")
     size = 100
@@ -154,17 +154,17 @@ def print_points(points, finess):
                 dist += d_inv
             fit /= dist
             a[j, i] = fit
-    plt.imshow(a, cmap='hot', interpolation='nearest', extent=[-1, 1, 1, -1])
+    plt.imshow(a, cmap='hot', interpolation='nearest', extent=[bounds[0], bounds[1], bounds[1], bounds[0]])
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    finess = np.random.uniform(100, 500, size=20)
+    finess = [0 for i in range(15)] + [10, 30, 50, 70, 90]
     points = np.random.uniform(-1, 1, size=(len(finess), 2))
     plt.show()
     for k in range(100):
         plt.clf()
         plt.title(k)
-        print_points(points, finess)
+        print_points(points, finess, [-1, 1])
         plt.pause(0.01)
         points += np.random.uniform(-0.1, 0.1, size=(len(finess), 2))

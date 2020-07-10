@@ -21,6 +21,7 @@ Configuration.rc[:].execute("Configuration.make()")
 Configuration.lview = Configuration.rc.load_balanced_view()
 Configuration.lview.block = True
 
+
 # Loading --------------------------------------------------------------------------------------------------------------
 
 def load_NNSGA_agents(path):
@@ -39,9 +40,10 @@ def load_NNSGA_agents(path):
         with open(f"{ea_path}", "rb") as f:
             NNSGA_resume = pickle.load(f)
         print(f"Execution successfully loaded from {folder} .")
-        for ag in NNSGA_resume[2]:
+        for ag in NNSGA_resume[2][:2]:
             ags.append(ag)
     return ags
+
 
 def load_POET_agents(path):
     ags = list()
@@ -89,6 +91,8 @@ POET_ags = load_POET_agents(folder)
 
 # Generating environments ----------------------------------------------------------------------------------------------
 
+print(f"Generating {nb_envs} new environments ...")
+
 test_envs = list()
 for i in range(nb_envs):
     test = Configuration.envFactory.new()
@@ -97,9 +101,19 @@ for i in range(nb_envs):
         test = test.get_child()
     test_envs.append(test)
 
+
+with open("Test_Environments.pickle", "wb") as f:
+    pickle.dump(test_envs, f)
+with open("POET_ag.pickle", "wb") as f:
+    pickle.dump(POET_ags, f)
+with open("NNSGA_ag.pickle", "wb") as f:
+    pickle.dump(NNSGA_ags, f)
+print("Saved tests environments and all agents as pickled files.")
+
 cross_res_POET = [list() for i in range(nb_envs)]
 cross_res_NNSGA = [list() for i in range(nb_envs)]
 
+print("Evaluation (may take a while) ...")
 for i in range(nb_envs):
     cross_res_POET[i] = Configuration.lview.map(test_envs[i], POET_ags)
     cross_res_NNSGA[i] = Configuration.lview.map(test_envs[i], NNSGA_ags)
