@@ -40,7 +40,7 @@ def load_NNSGA_agents(path):
         with open(f"{ea_path}", "rb") as f:
             NNSGA_resume = pickle.load(f)
         print(f"Execution successfully loaded from {folder} .")
-        for ag in NNSGA_resume[2][:2]:
+        for ag in NNSGA_resume[-2:][:2]:
             ags.append(ag)
     return ags
 

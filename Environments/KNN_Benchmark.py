@@ -167,6 +167,6 @@ if __name__ == "__main__":
     for k in range(100):
         plt.clf()
         plt.title(k)
-        print_points(points, finess, [-1, 1])
+        print_points(points, finess, [-2, 2])
         plt.pause(0.01)
         points += np.random.uniform(-0.1, 0.1, size=(len(finess), 2))
