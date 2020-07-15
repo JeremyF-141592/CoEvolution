@@ -136,7 +136,7 @@ def mutPolynomialBounded(agent, eta, low, up, indpb):
     C by Deb, returns a new agent.
     This function is in parts taken from the DEAP package for python.
     """
-    weights = agent.get_weights()
+    weights = agent.get_weights().copy()
     size = len(weights)
     xl = low
     xu = up
@@ -170,8 +170,8 @@ def cxSimulatedBinaryBounded(ind1, ind2, eta, xl, xu):
         Executes a simulated binary crossover, returns a new agent.
         This function is in parts taken from the DEAP package for python.
         """
-    w1 = ind1.get_weights()
-    w2 = ind2.get_weights()
+    w1 = ind1.get_weights().copy()
+    w2 = ind2.get_weights().copy()
     for i in range(len(w1)):
         c1 = 0
         c2 = 0

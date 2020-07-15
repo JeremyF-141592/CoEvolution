@@ -129,6 +129,9 @@ class KNNBenchmarkAg(Agent):
         self.value = np.array(state["value"])
         self.opt_state = state["opt"]
 
+    def __str__(self):
+        return str(self.value)
+
 
 class KNNBenchmarkAgFactory(AgentFactory):
     def __init__(self, dimension, bounds):

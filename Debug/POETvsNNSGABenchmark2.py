@@ -8,9 +8,9 @@ import pickle
 
 Configuration.make()
 
-envs_file = "Test_Environments.pickle"
-poet_file = "POET_ag.pickle"
-nnsga_file = "NNSGA_ag.pickle"
+envs_file = "../Test_Environments.pickle"
+poet_file = "../POET_ag.pickle"
+nnsga_file = "../NNSGA_ag.pickle"
 
 with open(envs_file, "rb") as f:
     envs = pickle.load(f)

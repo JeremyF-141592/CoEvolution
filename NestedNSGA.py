@@ -94,7 +94,7 @@ if ea_load:
 else:
     pop_ag = [new_population([], args) for i in range(args.pop_env_size)]
     pop_env = generate_environments([], args)
-    pop_generalist = list()
+    pop_generalist = [new_population([], args) for i in range(args.pop_general_size)]
 
 objs_local = [list() for i in range(len(pop_env))]
 objs_general = list()
@@ -124,7 +124,7 @@ for t in range(start_from, args.T):
                 c_dists = crowding_distance(objs_local[i])
                 extraction_size = int(np.floor(args.pop_general_size / len(pop_env)))
                 c_sorted = np.array(c_dists).argsort()
-                for k in range(extraction_size):
+                for k in range(min(extraction_size, args.pop_size)):
                     pop_generalist.append(pop_ag[i][c_sorted[k]])
         pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty], args)
         pop_generalist = [pop_generalist[i] for _,i in sorted(zip(objs_general, range(len(objs_general))))]
