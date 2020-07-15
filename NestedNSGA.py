@@ -94,7 +94,7 @@ if ea_load:
 else:
     pop_ag = [new_population([], args) for i in range(args.pop_env_size)]
     pop_env = generate_environments([], args)
-    pop_generalist = [new_population([], args) for i in range(args.pop_general_size)]
+    pop_generalist = new_population([], args)
 
 objs_local = [list() for i in range(len(pop_env))]
 objs_general = list()
