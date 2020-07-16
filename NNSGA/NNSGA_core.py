@@ -92,10 +92,10 @@ def obj_mean_observation_novelty(index, fitness, observations, new_pop, envs, ar
 
 def obj_generalisation(index, fitness, observation, new_pop, envs, args):
     # p-mean over environments fitness
-    res = 0
+    res = list()
     for i in range(len(envs)):
-        res += fitness[i][index]**args.p_mean
-    return np.power(res/len(fitness), 1.0/args.p_mean)
+        res.append(fitness[i][index])
+    return np.quantile(res, args.quantile)
 
 
 def obj_generalist_novelty(index, fitness, observation, new_pop, envs, args):
@@ -233,4 +233,3 @@ def bundle_stats_NNSGA(local_bool, objs_local, objs_general, args):
             bundle[f"Objective_general-arg{k}"] = [int(arg_maxi)]
 
     return bundle
-
