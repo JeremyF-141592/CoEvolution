@@ -86,7 +86,6 @@ class CollectBall(Environment):
             if count > max_steps:
                 fitness += exceed_reward
                 break
-        self.env.close()
         return Configuration.metric(agent, self, fitness, path)
 
     def get_child(self):
@@ -125,6 +124,9 @@ class CollectBall(Environment):
     def __setstate__(self, state):
         self.__init__(state["NewProb"], state["Std"])
         self.balls = state["Balls"]
+
+    def __del__(self):
+        self.env.close()
 
 
 class CollectBallFactory(EnvironmentFactory):
