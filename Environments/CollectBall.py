@@ -4,7 +4,7 @@ import numpy as np
 import time
 from Templates.Environments import Environment, EnvironmentFactory
 from Parameters import Configuration
-from Agents.NumpyAgent import NeuralAgentNumpyFactory
+import os
 
 
 class CollectBall(Environment):
@@ -20,7 +20,7 @@ class CollectBall(Environment):
     """
 
     def __init__(self, new_ball_probability=0.2, mut_std=5.0):
-        self.env = SimpleNavEnv("./pyFastSimEnv/LS_maze_hard.xml")
+        self.env = SimpleNavEnv(os.path.dirname(__file__) + "/pyFastSimEnv/LS_maze_hard.xml")
         self.env.reset()
 
         self.new_prob = new_ball_probability
