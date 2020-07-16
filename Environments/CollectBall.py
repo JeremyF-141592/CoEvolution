@@ -46,15 +46,15 @@ class CollectBall(Environment):
             for i, (x, y) in zip(range(len(self.balls)), self.balls):
                 if np.sqrt((self.pos[0] - x)**2 + (self.pos[1] - y)**2) < self.proximity_threshold:
                     self.ball_held = i
-                    return 100
-        return 0
+                    return 100.0
+        return 0.0
 
     def release(self):
         if self.ball_held != -1 and \
-           np.sqrt((self.pos[0] - self.init_pos[0])**2, (self.pos[1] - self.init_pos[1])**2) < self.proximity_threshold:
+           np.sqrt((self.pos[0] - self.init_pos[0])**2 + (self.pos[1] - self.init_pos[1])**2) < self.proximity_threshold:
             self.ball_held = -1
-            return 100
-        return 0
+            return 100.0
+        return 0.0
 
     def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
         self.add_balls()
@@ -63,7 +63,7 @@ class CollectBall(Environment):
         state = self.env.reset()
         done = False
 
-        fitness = 0
+        fitness = 0.0
         path = list()
         count = 0
         while not done:
@@ -77,7 +77,7 @@ class CollectBall(Environment):
             if use_state_path:
                 path.append(state)
 
-            reward = 0  # default reward is distance to goal
+            reward = 0.0  # default reward is distance to goal
             reward += self.catch()
             reward += self.release()
 
