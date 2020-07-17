@@ -63,7 +63,7 @@ def crowding_distance(elements):
         maxi = sorted_elements[-1][i]
         mini = sorted_elements[0][i]
         for k in range(1, len(elements) - 1):
-            distance[sorted_args[k]] += (sorted_elements[k + 1][i] - sorted_elements[k - 1][i]) / (maxi - mini)
+            distance[sorted_args[k]] += (sorted_elements[k + 1][i] - sorted_elements[k - 1][i]) / (maxi - mini + 1e-6)
     return distance
 
 

@@ -46,7 +46,7 @@ class KNNBenchmarkEnv(Environment):
     def get_child(self):
         child = KNNBenchmarkEnv(self.dim, self.specialist_fit, self.generalist_fit, self.generalist_points, self.bounds)
 
-        delta_points = np.random.uniform(self.bounds[0]/10.0, self.bounds[1]/10.0,
+        delta_points = np.random.uniform(self.bounds[0]/20.0, self.bounds[1]/20.0,
                                          size=(len(self.specialist_points), self.dim))
         child.specialist_points = self.specialist_points + delta_points
         return child
@@ -75,17 +75,22 @@ class KNNBenchmarkEnv(Environment):
 
 
 class KNNBenchmarkEnvFactory(EnvironmentFactory):
-    def __init__(self, dimension, spec_fitness, general_fitness, bounds, gen_path="./generalist_benchmark.npy"):
+    def __init__(self, dimension, spec_fitness, general_fitness, bounds, gen_path=""):
         self.dim = dimension
         self.spec_fit = spec_fitness
         self.gen_fit = general_fitness
         self.bounds = bounds
 
-        if os.path.exists(gen_path):
-            self.generalist_points = np.load(gen_path)
+        if gen_path == "":
+            path = f"./generalist_benchmark{dimension}.npy"
+        else:
+            path = gen_path
+
+        if os.path.exists(path):
+            self.generalist_points = np.load(path)
         else:
             self.generalist_points = np.random.uniform(bounds[0], bounds[1], size=(len(general_fitness), dimension))
-            np.save(gen_path, self.generalist_points)
+            np.save(path, self.generalist_points)
 
     def new(self):
         return KNNBenchmarkEnv(self.dim, self.spec_fit, self.gen_fit, self.generalist_points, self.bounds)

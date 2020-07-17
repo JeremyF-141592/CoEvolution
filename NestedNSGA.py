@@ -51,12 +51,12 @@ parser.add_argument('--knn', type=int, default=5, help='KNN agent novelty')
 parser.add_argument('--knn_env', type=int, default=5, help='KNN environment novelty')
 
 # NNSGA
-parser.add_argument('--pop_size', type=int, default=10, help='Population size on each environment')
-parser.add_argument('--gen_size', type=int, default=20, help='Amount of newly generated individuals')
+parser.add_argument('--pop_size', type=int, default=50, help='Population size on each environment')
+parser.add_argument('--gen_size', type=int, default=50, help='Amount of newly generated individuals')
 parser.add_argument('--pop_env_size', type=int, default=6, help='Amount of actives environments')
-parser.add_argument('--pop_general_size', type=int, default=10, help='Population size on each environment')
-parser.add_argument('--t_local', type=int, default=15, help='Iterations spent locally')
-parser.add_argument('--t_global', type=int, default=15, help='Iterations spent globally')
+parser.add_argument('--pop_general_size', type=int, default=50, help='Population size on each environment')
+parser.add_argument('--t_local', type=int, default=20, help='Iterations spent locally')
+parser.add_argument('--t_global', type=int, default=20, help='Iterations spent globally')
 parser.add_argument('--quantile', type=float, default=0.1, help='Generalisation score, quantile of fitness')
 
 parser.add_argument('--max_env_children', type=int, default=100, help='Maximum number of env children per reproduction')
