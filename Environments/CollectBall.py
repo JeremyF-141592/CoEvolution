@@ -9,28 +9,40 @@ import os
 
 class CollectBall(Environment):
     """
-    Observation space is Box(5,) meaning 5 dimensions continuous vector
+    2 Wheeled robot inside a maze, collecting balls and dropping them into a goal.
+    The environment is an additional layer to pyFastSim.
+
+    Default observation space is Box(7,) meaning 6 dimensions continuous vector
         1-3 are lasers oriented -45:0/45 degrees
         4-5 are left right bumpers
+        6-7 is a light sensor with an angular range of 50 degrees, balls are represented in FastSim as sources of light.
     (edit the xml configuration file if you want to change the sensors)
 
-    Action space is Box(2,) meaning 2 dimensions continuous vector, corresponding to the speed of the 2 wheels
+    Action space is Box(3,) meaning 3 dimensions continuous vector, corresponding to the speed of the 2 wheels, plus
+    a 'grabbing value', to indicate whether or not the robot should hold or release a ball. (<0 release, >0 hold)
 
-    x,y are bounded [0, 600]
+    x,y are by default bounded in [0, 600].
+
+    Environment mutation corresponds to a translation of the balls + translation and rotation of the initial position
+    of the robot at the start of one episode.
     """
 
-    def __init__(self, new_ball_probability=0.2, mut_std=5.0):
+    def __init__(self, mut_std=5.0, nb_ball=6, ini_pos=(100, 500, 45)):
         self.env = SimpleNavEnv(os.path.dirname(__file__) + "/pyFastSimEnv/LS_maze_hard.xml")
         self.env.reset()
 
-        self.new_prob = new_ball_probability
         self.mut_std = mut_std
 
-        self.init_pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
+        self.env.initPos = ini_pos
+        posture = fs.Posture(*ini_pos)
+        self.env.robot.set_pos(posture)
+
+        self.init_pos = self.env.get_robot_pos()
         self.ball_held = -1
         self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
 
-        self.balls = [(self.env.get_robot_pos()[0] + 80, self.env.get_robot_pos()[1] + 80)]
+        self.balls = [(self.env.get_robot_pos()[0] + 60 * np.cos((2*np.pi) * i/nb_ball),
+                       self.env.get_robot_pos()[1] + 60 * np.sin((2*np.pi) * i/nb_ball)) for i in range(nb_ball)]
 
         self.windows_alive = False
 
@@ -61,6 +73,8 @@ class CollectBall(Environment):
         if render and not self.windows_alive:
             self.env.enable_display()
         state = self.env.reset()
+        if len(agent.choose_action(state)) != 3:
+            return AssertionError("The current agent returned an action of length != 3. Aborting.")
         done = False
 
         fitness = 0.0
@@ -72,14 +86,21 @@ class CollectBall(Environment):
                 time.sleep(0.01)
 
             action = agent.choose_action(state)
+            holding = action[2] > 0
+            action = action[:2]
+
             state, reward, done, info = self.env.step(action)
             self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
             if use_state_path:
                 path.append(state)
 
             reward = 0.0  # default reward is distance to goal
-            reward += self.catch()
-            reward += self.release()
+
+            if holding:
+                reward += self.catch()
+
+            if not holding:
+                reward += self.release()
 
             fitness += reward
             count += 1
@@ -89,19 +110,20 @@ class CollectBall(Environment):
         return Configuration.metric(agent, self, fitness, path)
 
     def get_child(self):
-        new_env = CollectBall(self.new_prob, self.mut_std)
+        new_init_pos = (self.init_pos[0] + np.random.normal(0, self.mut_std),
+                        self.init_pos[1] + np.random.normal(0, self.mut_std),
+                        (self.init_pos[2] + np.random.normal(0, self.mut_std)) % 360)
+        new_env = CollectBall(self.mut_std, ini_pos=new_init_pos)
         new_balls = list()
         for b in self.balls:
             new_balls.append((b[0] + np.random.normal(0, self.mut_std),
                               b[1] + np.random.normal(0, self.mut_std)))
-        if np.random.uniform(0, 1) < self.new_prob:
-            new_balls.append((self.balls[-1][0] + np.random.normal(0, self.mut_std),
-                              self.balls[-1][1] + np.random.normal(0, self.mut_std)))
         new_env.balls = new_balls
         return new_env
 
     def crossover(self, other):
-        new_env = CollectBall(self.new_prob, self.mut_std)
+        new_init_pos = self.init_pos if np.random.uniform(0, 1) < 0.5 else other.init_pos
+        new_env = CollectBall(self.mut_std, ini_pos=new_init_pos)
         new_balls = list()
         if len(self.balls) >= len(other.balls):
             for i in range(len(other.balls)):
@@ -117,12 +139,12 @@ class CollectBall(Environment):
     def __getstate__(self):
         dic = dict()
         dic["Balls"] = self.balls
-        dic["NewProb"] = self.new_prob
         dic["Std"] = self.mut_std
+        dic["Init_pos"] = self.init_pos
         return dic
 
     def __setstate__(self, state):
-        self.__init__(state["NewProb"], state["Std"])
+        self.__init__(state["Std"], ini_pos=state["Init_pos"])
         self.balls = state["Balls"]
 
     def __del__(self):
@@ -131,9 +153,10 @@ class CollectBall(Environment):
 
 class CollectBallFactory(EnvironmentFactory):
 
-    def __init__(self, new_ball_probability=0.2, mut_std=25.0):
-        self.new_ball_probability = new_ball_probability
+    def __init__(self, mut_std=25.0, ini_pos=(80, 480, 45), nb_balls=6):
         self.mut_std = mut_std
+        self.ini_pos = ini_pos
+        self.nb_balls = nb_balls
 
     def new(self):
-        return CollectBall(self.new_ball_probability, self.mut_std)
+        return CollectBall(mut_std=self.mut_std, ini_pos=self.ini_pos, nb_ball=self.nb_balls)

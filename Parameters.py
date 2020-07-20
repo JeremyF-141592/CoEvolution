@@ -20,25 +20,42 @@ class Configuration:
     @staticmethod
     def make():
         """Edit this part to easily change configuration."""
-        from Environments.bipedal_walker_cppn import BipedalWalkerFactory
-        from Agents.NumpyAgent import NeuralAgentNumpyFactory
         from Optimizers.Adam import Adam
         import Utils.Metrics
 
-        # Configuration.agentFactory = NeuralAgentNumpyFactory(4, 1, 2, 20)
-        # #
-        # Configuration.envFactory = BipedalWalkerFactory()
-
-        Configuration.metric = Utils.Metrics.fitness_metric
+        Configuration.metric = Utils.Metrics.fitness_bc
 
         Configuration.optimizer = Adam()
 
+        # ----------------------------------------------------------------
+        #   CollectBall
+        # ----------------------------------------------------------------
+        from Environments.CollectBall import CollectBallFactory
+        from Agents.NumpyAgent import NeuralAgentNumpyFactory
+
+        Configuration.agentFactory = NeuralAgentNumpyFactory(7, 3, 2, 20)
+        Configuration.envFactory = CollectBallFactory()
+
+        """
+        # ----------------------------------------------------------------
+        #   BipedalWalker
+        # ----------------------------------------------------------------
+        from Environments.bipedal_walker_cppn import BipedalWalkerFactory
+        from Agents.NumpyAgent import NeuralAgentNumpyFactory
+
+        Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
+        Configuration.envFactory = BipedalWalkerFactory()
+        """
+
+        """
+        # ----------------------------------------------------------------
+        #   Benchmark
         # ----------------------------------------------------------------
         from Environments.KNN_Benchmark import KNNBenchmarkAgFactory, KNNBenchmarkEnvFactory
 
         Configuration.envFactory = KNNBenchmarkEnvFactory(
             2,
-            [0 for i in range(15)] + [10, 30, 50, 70, 100],
+            [0 for i in range(15)],
             [20, 40, 60, 80],
             [-1, 1]
         )
@@ -46,7 +63,6 @@ class Configuration:
             2,
             [-1, 1]
         )
-
-        # ----------------------------------------------------------------
+        """
 
 

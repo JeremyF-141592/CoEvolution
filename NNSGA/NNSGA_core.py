@@ -205,9 +205,7 @@ def bundle_stats_NNSGA(local_bool, objs_local, objs_general, args):
     bundle = dict()
     if local_bool:
         for k in range(len(objs_local[0][0])):
-            bundle[f"Objective_{k}-min"] = list()
             bundle[f"Objective_{k}-max"] = list()
-            bundle[f"Objective_{k}-med"] = list()
             bundle[f"Objective_{k}-argmax"] = list()
 
         for i in range(len(objs_local)):
@@ -216,20 +214,15 @@ def bundle_stats_NNSGA(local_bool, objs_local, objs_general, args):
                 for j in range(len(objs_local[i])):
                     obj_list.append(objs_local[i][j][k])
                 obj_arr = np.array(obj_list)
-                bundle[f"Objective_{k}-min"].append(obj_arr.min())
                 bundle[f"Objective_{k}-max"].append(obj_arr.max())
                 bundle[f"Objective_{k}-argmax"].append(int(obj_arr.argmax()))
-                bundle[f"Objective_{k}-med"].append(np.median(obj_arr))
     else:
         for k in range(len(objs_general[0])):  # reformat objectives from list of tuple to lists for each objective
             bundle[f"Objective_general-{k}"] = list()
-            arg_maxi = 0
             maxi = float("-inf")
             for j in range(len(objs_general)):
                 bundle[f"Objective_general-{k}"].append(objs_general[j][k])
                 if objs_general[j][k] > maxi:
                     maxi = objs_general[j][k]
-                    arg_maxi = j
-            bundle[f"Objective_general-arg{k}"] = [int(arg_maxi)]
 
     return bundle
