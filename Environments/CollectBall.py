@@ -14,10 +14,11 @@ class CollectBall(Environment):
     2 Wheeled robot inside a maze, collecting balls and dropping them into a goal.
     The environment is an additional layer to pyFastSim.
 
-    Default observation space is Box(7,) meaning 6 dimensions continuous vector
+    Default observation space is Box(9,) meaning 6 dimensions continuous vector
         1-3 are lasers oriented -45:0/45 degrees
         4-5 are left right bumpers
         6-7 is a light sensor with an angular range of 50 degrees, balls are represented in FastSim as sources of light.
+        8-9 is a light sensor with an angular range of 50 degrees, goal is also represented as a source of light.
     (edit the xml configuration file if you want to change the sensors)
 
     Action space is Box(3,) meaning 3 dimensions continuous vector, corresponding to the speed of the 2 wheels, plus
@@ -52,6 +53,7 @@ class CollectBall(Environment):
 
     def add_balls(self):
         self.env.map.clear_illuminated_switches()
+        self.env.map.add_illuminated_switch(fs.IlluminatedSwitch(1, 8, self.init_pos[0], self.init_pos[1], True))
         for x, y in self.balls:
             self.env.map.add_illuminated_switch(fs.IlluminatedSwitch(0, 8, x, y, True))
 
