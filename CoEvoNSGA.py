@@ -53,6 +53,7 @@ parser.add_argument('--knn_env', type=int, default=5, help='KNN environment nove
 # NNSGA
 parser.add_argument('--pop_size', type=int, default=30, help='Population size on each environment')
 parser.add_argument('--gen_size', type=int, default=60, help='Amount of newly generated individuals')
+parser.add_argument('--p_mut_env', type=float, default=0.25, help='Probability of environment mutation')
 
 parser.add_argument('--max_env_children', type=int, default=30, help='Maximum number of env children per reproduction')
 
@@ -85,7 +86,7 @@ else:
 def NSGAII_ag_env(pop, envs, additional_objectives, args):
 
     new_pop = pop + new_population(pop, args)
-    new_evs = envs + generate_environments(envs, args)
+    new_evs = envs + generate_env(envs, args)
 
     # Both fitness and observation are required
     fit = [list() for i in range(len(new_evs))]
@@ -137,6 +138,23 @@ def NSGAII_ag_env(pop, envs, additional_objectives, args):
 
     # Return new population and their objectives
     return pop, evs, objs
+
+
+def generate_env(envs, args):
+    """Generate new environments by mutating old environments"""
+    new_list = list()
+    if len(envs) == 0:
+        new_list.append(Configuration.envFactory.new())
+        return new_list
+    for i in range(args.max_env_children):
+        choice = np.random.randint(0, len(envs))
+        if np.random.uniform(0, 1) < args.p_mut_env:
+            new_list.append(envs[choice].get_child())
+        else:
+            new = Configuration.envFactory.new()
+            new.__setstate__(envs[choice].__getstate__())
+            new_list.append(new)
+    return new_list
 
 # NSGAII Algorithm -----------------------------------------------------------------------------------------------------
 
