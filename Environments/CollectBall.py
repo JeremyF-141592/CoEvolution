@@ -64,6 +64,7 @@ class CollectBall(Environment):
     def release(self):
         if self.ball_held != -1 and \
            np.sqrt((self.pos[0] - self.init_pos[0])**2 + (self.pos[1] - self.init_pos[1])**2) < self.proximity_threshold:
+            self.balls.remove(self.balls[self.ball_held])
             self.ball_held = -1
             return 100.0
         return 0.0
