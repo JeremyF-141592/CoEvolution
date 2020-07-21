@@ -51,11 +51,12 @@ parser.add_argument('--knn', type=int, default=5, help='KNN agent novelty')
 parser.add_argument('--knn_env', type=int, default=5, help='KNN environment novelty')
 
 # NNSGA
-parser.add_argument('--pop_size', type=int, default=30, help='Population size on each environment')
-parser.add_argument('--gen_size', type=int, default=60, help='Amount of newly generated individuals')
+parser.add_argument('--pop_size', type=int, default=20, help='Population size on each environment')
+parser.add_argument('--gen_size', type=int, default=20, help='Amount of newly generated individuals')
+parser.add_argument('--quantile', type=float, default=0.3, help='Generalisation score, quantile of fitness')
 parser.add_argument('--p_mut_env', type=float, default=0.25, help='Probability of environment mutation')
 
-parser.add_argument('--max_env_children', type=int, default=30, help='Maximum number of env children per reproduction')
+parser.add_argument('--max_env_children', type=int, default=20, help='Maximum number of env children per reproduction')
 
 parser.add_argument('--pata_ec_tol', type=float, default=2, help='Ranking tolerance for PATA_EC diversity')
 parser.add_argument('--pata_ec_clipmax', type=float, default=250, help='Upper fitness bound for PATA_EC diversity')
@@ -87,6 +88,9 @@ def NSGAII_ag_env(pop, envs, additional_objectives, args):
 
     new_pop = pop + new_population(pop, args)
     new_evs = envs + generate_env(envs, args)
+
+    if len(new_evs) == 1:
+        new_evs = generate_env(new_evs, args)
 
     # Both fitness and observation are required
     fit = [list() for i in range(len(new_evs))]
@@ -171,7 +175,7 @@ for t in range(start_from, args.T):
     Configuration.budget_spent.append(0)
     print(f"Iteration {t}", flush=True)
 
-    pop_ag, pop_env, objs_local = NSGAII_ag_env(pop_ag, pop_env, [obj_mean_fitness, obj_genotypic_novelty], args)
+    pop_ag, pop_env, objs_local = NSGAII_ag_env(pop_ag, pop_env, [obj_generalisation, obj_genotypic_novelty], args)
 
     # Save execution ----------------------------------------------------------------------------------
     if args.save_mode == "last" and t > 0:
@@ -188,13 +192,12 @@ for t in range(start_from, args.T):
     for k in range(len(objs_local[0][0])):
         bundle[f"Objective_{k}-max"] = list()
 
-    for i in range(len(objs_local)):
-        for k in range(len(objs_local[i][0])):  # reformat objectives from list of tuple to lists for each objective
-            obj_list = list()
-            for j in range(len(objs_local[i])):
-                obj_list.append(objs_local[i][j][k])
-            obj_arr = np.array(obj_list)
-            bundle[f"Objective_{k}-max"].append(obj_arr.max())
+    for k in range(len(objs_local[0])):  # reformat objectives from list of tuple to lists for each objective
+        obj_list = list()
+        for j in range(len(objs_local)):
+            obj_list.append(objs_local[j][k])
+        obj_arr = np.array(obj_list)
+        bundle[f"Objective_{k}-max"].append(obj_arr.max())
 
     append_stats(f"{args.save_to}/Stats.json", bundle)
     if args.verbose > 0:
