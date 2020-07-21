@@ -10,6 +10,7 @@
   <goal x="60" y="60" color="0" diameter="7"/> <!-- Goal pos :0.1*size, 0.75*size -->
 
   <light_sensor angle="0" color="0" angular_range="50"/>
+  <light_sensor angle="0" color="1" angular_range="50"/>
   
   <!-- sensors -->
   <laser range="100" angle="45"/>
