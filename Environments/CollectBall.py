@@ -48,12 +48,12 @@ class CollectBall(Environment):
 
         self.windows_alive = False
 
-        self.proximity_threshold = 2.0  # min distance required to catch or release ball
+        self.proximity_threshold = 10.0  # min distance required to catch or release ball
 
     def add_balls(self):
         self.env.map.clear_illuminated_switches()
         for x, y in self.balls:
-            self.env.map.add_illuminated_switch(fs.IlluminatedSwitch(0, 8, x % 580 + 20, y % 580 + 20, True))
+            self.env.map.add_illuminated_switch(fs.IlluminatedSwitch(0, 8, x, y, True))
 
     def catch(self):
         if self.ball_held == -1:
@@ -85,8 +85,6 @@ class CollectBall(Environment):
         path = list()
         count = 0
         while not done:
-            if len(self.balls) == 0:
-                break
             if render:
                 self.env.render()
                 time.sleep(0.01)
@@ -122,8 +120,9 @@ class CollectBall(Environment):
         new_env = CollectBall(self.mut_std, ini_pos=new_init_pos)
         new_balls = list()
         for b in self.balls:
-            new_balls.append((b[0] + np.random.normal(0, self.mut_std),
-                              b[1] + np.random.normal(0, self.mut_std)))
+            # We try to avoid getting to close to the border
+            new_balls.append((b[0] + np.random.normal(0, self.mut_std) % 580 + 10,
+                              b[1] + np.random.normal(0, self.mut_std) % 580 + 10))
         new_env.balls = new_balls
         return new_env
 
@@ -166,3 +165,40 @@ class CollectBallFactory(EnvironmentFactory):
 
     def new(self):
         return CollectBall(mut_std=self.mut_std, ini_pos=self.ini_pos, nb_ball=self.nb_balls)
+
+
+class stupid_agent(Agent):
+    def randomize(self):
+        pass
+
+    def get_weights(self):
+        pass
+
+    def set_weights(self, weights):
+        pass
+
+    def get_opt_state(self):
+        pass
+
+    def set_opt_state(self, state):
+        pass
+
+    def __getstate__(self):
+        pass
+
+    def __setstate__(self, state):
+        pass
+
+    def __init__(self):
+        self.t = 0
+    def choose_action(self, state):
+        self.t += 1
+        if self.t%100 < 50:
+            return (1, 1, 1)
+        else:
+            return (-1, 1, 0)
+
+cc = CollectBall()
+aa = stupid_agent()
+
+cc(aa, render=True)
