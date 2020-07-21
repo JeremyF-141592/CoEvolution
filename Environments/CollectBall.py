@@ -85,6 +85,8 @@ class CollectBall(Environment):
         path = list()
         count = 0
         while not done:
+            if len(self.balls) == 0:
+                break
             if render:
                 self.env.render()
                 time.sleep(0.01)
