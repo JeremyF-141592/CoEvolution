@@ -20,7 +20,7 @@ class Configuration:
     @staticmethod
     def make():
         """Edit this part to easily change configuration."""
-        from Optimizers.Adam import Adam
+        from Objects.Optimizers.Adam import Adam
         import Utils.Metrics
 
         Configuration.metric = Utils.Metrics.fitness_bc
@@ -30,39 +30,36 @@ class Configuration:
         # ----------------------------------------------------------------
         #   CollectBall
         # ----------------------------------------------------------------
-        from Environments.CollectBall import CollectBallFactory
-        from Agents.NumpyAgent import NeuralAgentNumpyFactory
+        from Objects.Environments.CollectBall import CollectBallFactory
+        from Objects.Agents.NumpyAgent import NeuralAgentNumpyFactory
 
-        Configuration.agentFactory = NeuralAgentNumpyFactory(7, 3, 2, 20)
+        Configuration.agentFactory = NeuralAgentNumpyFactory(10, 3, 2, 20)
         Configuration.envFactory = CollectBallFactory()
 
         """
         # ----------------------------------------------------------------
         #   BipedalWalker
         # ----------------------------------------------------------------
-        from Environments.bipedal_walker_cppn import BipedalWalkerFactory
-        from Agents.NumpyAgent import NeuralAgentNumpyFactory
+        from Objects.Environments.BipedalWalkerCppn import BipedalWalkerFactory
+        from Objects.Agents.NumpyAgent import NeuralAgentNumpyFactory
 
         Configuration.agentFactory = NeuralAgentNumpyFactory(24, 4, 2, 20)
         Configuration.envFactory = BipedalWalkerFactory()
         """
-
         """
         # ----------------------------------------------------------------
         #   Benchmark
         # ----------------------------------------------------------------
-        from Environments.KNN_Benchmark import KNNBenchmarkAgFactory, KNNBenchmarkEnvFactory
+        from Objects.Environments.DistanceBenchmark import DistanceBenchmarkAgFactory, DistanceBenchmarkEnvFactory
 
-        Configuration.envFactory = KNNBenchmarkEnvFactory(
-            2,
-            [0 for i in range(15)],
-            [20, 40, 60, 80],
+        Configuration.envFactory = DistanceBenchmarkEnvFactory(
+            60,
+            [0 for i in range(40)] + [10 * i%10 for i in range(20)],
+            [10 * i%9 + 5 for i in range(18)],
             [-1, 1]
         )
-        Configuration.agentFactory = KNNBenchmarkAgFactory(
-            2,
+        Configuration.agentFactory = DistanceBenchmarkAgFactory(
+            60,
             [-1, 1]
         )
         """
-
-
