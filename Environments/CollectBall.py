@@ -6,19 +6,18 @@ from Templates.Environments import Environment, EnvironmentFactory
 from Parameters import Configuration
 import os
 
-from Templates.Agents import Agent
-
 
 class CollectBall(Environment):
     """
     2 Wheeled robot inside a maze, collecting balls and dropping them into a goal.
     The environment is an additional layer to pyFastSim.
 
-    Default observation space is Box(9,) meaning 6 dimensions continuous vector
+    Default observation space is Box(10,) meaning 10 dimensions continuous vector
         1-3 are lasers oriented -45:0/45 degrees
         4-5 are left right bumpers
-        6-7 is a light sensor with an angular range of 50 degrees, balls are represented in FastSim as sources of light.
-        8-9 is a light sensor with an angular range of 50 degrees, goal is also represented as a source of light.
+        6-7 is a light sensor with an angular range of 50 degrees, sensing balls represented as sources of light.
+        8-9 is a light sensor with an angular range of 50 degrees, sensing goal also represented as a source of light.
+        10 is the grabbing value
     (edit the xml configuration file if you want to change the sensors)
 
     Action space is Box(3,) meaning 3 dimensions continuous vector, corresponding to the speed of the 2 wheels, plus
@@ -68,10 +67,13 @@ class CollectBall(Environment):
         return 0.0
 
     def release(self):
-        if self.ball_held != -1 and \
-           np.sqrt((self.pos[0] - self.init_pos[0])**2 + (self.pos[1] - self.init_pos[1])**2) < self.proximity_threshold:
+        if self.ball_held != -1:
             self.ball_held = -1
-            return 100.0
+            if np.sqrt((self.pos[0] - self.init_pos[0])**2 + (self.pos[1] - self.init_pos[1])**2) \
+                   < self.proximity_threshold:
+                return 100.0
+            self.balls.append(self.pos)
+            self.add_balls()
         return 0.0
 
     def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
@@ -93,12 +95,10 @@ class CollectBall(Environment):
 
             action = agent.choose_action(state)
             holding = action[2] > 0
-            action = action[:2]
 
-            state, reward, done, info = self.env.step(action)
+            state, reward, done, info = self.env.step(action[:2])
+            state.append(action[2])
             self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
-            if use_state_path:
-                path.append(state)
 
             reward = -0.1  # default reward is distance to goal
 
@@ -107,6 +107,9 @@ class CollectBall(Environment):
 
             if not holding:
                 reward += self.release()
+
+            if use_state_path:
+                path.append(state)
 
             fitness += reward
             count += 1
