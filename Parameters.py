@@ -9,12 +9,15 @@ class Configuration:
     metric = None
     optimizer = None
 
+    # Ipyparallel
     lview = None
     rc = None
 
+    # Execution's trace
     archive = []
     budget_spent = []
 
+    # Specific variable to the Benchmark environment - todo: delete this (or move it away)
     benchmark = None
 
     @staticmethod

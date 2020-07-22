@@ -5,12 +5,14 @@
 
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats
-from Algorithms.NSGA2.NSGAII_core import *
+from Algorithms.NSGA2.NSGAII_tools import *
+from Parameters import Configuration
 import ipyparallel as ipp
 import argparse
 import json
 import pickle
 import warnings
+import os
 warnings.filterwarnings("ignore")
 
 Configuration.make()
@@ -36,12 +38,14 @@ parser.add_argument('--save_to', type=str, default="./NSGA_execution", help="Exe
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number of environment evaluations.")
 # Population
-parser.add_argument('--pop_size', type=int, default=25, help='Population size')
+parser.add_argument('--pop_size', type=int, default=100, help='Population size')
 # NSGA2
-parser.add_argument('--gen_size', type=int, default=75, help='Population generation size')
-parser.add_argument('--env_path', type=str, default="./NSGA2/NSGA_env.pickle", help='Path to the pickled environment')
+parser.add_argument('--gen_size', type=int, default=100, help='Population generation size')
 parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of mutation')
 parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of crossover')
+
+parser.add_argument('--mut_low_bound', type=float, default=-1.0, help='Lower bound for polynomial bounded mutation')
+parser.add_argument('--mut_high_bound', type=float, default=1.0, help='Upper bound for polynomial bounded mutation')
 
 parser.add_argument('--eta_mut', type=float, default=0.5, help='Eta in polynomial bounded mutation')
 parser.add_argument('--eta_cross', type=float, default=0.5, help='Eta in SimulatedBinary crossover')
@@ -70,13 +74,19 @@ else:
 
 # NSGAII Algorithm -----------------------------------------------------------------------------------------------------
 
-with open(args.env_path, "rb") as f:
-    env = pickle.load(f)
+if os.path.exists(args.env_path):
+    with open(f"{args.save_to}/Environment.pickle", "rb") as f:
+        env = pickle.load(f)
+else:
+    env = Configuration.envFactory.new()
+    with open(f"{args.save_to}/Environment.pickle", "wb") as f:
+        pickle.dump(env, f)
 
 for t in range(start_from, args.T):
     print(f"Iteration {t} ...", flush=True)
     Configuration.budget_spent.append(0)
-    
+
+    pop, objs = NSGAII(pop, [env], [obj_mean_fitness, obj_genotypic_novelty], args)
 
     # Save execution ----------------------------------------------------------------------------------
     with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:

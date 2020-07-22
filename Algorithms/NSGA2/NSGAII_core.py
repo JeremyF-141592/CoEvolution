@@ -97,37 +97,11 @@ def new_population(old_learners, args):
 
 
 def mutate_ag(agent, args):
-    if Configuration.benchmark is not None:
-        return mutPolynomialBounded(agent, args.eta_mut, -100, 100, args.p_mut_gene)
-    return mutPolynomialBounded(agent, args.eta_mut, -1, 1, args.p_mut_gene)
-
-    # # Uniform mutation
-    # new_wei = agent.get_weights()
-    # for i in range(len(new_wei)):
-    #     if np.random.random() < args.p_mut_gene:
-    #         new_wei[i] += np.random.uniform(-1, 1) * args.mut_step
-    # new = Configuration.agentFactory.new()
-    # new.set_weights(new_wei)
-    # return new
+    return mutPolynomialBounded(agent, args.eta_mut, args.mut_low_bound, args.mut_high_bound, args.p_mut_gene)
 
 
 def mate_ag(agent1, agent2, args):
-    if Configuration.benchmark is not None:
-        return cxSimulatedBinaryBounded(agent1, agent2, args.eta_cross, -100, 100)
-    return cxSimulatedBinaryBounded(agent1, agent2, args.eta_cross, -1, 1)
-
-    # # Uniform crossover
-    # wei_1 = agent1.get_weights()
-    # wei_2 = agent2.get_weights()
-    # new_wei = list()
-    # for i in range(len(wei_1)):
-    #     if np.random.random() < 0.5:
-    #         new_wei.append(wei_1[i])
-    #     else:
-    #         new_wei.append(wei_2[i])
-    # new = Configuration.agentFactory.new()
-    # new.set_weights(new_wei)
-    # return new
+    return cxSimulatedBinaryBounded(agent1, agent2, args.eta_cross, args.mut_low_bound, args.mut_high_bound)
 
 
 def mutPolynomialBounded(agent, eta, low, up, indpb):
@@ -167,9 +141,9 @@ def mutPolynomialBounded(agent, eta, low, up, indpb):
 
 def cxSimulatedBinaryBounded(ind1, ind2, eta, xl, xu):
     """
-        Executes a simulated binary crossover, returns a new agent.
-        This function is in parts taken from the DEAP package for python.
-        """
+    Executes a simulated binary crossover, returns a new agent.
+    This function is in parts taken from the DEAP package for python.
+    """
     w1 = ind1.get_weights().copy()
     w2 = ind2.get_weights().copy()
     for i in range(len(w1)):
@@ -209,31 +183,3 @@ def cxSimulatedBinaryBounded(ind1, ind2, eta, xl, xu):
     new = Configuration.agentFactory.new()
     new.set_weights(w1)
     return new
-
-
-if __name__ == "__main__":
-    Configuration.make()
-    for k in range(500):
-        ag = Configuration.agentFactory.new()
-
-        ag2 = mutPolynomialBounded(ag, 0.5, -100, 100, 1)
-        ag3 = cxSimulatedBinaryBounded(ag, ag2, 0.1, -100, 100)
-
-        print(ag.get_weights())
-        if abs(ag.get_weights()[0]) > 100:
-            print("Error 1 ! ")
-            assert False
-        print(ag2.get_weights())
-        if abs(ag2.get_weights()[0]) > 100:
-            print("Error 2 ! ")
-            assert False
-        print(ag3.get_weights())
-        if abs(ag3.get_weights()[0]) > 100:
-            print("Error 3 ! ")
-            assert False
-    # vals = [[10, 0], [0, 10], [5, 5], [4, 2], [4, 4], [8, 2]]
-    # import matplotlib.pyplot as plt
-    # for v in vals:
-    #     plt.plot(v[0], v[1], "o")
-    # plt.show()
-    # print(crowding_distance(vals))
