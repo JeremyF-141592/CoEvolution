@@ -6,6 +6,8 @@ from Templates.Environments import Environment, EnvironmentFactory
 from Parameters import Configuration
 import os
 
+from Templates.Agents import Agent
+
 
 class CollectBall(Environment):
     """
@@ -72,8 +74,6 @@ class CollectBall(Environment):
             if np.sqrt((self.pos[0] - self.init_pos[0])**2 + (self.pos[1] - self.init_pos[1])**2) \
                    < self.proximity_threshold:
                 return 100.0
-            self.balls.append(self.pos)
-            self.add_balls()
         return 0.0
 
     def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
@@ -81,7 +81,6 @@ class CollectBall(Environment):
         if render and not self.windows_alive:
             self.env.enable_display()
         state = self.env.reset()
-        state.append(0.0)
         if len(agent.choose_action(state)) != 3:
             return AssertionError("The current agent returned an action of length != 3. Aborting.")
         done = False
@@ -171,3 +170,44 @@ class CollectBallFactory(EnvironmentFactory):
 
     def new(self):
         return CollectBall(mut_std=self.mut_std, ini_pos=self.ini_pos, nb_ball=self.nb_balls)
+
+
+class aaaa(Agent):
+    def __init__(self):
+        self.t = 0
+    def choose_action(self, state):
+        self.t += 1
+        if self.t < 25:
+            return 1, 0, 1
+        elif self.t < 150:
+            return 1, 1, 1
+        elif self.t < 200:
+            return 1, 1, 0
+        return 0.1, 0.2, 1
+
+    def randomize(self):
+        pass
+
+    def get_weights(self):
+        pass
+
+    def set_weights(self, weights):
+        pass
+
+    def get_opt_state(self):
+        pass
+
+    def set_opt_state(self, state):
+        pass
+
+    def __getstate__(self):
+        pass
+
+    def __setstate__(self, state):
+        pass
+
+
+Configuration.make()
+aa = aaaa()
+ev = CollectBall()
+ev(aa, render=True)
