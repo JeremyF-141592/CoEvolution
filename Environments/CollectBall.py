@@ -81,6 +81,7 @@ class CollectBall(Environment):
         if render and not self.windows_alive:
             self.env.enable_display()
         state = self.env.reset()
+        state.append(0.0)
         if len(agent.choose_action(state)) != 3:
             return AssertionError("The current agent returned an action of length != 3. Aborting.")
         done = False
