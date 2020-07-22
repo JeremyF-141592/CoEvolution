@@ -1,12 +1,27 @@
 # CoEvolution
 
-This repository includes python re-implementation of Evolutionary algorithms such as :
- 
- * POET Enhanced (Wang, R. et al. 2020)
- * NSGA-II (Deb, K. et al 2002)
- * IPCA structure (De Jong, E. D. 2004)
- 
- All work is one as part of an Internship at l'*Institut des Systèmes Intelligents et de Robotique* (ISIR), Sorbonne Université, Paris. 
+This repository aims to implement multiple co-evolution algorithms designed for simulated reinforcement learning.
+
+All work is one as part of an Internship at l'*Institut des Systèmes Intelligents et de Robotique* (ISIR), Sorbonne Université, Paris. 
+The main objective of the related internship is to develop a new algorithm based on Quality-Diversity, co-evolving agents and environnements in order to find policies that generalize better.
+
+Key-words : Reinforcement Learning, Co-Evolution, Evolution algorithms, Quality-Diversity
+
+
+# Implemented algorithms
+
+Currently, the repository includes the full implementations of:
+
+* NSGA-II (Deb, K. et al 2002)
+* POET Enhanced (Wang, R. et al. 2020)
+* A new NSGA-II inspired co-evolution algorithm
+
+As well as a structure for co-evolution built up in a test/learner fashion:
+* IPCA structure (De Jong, E. D. 2004)
+
+However, no algorithm was currently developped according to this structure.
+
+More details can be found in the "Algorithms" section of the wiki.
  
  # Dependencies
  
@@ -23,7 +38,7 @@ Some environments in the repository also need they own packages, including but n
  * Neat-python (https://github.com/CodeReclaimers/neat-python)
  * PyFastSim (https://github.com/alexendy/pyfastsim)
  
- Details can be found in the wiki, section Environments.
+ Details can be found the "Environments" section of the wiki.
  
   # Quick-start
   
@@ -39,4 +54,4 @@ Some environments in the repository also need they own packages, including but n
   
   Arguments can be written directly in the shell (--*arg* %d), and are detailed in each algorithm's main file.
   
-  It is possible to resume any execution with the argument --resume *\*folder\**, loading the last indexed Iteration_%d file, archive if needed and the file *commandline_args.txt* containing previous execution arguments.
+  It is possible to resume any execution with the argument --resume_from *\*folder\**, loading the last indexed Iteration_%d file, archive if needed and the file *commandline_args.txt* containing previous execution arguments.
