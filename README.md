@@ -10,15 +10,18 @@ This repository includes python re-implementation of Evolutionary algorithms suc
  
  # Dependencies
  
- 
  Main package dependencies are as follow :
  * Numpy
  * Ipyparallel (https://github.com/ipython/ipyparallel)
  * Gym (https://github.com/openai/gym)
- * Neat-python (https://github.com/CodeReclaimers/neat-python)
- * Argparse
  
  Sci-kit Learn and Keras also appear in the code, although they are not used by default.
+ 
+Some environments in the repository also need they own packages, including but not limited to : 
+ * Neat-python (https://github.com/CodeReclaimers/neat-python)
+ * PyFastSim (https://github.com/alexendy/pyfastsim)
+ 
+ Details can be found in the wiki, section Environments.
  
  **Python 3.4 is required**, due to the frequent use of f-strings.
  
