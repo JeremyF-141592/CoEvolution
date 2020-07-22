@@ -54,4 +54,4 @@ Some environments in the repository also need they own packages, including but n
   
   Arguments can be written directly in the shell (--*arg* %d), and are detailed in each algorithm's main file.
   
-  It is possible to resume any execution with the argument --resume *\*folder\**, loading the last indexed Iteration_%d file, archive if needed and the file *commandline_args.txt* containing previous execution arguments.
+  It is possible to resume any execution with the argument --resume_from *\*folder\**, loading the last indexed Iteration_%d file, archive if needed and the file *commandline_args.txt* containing previous execution arguments.
