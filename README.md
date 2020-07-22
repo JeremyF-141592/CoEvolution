@@ -10,6 +10,8 @@ This repository includes python re-implementation of Evolutionary algorithms suc
  
  # Dependencies
  
+ **Python 3.4 is required**, due to the frequent use of f-strings.
+ 
  Main package dependencies are as follow :
  * Numpy
  * Ipyparallel (https://github.com/ipython/ipyparallel)
@@ -22,8 +24,6 @@ Some environments in the repository also need they own packages, including but n
  * PyFastSim (https://github.com/alexendy/pyfastsim)
  
  Details can be found in the wiki, section Environments.
- 
- **Python 3.4 is required**, due to the frequent use of f-strings.
  
   # Quick-start
   
