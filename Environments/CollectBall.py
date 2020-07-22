@@ -6,8 +6,6 @@ from Templates.Environments import Environment, EnvironmentFactory
 from Parameters import Configuration
 import os
 
-from Templates.Agents import Agent
-
 
 class CollectBall(Environment):
     """
@@ -170,44 +168,3 @@ class CollectBallFactory(EnvironmentFactory):
 
     def new(self):
         return CollectBall(mut_std=self.mut_std, ini_pos=self.ini_pos, nb_ball=self.nb_balls)
-
-
-class aaaa(Agent):
-    def __init__(self):
-        self.t = 0
-    def choose_action(self, state):
-        self.t += 1
-        if self.t < 25:
-            return 1, 0, 1
-        elif self.t < 150:
-            return 1, 1, 1
-        elif self.t < 200:
-            return 1, 1, 0
-        return 0.1, 0.2, 1
-
-    def randomize(self):
-        pass
-
-    def get_weights(self):
-        pass
-
-    def set_weights(self, weights):
-        pass
-
-    def get_opt_state(self):
-        pass
-
-    def set_opt_state(self, state):
-        pass
-
-    def __getstate__(self):
-        pass
-
-    def __setstate__(self, state):
-        pass
-
-
-Configuration.make()
-aa = aaaa()
-ev = CollectBall()
-ev(aa, render=True)
