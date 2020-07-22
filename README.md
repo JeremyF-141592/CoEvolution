@@ -18,7 +18,10 @@ Currently, the repository includes the full implementations of:
 
 As well as a structure for co-evolution built up in a test/learner fashion:
 * IPCA structure (De Jong, E. D. 2004)
+
 However, no algorithm was currently developped according to this structure.
+
+More details can be found in the "Algorithms" section of the wiki.
  
  # Dependencies
  
@@ -35,7 +38,7 @@ Some environments in the repository also need they own packages, including but n
  * Neat-python (https://github.com/CodeReclaimers/neat-python)
  * PyFastSim (https://github.com/alexendy/pyfastsim)
  
- Details can be found in the wiki, section Environments.
+ Details can be found the "Environments" section of the wiki.
  
   # Quick-start
   
