@@ -63,7 +63,7 @@ class CollectBall(Environment):
                     self.ball_held = i
                     self.balls.remove(self.balls[i])
                     self.add_balls()
-                    return 100.0
+                    return 10.0
         return 0.0
 
     def release(self):
@@ -88,6 +88,8 @@ class CollectBall(Environment):
         path = list()
         count = 0
         while not done:
+            if len(self.balls) == 0:
+                break
             if render:
                 self.env.render()
                 time.sleep(0.01)
