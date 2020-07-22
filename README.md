@@ -42,7 +42,7 @@ Some environments in the repository also need they own packages, including but n
  
   # Quick-start
   
-  The main configuration file, **Parameters.py** uses differed imports to synchronise parts of the code and to make modulation easier. The main parts that may need to be changed often are environments, agents and optimizers. Theses three can be anything inherited from abstract classes defined in ./Templates, defaults are :
+  The main configuration file, **Parameters.py** uses differed imports to synchronise parts of the code and to make modulation easier. The main parts that may need to be changed often are environments, agents and optimizers. Theses three can be anything inherited from abstract classes defined in ./ABC, defaults are :
   * gym BipedalWalkerV2 with CPPN-drawn landscapes
   * Numpy fully-connected NN with tanh activation
   * Adam optimizer
