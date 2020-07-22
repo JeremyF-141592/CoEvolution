@@ -18,7 +18,7 @@ class CollectBall(Environment):
         6-7 is a light sensor with an angular range of 50 degrees, sensing balls represented as sources of light.
         8-9 is a light sensor with an angular range of 50 degrees, sensing goal also represented as a source of light.
         10 is the grabbing value
-    (edit the xml configuration file if you want to change the sensors)
+    (edit the xml configuration file in ./pyFastSimEnv if you want to change the sensors)
 
     Action space is Box(3,) meaning 3 dimensions continuous vector, corresponding to the speed of the 2 wheels, plus
     a 'grabbing value', to indicate whether or not the robot should hold or release a ball. (<0 release, >0 hold)
@@ -63,15 +63,15 @@ class CollectBall(Environment):
                     self.ball_held = i
                     self.balls.remove(self.balls[i])
                     self.add_balls()
-                    return 10.0
+                    return 0.0
         return 0.0
 
     def release(self):
         if self.ball_held != -1:
             self.ball_held = -1
             if np.sqrt((self.pos[0] - self.init_pos[0])**2 + (self.pos[1] - self.init_pos[1])**2) \
-                   < self.proximity_threshold:
-                return 100.0
+               < self.proximity_threshold:
+                return 1.0
         return 0.0
 
     def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
@@ -101,7 +101,7 @@ class CollectBall(Environment):
             state.append(action[2])
             self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
 
-            reward = -0.1  # default reward is distance to goal
+            reward = 0.0  # default reward is distance to goal
 
             if holding:
                 reward += self.catch()
