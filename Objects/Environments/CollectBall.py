@@ -127,8 +127,8 @@ class CollectBall(Environment):
         new_balls = list()
         for b in self.balls:
             # We try to avoid getting to close to the border
-            new_balls.append((b[0] + np.random.normal(0, self.mut_std) % 580 + 10,
-                              b[1] + np.random.normal(0, self.mut_std) % 580 + 10))
+            new_balls.append(((b[0] + np.random.normal(0, self.mut_std)) % 580 + 10,
+                              (b[1] + np.random.normal(0, self.mut_std)) % 580 + 10))
         new_env.balls = new_balls
         return new_env
 
