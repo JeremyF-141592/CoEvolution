@@ -43,8 +43,9 @@ class CollectBall(Environment):
         self.ball_held = -1
         self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
 
-        self.balls = [(self.env.get_robot_pos()[0] + 60 * np.cos((2*np.pi) * i/nb_ball),
-                       self.env.get_robot_pos()[1] + 60 * np.sin((2*np.pi) * i/nb_ball)) for i in range(nb_ball)]
+        self.init_balls = [(self.env.get_robot_pos()[0] + 60 * np.cos((2*np.pi) * i/nb_ball),
+                            self.env.get_robot_pos()[1] + 60 * np.sin((2*np.pi) * i/nb_ball)) for i in range(nb_ball)]
+        self.balls = self.init_balls.copy()
 
         self.windows_alive = False
 
@@ -75,6 +76,7 @@ class CollectBall(Environment):
         return 0.0
 
     def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
+        self.balls = self.init_balls.copy()
         self.add_balls()
         if render and not self.windows_alive:
             self.env.enable_display()
@@ -125,38 +127,38 @@ class CollectBall(Environment):
                         (self.init_pos[2] + np.random.normal(0, self.mut_std)) % 360)
         new_env = CollectBall(self.mut_std, ini_pos=new_init_pos)
         new_balls = list()
-        for b in self.balls:
-            # We try to avoid getting to close to the border
+        for b in self.init_balls:
+            # We try to avoid getting too close to the border
             new_balls.append(((b[0] + np.random.normal(0, self.mut_std)) % 580 + 10,
                               (b[1] + np.random.normal(0, self.mut_std)) % 580 + 10))
-        new_env.balls = new_balls
+        new_env.init_balls = new_balls
         return new_env
 
     def crossover(self, other):
         new_init_pos = self.init_pos if np.random.uniform(0, 1) < 0.5 else other.init_pos
         new_env = CollectBall(self.mut_std, ini_pos=new_init_pos)
         new_balls = list()
-        if len(self.balls) >= len(other.balls):
-            for i in range(len(other.balls)):
-                new_balls.append(self.balls[i] if np.random.uniform(0, 1) < 0.5 else other.balls[i])
-            new_balls += self.balls[len(other.balls):].copy()
+        if len(self.init_balls) >= len(other.init_balls):
+            for i in range(len(other.init_balls)):
+                new_balls.append(self.init_balls[i] if np.random.uniform(0, 1) < 0.5 else other.init_balls[i])
+            new_balls += self.init_balls[len(other.init_balls):].copy()
         else:
-            for i in range(len(self.balls)):
-                new_balls.append(self.balls[i] if np.random.uniform(0, 1) < 0.5 else other.balls[i])
-            new_balls += other.balls[len(other.balls):].copy()
-        new_env.balls = new_balls
+            for i in range(len(self.init_balls)):
+                new_balls.append(self.init_balls[i] if np.random.uniform(0, 1) < 0.5 else other.init_balls[i])
+            new_balls += other.init_balls[len(other.init_balls):].copy()
+        new_env.init_balls = new_balls
         return new_env
 
     def __getstate__(self):
         dic = dict()
-        dic["Balls"] = self.balls
+        dic["Balls"] = self.init_balls
         dic["Std"] = self.mut_std
         dic["Init_pos"] = self.init_pos
         return dic
 
     def __setstate__(self, state):
         self.__init__(state["Std"], ini_pos=state["Init_pos"])
-        self.balls = state["Balls"]
+        self.init_balls = state["Balls"]
 
     def __del__(self):
         self.env.close()
