@@ -15,9 +15,9 @@ class CollectBall(Environment):
     Default observation space is Box(10,) meaning 10 dimensions continuous vector
         1-3 are lasers oriented -45:0/45 degrees
         4-5 are left right bumpers
-        6-7 is a light sensor with an angular range of 50 degrees, sensing balls represented as sources of light.
-        8-9 is a light sensor with an angular range of 50 degrees, sensing goal also represented as a source of light.
-        10 is the grabbing value
+        6-9 are light sensors with angular ranges of 50 degrees, sensing balls represented as sources of light.
+        10-13 are light sensors with angular ranges of 50 degrees, sensing goal also represented as a source of light.
+        14 is the grabbing value
     (edit the xml configuration file in ./pyFastSimEnv if you want to change the sensors)
 
     Action space is Box(3,) meaning 3 dimensions continuous vector, corresponding to the speed of the 2 wheels, plus
@@ -39,6 +39,16 @@ class CollectBall(Environment):
         posture = fs.Posture(*ini_pos)
         self.env.robot.set_pos(posture)
 
+        for i in range(10):
+            if self.check_validity():
+                break
+            else:
+                self.env.initPos = ((self.env.initPos[0] + np.random.uniform(-10, 10)) % 590 + 5,
+                                    (self.env.initPos[1] + np.random.uniform(-10, 10)) % 590 + 5,
+                                    self.env.initPos[2])
+                posture = fs.Posture(*self.env.initPos)
+                self.env.robot.set_pos(posture)
+
         self.init_pos = self.env.get_robot_pos()
         self.ball_held = -1
         self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
@@ -50,6 +60,25 @@ class CollectBall(Environment):
         self.windows_alive = False
 
         self.proximity_threshold = 10.0  # min distance required to catch or release ball
+
+    def check_validity(self):
+        """
+        Take a step in a few directions to see if the robot is stuck or not.
+        """
+        self.env.reset()
+        init_state = self.env.get_robot_pos()
+
+        for i in range(4):
+            state, reward, done, info = self.env.step((1, 1))
+
+            if abs(info["robot_pos"][0] - init_state[0]) > 0.2 or abs(info["robot_pos"][1] - init_state[1]) > 0.2:
+                posture = fs.Posture(*self.env.initPos)
+                self.env.robot.set_pos(posture)
+                return True
+            new_pos = (self.env.initPos[0], self.env.initPos[1], i*90.0)
+            posture = fs.Posture(*new_pos)
+            self.env.robot.set_pos(posture)
+        return False
 
     def add_balls(self):
         self.env.map.clear_illuminated_switches()
@@ -95,7 +124,7 @@ class CollectBall(Environment):
             if render:
                 self.env.render()
                 time.sleep(0.01)
-
+            print(state)
             action = agent.choose_action(state)
             holding = action[2] > 0
 

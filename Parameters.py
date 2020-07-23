@@ -36,7 +36,7 @@ class Configuration:
         from Objects.Environments.CollectBall import CollectBallFactory
         from Objects.Agents.NumpyAgent import NeuralAgentNumpyFactory
 
-        Configuration.agentFactory = NeuralAgentNumpyFactory(10, 3, 2, 20)
+        Configuration.agentFactory = NeuralAgentNumpyFactory(14, 3, 2, 20)
         Configuration.envFactory = CollectBallFactory()
 
         """
