@@ -124,7 +124,6 @@ class CollectBall(Environment):
             if render:
                 self.env.render()
                 time.sleep(0.01)
-            print(state)
             action = agent.choose_action(state)
             holding = action[2] > 0
 
@@ -148,7 +147,7 @@ class CollectBall(Environment):
             if count > max_steps:
                 fitness += exceed_reward
                 break
-        return Configuration.metric(agent, self, fitness, path)
+        return Configuration.metric(agent, self, fitness, self.pos)
 
     def get_child(self):
         new_init_pos = ((self.init_pos[0] + np.random.normal(0, self.mut_std)) % 580 + 10,

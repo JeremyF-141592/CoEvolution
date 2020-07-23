@@ -10,6 +10,6 @@ def fitness_metric(agent, environment, raw_fitness, path):
 
 
 def fitness_bc(agent, environment, raw_fitness, path):
-    # p = np.array(path).T
-    # obs = p.mean(axis=1) + np.diag(np.cov(p))
+    if len(path) > 0:
+        return raw_fitness, path
     return raw_fitness, [0]

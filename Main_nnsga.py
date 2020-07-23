@@ -116,7 +116,7 @@ for t in range(start_from, args.T):
     if local:
         print(f"Local iteration {t} ...")
         for i in range(len(pop_env)):
-            pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_genotypic_novelty], args)
+            pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_mean_observation_novelty], args)
     else:
         print(f"Global iteration {t} ...")
         if transition_global:

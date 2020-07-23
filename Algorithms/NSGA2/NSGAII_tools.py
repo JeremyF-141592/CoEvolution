@@ -100,7 +100,7 @@ def obj_generalisation(index, fitness, observation, new_pop, envs, args):
 
 def obj_generalist_novelty(index, fitness, observation, new_pop, envs, args):
     # todo : replace with true generalist novelty, such as inverted pata-ec
-    return obj_genotypic_novelty(index, fitness, observation, new_pop, envs, args)
+    return obj_mean_observation_novelty(index, fitness, observation, new_pop, envs, args)
 
 
 def obj_mean_fitness(index, fitness, observation, new_pop, envs, args):
