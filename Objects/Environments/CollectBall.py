@@ -120,8 +120,8 @@ class CollectBall(Environment):
         return Configuration.metric(agent, self, fitness, path)
 
     def get_child(self):
-        new_init_pos = (self.init_pos[0] + np.random.normal(0, self.mut_std),
-                        self.init_pos[1] + np.random.normal(0, self.mut_std),
+        new_init_pos = ((self.init_pos[0] + np.random.normal(0, self.mut_std)) % 580 + 10,
+                        (self.init_pos[1] + np.random.normal(0, self.mut_std)) % 580 + 10,
                         (self.init_pos[2] + np.random.normal(0, self.mut_std)) % 360)
         new_env = CollectBall(self.mut_std, ini_pos=new_init_pos)
         new_balls = list()
