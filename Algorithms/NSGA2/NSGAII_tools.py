@@ -86,7 +86,8 @@ def obj_mean_observation_novelty(index, fitness, observations, new_pop, envs, ar
         dists = np.zeros(len(new_pop))
         for j in range(len(new_pop)):
             dists[j] = np.linalg.norm(w - np.array(observation[j]))
-        res += dists.sort()[:args.knn].mean()
+        dists.sort()
+        res += dists[:args.knn].mean()
     return res / len(observations)
 
 
