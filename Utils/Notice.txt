@@ -1,0 +1,20 @@
+############ Execution Notice ############
+
+File created on : {0}
+Algorithm used : {1}
+
+### Parameters ###
+
+Configuration.metric : {2}
+
+Configuration.optimizer : {3}
+
+    - {4}
+
+Configuration.agentFactory : {5}
+
+    - {6}
+
+Configuration.envFactory : {7}
+
+    - {8}

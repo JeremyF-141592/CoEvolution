@@ -4,17 +4,16 @@ FILE IS TO BE CLEANED AND REFACTORED
 If you can read this warning, chances are the file will be unreadable and not useful.
 
 """
-
+import sys
+sys.path.append("..")
 
 from Parameters import Configuration
-from Utils.Stats import unpack_stats
 import ipyparallel as ipp
 import pickle
-import json
 import numpy as np
-import os
 from glob import glob
 import re
+import os
 
 Configuration.make()
 
@@ -110,11 +109,11 @@ for i in range(nb_envs):
     test_envs.append(test)
 
 
-with open("temp/Test_Environments.pickle", "wb") as f:
+with open("../temp/Test_Environments.pickle", "wb") as f:
     pickle.dump(test_envs, f)
-with open("temp/POET_ag.pickle", "wb") as f:
+with open("../temp/POET_ag.pickle", "wb") as f:
     pickle.dump(POET_ags, f)
-with open("temp/NNSGA_ag.pickle", "wb") as f:
+with open("../temp/NNSGA_ag.pickle", "wb") as f:
     pickle.dump(NNSGA_ags, f)
 print("Saved tests environments and all agents as pickled files.")
 

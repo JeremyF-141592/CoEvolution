@@ -5,6 +5,7 @@ import shutil
 import json
 import pickle
 import re
+from datetime import datetime
 import sys
 
 
@@ -52,8 +53,6 @@ def rm_folder_content(folder):
 
 
 def prepare_folder(args):
-    if not os.path.exists(args.save_to):
-        os.mkdir(args.save_to)
     # Check if the folder to save to is empty, propose to abort otherwise
     if os.path.isdir(args.save_to) and len(os.listdir(args.save_to)) > 0:
         erase = ""
@@ -65,4 +64,27 @@ def prepare_folder(args):
             sys.exit()
         else:
             rm_folder_content(args.save_to)
+            fill_notice(args)
             print(f"{args.save_to} Successfully erased.")
+
+    if not os.path.exists(args.save_to):
+        os.mkdir(args.save_to)
+        fill_notice(args)
+
+
+def fill_notice(args):
+    with open(f"{os.path.dirname(__file__)}/Notice.txt", "r") as f:
+        notice = f.read()
+
+    info = (datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            os.path.basename(sys.argv[0]),
+            Configuration.metric.__name__,
+            type(Configuration.optimizer).__name__,
+            Configuration.optimizer.__dict__,
+            type(Configuration.agentFactory).__name__,
+            Configuration.agentFactory.__dict__,
+            type(Configuration.envFactory).__name__,
+            Configuration.envFactory.__dict__,)
+
+    with open(f"{args.save_to}/Notice.txt", "w") as f:
+        f.write(notice.format(*info))
