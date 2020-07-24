@@ -93,10 +93,16 @@ def obj_mean_observation_novelty(index, fitness, observations, new_pop, envs, ar
 
 def obj_generalisation(index, fitness, observation, new_pop, envs, args):
     # p-mean over environments fitness
-    res = list()
+    values = list()
     for i in range(len(envs)):
-        res.append(fitness[i][index])
-    return np.quantile(res, args.quantile)
+        values.append(fitness[i][index])
+    values = np.array(values)
+    values.sort()
+    dot = np.arange(len(values)) + 1
+    dot = np.power(dot, args.mean)
+    dot = dot / dot.sum()
+    dot *= len(values)
+    return np.multiply(values, dot).mean()
 
 
 def obj_generalist_novelty(index, fitness, observation, new_pop, envs, args):

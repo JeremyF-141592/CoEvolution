@@ -58,7 +58,7 @@ parser.add_argument('--pop_env_size', type=int, default=6, help='Amount of activ
 parser.add_argument('--pop_general_size', type=int, default=50, help='Population size on each environment')
 parser.add_argument('--t_local', type=int, default=20, help='Iterations spent locally')
 parser.add_argument('--t_global', type=int, default=20, help='Iterations spent globally')
-parser.add_argument('--quantile', type=float, default=0.1, help='Generalisation score, quantile of fitness')
+parser.add_argument('--mean', type=float, default=-0.25, help='Generalisation score, sliding mean of fitness')
 
 parser.add_argument('--max_env_children', type=int, default=100, help='Maximum number of env children per reproduction')
 

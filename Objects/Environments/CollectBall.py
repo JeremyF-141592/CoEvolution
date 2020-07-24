@@ -127,7 +127,7 @@ class CollectBall(Environment):
             action = agent.choose_action(state)
             holding = action[2] > 0
 
-            state, reward, done, info = self.env.step(action[:2])
+            state, reward, done, info = self.env.step((action[0]*2.0, action[1]*2.0))
             state.append(action[2])
             self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
 
