@@ -17,7 +17,7 @@ class CollectBall(Environment):
         4-5 are left right bumpers
         6-7 are light sensors with angular ranges of 50 degrees, sensing balls represented as sources of light.
         8-9 are light sensors with angular ranges of 50 degrees, sensing goal also represented as a source of light.
-        10 is the grabbing value
+        10 is indicating if a ball is held
     (edit the xml configuration file in ./pyFastSimEnv if you want to change the sensors)
 
     Action space is Box(3,) meaning 3 dimensions continuous vector, corresponding to the speed of the 2 wheels, plus
@@ -140,7 +140,7 @@ class CollectBall(Environment):
             if not holding:
                 reward += self.release()
 
-            if count % 200 == 0:
+            if count % 200 == 0 and count != 0:
                 path.append(self.pos[0])
                 path.append(self.pos[1])
 
@@ -149,6 +149,9 @@ class CollectBall(Environment):
             if count > max_steps:
                 fitness += exceed_reward
                 break
+        for i in range(20 - len(path)):
+            path.append(-1)
+
         return Configuration.metric(agent, self, fitness, path)
 
     def get_child(self):
