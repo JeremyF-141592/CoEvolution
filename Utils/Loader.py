@@ -11,7 +11,7 @@ import sys
 
 def resume_from_folder(folder, args):
     """Resume execution by loading archive, budget spent and the last iteration file generated."""
-    with open(folder + "/commandline_args.txt", 'r') as f:
+    with open(folder + "/HyperParameters.json", 'r') as f:
         args.__dict__ = json.load(f)
     filenames = glob(f"{folder}/*.pickle")
     filenames = list(filter(lambda x: "Iteration" in x, filenames))
@@ -70,6 +70,9 @@ def prepare_folder(args):
     if not os.path.exists(args.save_to):
         os.mkdir(args.save_to)
         fill_notice(args)
+
+    with open(f"{args.save_to}/HyperParameters.json", 'w') as f:
+        json.dump(args.__dict__, f, indent=2)
 
 
 def fill_notice(args):

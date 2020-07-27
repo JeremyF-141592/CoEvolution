@@ -101,8 +101,7 @@ def obj_generalisation(index, fitness, observation, new_pop, envs, args):
     dot = np.arange(len(values)) + 1
     dot = np.power(dot, args.mean)
     dot = dot / dot.sum()
-    dot *= len(values)
-    return np.multiply(values, dot).mean()
+    return np.multiply(values, dot).sum()
 
 
 def obj_generalist_novelty(index, fitness, observation, new_pop, envs, args):

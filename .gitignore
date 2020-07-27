@@ -1,5 +1,6 @@
 __pycache__/*
 *_execution/*
+.idea/*
 temp/*
 Tests.py
 *.pyc

@@ -3,7 +3,7 @@
 File created on : {0}
 Algorithm used : {1}
 
-### Parameters ###
+------------    Parameters    ------------
 
 Configuration.metric : {2}
 

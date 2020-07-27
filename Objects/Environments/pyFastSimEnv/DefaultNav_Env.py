@@ -135,8 +135,7 @@ class SimpleNavEnv(gym.Env):
     def get_light_sensors(self):
         out = list()
         for l in self.robot.get_light_sensors():
-            out.append(l.get_distance())
-            out.append(l.get_angle())
+            out.append(1.0 if l.get_activated() else 0.0)
         return out
 
     def get_radars(self):

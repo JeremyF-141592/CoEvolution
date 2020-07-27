@@ -86,10 +86,11 @@ while True:
                     vertical1 = int(bonus[bonus.index("||") + 1])
                     vertical2 = int(bonus[bonus.index("||") + 2])
                     for k in range(0, maxi_x, vertical2 + vertical1):
-                        if k != 0:
+                        if k != 0 and vertical1 != 0:
                             plt.axvline(k, linestyle="--", color="#babbff")
                     for k in range(0, maxi_x, vertical2 + vertical1):
-                        plt.axvline(k + vertical1 -1, linestyle="--", color="#ffbaba")
+                        if vertical1 != 0:
+                            plt.axvline(k + vertical1 -1, linestyle="--", color="#ffbaba")
                     blue_patch = mpatches.Patch(color='#babbff', label='Local iterations')
                     red_patch = mpatches.Patch(color='#ffbaba', label='Global iterations')
 

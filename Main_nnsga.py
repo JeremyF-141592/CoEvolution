@@ -82,8 +82,6 @@ if folder != "":
     ea_load, start_from = resume_from_folder(folder, args)
 else:
     prepare_folder(args)  # checks if folder exist and propose to erase it
-    with open(f"{args.save_to}/commandline_args.txt", 'w') as f:
-        json.dump(args.__dict__, f, indent=2)
 
 
 # NSGAII Algorithm -----------------------------------------------------------------------------------------------------

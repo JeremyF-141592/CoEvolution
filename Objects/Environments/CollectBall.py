@@ -15,9 +15,9 @@ class CollectBall(Environment):
     Default observation space is Box(10,) meaning 10 dimensions continuous vector
         1-3 are lasers oriented -45:0/45 degrees
         4-5 are left right bumpers
-        6-9 are light sensors with angular ranges of 50 degrees, sensing balls represented as sources of light.
-        10-13 are light sensors with angular ranges of 50 degrees, sensing goal also represented as a source of light.
-        14 is the grabbing value
+        6-7 are light sensors with angular ranges of 50 degrees, sensing balls represented as sources of light.
+        8-9 are light sensors with angular ranges of 50 degrees, sensing goal also represented as a source of light.
+        10 is the grabbing value
     (edit the xml configuration file in ./pyFastSimEnv if you want to change the sensors)
 
     Action space is Box(3,) meaning 3 dimensions continuous vector, corresponding to the speed of the 2 wheels, plus
@@ -129,6 +129,7 @@ class CollectBall(Environment):
 
             state, reward, done, info = self.env.step((action[0]*2.0, action[1]*2.0))
             state.append(action[2])
+
             self.pos = (self.env.get_robot_pos()[0], self.env.get_robot_pos()[1])
 
             reward = 0.0  # default reward is distance to goal
@@ -139,26 +140,27 @@ class CollectBall(Environment):
             if not holding:
                 reward += self.release()
 
-            if use_state_path:
-                path.append(state)
+            if count % 200 == 0:
+                path.append(self.pos[0])
+                path.append(self.pos[1])
 
             fitness += reward
             count += 1
             if count > max_steps:
                 fitness += exceed_reward
                 break
-        return Configuration.metric(agent, self, fitness, self.pos)
+        return Configuration.metric(agent, self, fitness, path)
 
     def get_child(self):
-        new_init_pos = ((self.init_pos[0] + np.random.normal(0, self.mut_std)) % 580 + 10,
-                        (self.init_pos[1] + np.random.normal(0, self.mut_std)) % 580 + 10,
+        new_init_pos = ((self.init_pos[0] + np.random.normal(0, self.mut_std)) % 560 + 20,
+                        (self.init_pos[1] + np.random.normal(0, self.mut_std)) % 560 + 20,
                         (self.init_pos[2] + np.random.normal(0, self.mut_std)) % 360)
         new_env = CollectBall(self.mut_std, ini_pos=new_init_pos)
         new_balls = list()
         for b in self.init_balls:
             # We try to avoid getting too close to the border
-            new_balls.append(((b[0] + np.random.normal(0, self.mut_std)) % 580 + 10,
-                              (b[1] + np.random.normal(0, self.mut_std)) % 580 + 10))
+            new_balls.append(((b[0] + np.random.normal(0, self.mut_std)) % 560 + 20,
+                              (b[1] + np.random.normal(0, self.mut_std)) % 560 + 20))
         new_env.init_balls = new_balls
         return new_env
 
