@@ -124,9 +124,9 @@ class SimpleNavEnv(gym.Env):
         for l in self.robot.get_lasers():
             r = l.get_dist()
             if r < 0:
-                out.append(self.maxSensorRange)
+                out.append(1.0)
             else:
-                out.append(np.clip(r, 0., self.maxSensorRange))
+                out.append(np.clip(r, 0., self.maxSensorRange) / self.maxSensorRange)
         return out
 
     def get_bumpers(self):
