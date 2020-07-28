@@ -101,7 +101,7 @@ for t in range(start_from, args.T):
     Configuration.budget_spent.append(0)
     local = t % (args.t_local + args.t_global) < args.t_local
     gen_env = t % (args.t_local + args.t_global) == 0 and t != 0
-    transition_global = t % (args.t_local + args.t_global) == args.t_local
+    transition_global = t % (args.t_local + args.t_global) == args.t_local and args.t_local != 0
 
     if gen_env:
         print(f"Generating new environments ...")
