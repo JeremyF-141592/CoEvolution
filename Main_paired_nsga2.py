@@ -41,6 +41,9 @@ parser.add_argument('--theta_init', type=str, default="random", help='Initial po
 parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of agent mutation')
 parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of agent crossover')
 
+parser.add_argument('--mut_low_bound', type=float, default=-1.0, help='Lower bound for polynomial bounded mutation')
+parser.add_argument('--mut_high_bound', type=float, default=1.0, help='Upper bound for polynomial bounded mutation')
+
 parser.add_argument('--p_mut_gene', type=float, default=0.1, help='Probability of agent gene mutation')
 parser.add_argument('--eta_mut', type=float, default=0.5, help='Eta in polynomial bounded mutation')
 parser.add_argument('--eta_cross', type=float, default=0.5, help='Eta in SimulatedBinary crossover')
@@ -51,7 +54,7 @@ parser.add_argument('--knn_env', type=int, default=5, help='KNN environment nove
 # NNSGA
 parser.add_argument('--pop_size', type=int, default=100, help='Population size on each environment')
 parser.add_argument('--gen_size', type=int, default=100, help='Amount of newly generated individuals')
-parser.add_argument('--quantile', type=float, default=0.3, help='Generalisation score, quantile of fitness')
+parser.add_argument('--mean', type=float, default=-0.25, help='Generalisation score, quantile of fitness')
 parser.add_argument('--p_mut_env', type=float, default=0.25, help='Probability of environment mutation')
 
 parser.add_argument('--max_env_children', type=int, default=100, help='Maximum number of env children per reproduction')
