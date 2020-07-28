@@ -1,9 +1,9 @@
 ############ Execution Notice ############
 
-File created on : 23/07/2020 10:53:16
+File created on : 27/07/2020 16:59:25
 Algorithm used : Main_nnsga.py
 
-### Parameters ###
+------------    Parameters    ------------
 
 Configuration.metric : fitness_bc
 

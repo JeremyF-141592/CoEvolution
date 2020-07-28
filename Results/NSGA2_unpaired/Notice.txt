@@ -1,11 +1,11 @@
 ############ Execution Notice ############
 
-File created on : 28/07/2020 12:10:20
-Algorithm used : Main_poet.py
+File created on : 28/07/2020 15:14:16
+Algorithm used : Main_unpaired_nsga2.py
 
 ------------    Parameters    ------------
 
-Configuration.metric : fitness_metric
+Configuration.metric : fitness_bc
 
 Configuration.optimizer : Adam
 

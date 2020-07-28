@@ -1,9 +1,9 @@
 {
-  "T": 400,
+  "T": 5000,
   "resume_from": "",
-  "save_to": "CollectBallNNSGA",
+  "save_to": "CollectBallNNSGA_G",
   "verbose": 0,
-  "max_budget": -1,
+  "max_budget": 200000,
   "save_mode": "last",
   "e_init": "flat",
   "theta_init": "random",
@@ -20,11 +20,11 @@
   "gen_size": 50,
   "pop_env_size": 6,
   "pop_general_size": 50,
-  "t_local": 30,
-  "t_global": 30,
-  "quantile": 0.1,
+  "t_local": 0,
+  "t_global": 60,
+  "mean": -0.25,
   "max_env_children": 100,
-  "pata_ec_tol": 2,
+  "pata_ec_tol": 0.1,
   "pata_ec_clipmax": 250,
   "pata_ec_clipmin": -50
 }
