@@ -49,12 +49,12 @@ parser.add_argument('--knn', type=int, default=5, help='KNN agent novelty')
 parser.add_argument('--knn_env', type=int, default=5, help='KNN environment novelty')
 
 # NNSGA
-parser.add_argument('--pop_size', type=int, default=30, help='Population size on each environment')
-parser.add_argument('--gen_size', type=int, default=30, help='Amount of newly generated individuals')
+parser.add_argument('--pop_size', type=int, default=50, help='Population size on each environment')
+parser.add_argument('--gen_size', type=int, default=50, help='Amount of newly generated individuals')
 parser.add_argument('--quantile', type=float, default=0.3, help='Generalisation score, quantile of fitness')
 parser.add_argument('--p_mut_env', type=float, default=0.25, help='Probability of environment mutation')
 
-parser.add_argument('--max_env_children', type=int, default=30, help='Maximum number of env children per reproduction')
+parser.add_argument('--max_env_children', type=int, default=50, help='Maximum number of env children per reproduction')
 
 parser.add_argument('--pata_ec_tol', type=float, default=2, help='Ranking tolerance for PATA_EC diversity')
 parser.add_argument('--pata_ec_clipmax', type=float, default=250, help='Upper fitness bound for PATA_EC diversity')
@@ -179,7 +179,8 @@ for t in range(start_from, args.T):
 
     pop_ag, pop_env, objs_local = NSGAII_ag_env(pop_ag, pop_env, [obj_generalisation,
                                                                   obj_paired_fitness,
-                                                                  obj_genotypic_novelty], args)
+                                                                  obj_mean_observation_novelty,
+                                                                  obj_env_pata_ec], args)
 
     # Save execution ----------------------------------------------------------------------------------
     if args.save_mode == "last" and t > 0:
