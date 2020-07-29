@@ -109,7 +109,18 @@ def NSGAII_ag_env(pop, envs, args):
     if type(res[0]) != tuple and type(res[0]) != list:
         raise TypeError("Current fitness metric returns a scalar instead of a tuple.")
 
-    results = [[res[i][0] - new_pop[i].get_opt_state(), res[i][1]] for i in range(len(res))]
+    novelty = list()
+    for i in range(len(res)):
+        val = 0
+        w = np.array(res[i][1])
+        dists = np.zeros(len(res))
+        for j in range(len(res)):
+            dists[j] = np.linalg.norm(w - np.array(res[j][1]))
+        dists.sort()
+        val += dists[:args.knn].mean()
+        novelty.append(val)
+
+    results = [(res[i][0] - new_pop[i].get_opt_state(), novelty[i]) for i in range(len(res))]
 
     nd_sort = np.array(fast_non_dominated_sort(results))
 
