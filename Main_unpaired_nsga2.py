@@ -182,8 +182,7 @@ for t in range(start_from, args.T):
 
     pop_ag, pop_env, objs_local = NSGAII_ag_env(pop_ag, pop_env, [obj_generalisation,
                                                                   obj_paired_fitness,
-                                                                  obj_mean_observation_novelty,
-                                                                  obj_env_pata_ec], args)
+                                                                  obj_mean_observation_novelty], args)
 
     # Save execution ----------------------------------------------------------------------------------
     if args.save_mode == "last" and t > 0:

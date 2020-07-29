@@ -82,9 +82,11 @@ else:
 
 # ----------------------------------------------------------------------------------------------------------------------
 
+
 def evaluate_pair(ea):
     e, a = ea
     return e(a)
+
 
 def NSGAII_ag_env(pop, envs, args):
 
@@ -150,7 +152,8 @@ def generate_env(envs, args):
     """Generate new environments by mutating old environments"""
     new_list = list()
     if len(envs) == 0:
-        new_list.append(Configuration.envFactory.new())
+        new_list = [Configuration.envFactory.new()] +\
+                   [Configuration.envFactory.new().get_child() for i in range(args.max_env_children - 1)]
         return new_list
     for i in range(args.max_env_children):
         choice = np.random.randint(0, len(envs))
