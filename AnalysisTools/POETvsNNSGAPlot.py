@@ -9,9 +9,9 @@ from Objects.Environments.Benchmark import *
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-res_POET = np.load("../temp/cross_res_POET.npy")
+res_POET = np.load("../temp/Results_CollectNNSGA_GL.npy")
 
-res_NNSGA = np.load("../temp/cross_res_NNSGA.npy")
+res_NNSGA = np.load("../temp/Results_CollectNNSGA_L.npy")
 
 print(res_POET.shape)
 

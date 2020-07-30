@@ -77,7 +77,7 @@ def plot(value, dic, destination):
 # path = input("Path to execution folder :")
 # while not os.path.exists(path) and not os.path.isdir(path):
 #     path = input("Path to execution folder :")
-path = "../temp/CollectBallNNSGA_L"
+path = "../temp/CollectBallNNSGA_L2"
 dic = unpack_stats(f"{path}/Stats.json")
 if not os.path.exists(f"{path}/Plots"):
     os.mkdir(f"{path}/Plots")

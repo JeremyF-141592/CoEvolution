@@ -20,13 +20,19 @@ def load_agents_last_iteration(folder):
         resume = pickle.load(f)
     print(f"Execution successfully loaded from {folder} .")
     if len(resume) == 3:
-        if len(resume[2]) > 1:
-            for ag in resume[2]:
-                ags.append(ag)
-        else:
+        loc = input("Use local populations ? (y/n)")
+        loc = loc.lower()
+        while loc != "y" and loc != "n":
+            loc = input("Use local populations ? (y/n)")
+            loc = loc.lower()
+
+        if loc:
             for pop_ag in resume[0]:
                 for ag in pop_ag:
                     ags.append(ag)
+        else:
+            for ag in resume[2]:
+                ags.append(ag)
     else:
         for ea_pair in resume:
             E, theta = ea_pair
