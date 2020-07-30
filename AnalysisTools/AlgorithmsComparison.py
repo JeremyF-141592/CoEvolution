@@ -60,9 +60,9 @@ print("Evaluation (may take a while) ...")
 for i in range(nb_envs):
     print(f"\tEnvironment {i}")
     for j in range(len(dir_list)):
-        res_dic[dir_list[j]] = Configuration.lview.map(test_envs[i], ags_list[j])
+        res_dic[dir_list[j]][i] = Configuration.lview.map(test_envs[i], ags_list[j])
 
-with open(f"{path}/Result.pickle", "wb") as f:
+with open(f"{path}/Results.pickle", "wb") as f:
     pickle.dump(res_dic, f)
 
 print("Done.")
