@@ -24,8 +24,13 @@ def load_agents_last_iteration(path):
             resume = pickle.load(f)
         print(f"Execution successfully loaded from {folder} .")
         if len(resume) == 3:
-            for ag in resume[2]:
-                ags.append(ag)
+            if len(resume[2]) > 1:
+                for ag in resume[2]:
+                    ags.append(ag)
+            else:
+                for pop_ag in resume[0]:
+                    for ag in pop_ag:
+                        ags.append(ag)
         else:
             for ea_pair in resume:
                 E, theta = ea_pair
