@@ -46,15 +46,16 @@ while not os.path.exists(path) or not os.path.isdir(path):
 dir_list = list()
 res_dic = dict()
 for f in os.listdir(path):
-    if os.path.isdir(f):
+    if os.path.isdir(os.path.join(path, f)):
         dir_list.append(f)
         res_dic[f] = [list() for i in range(nb_envs)]
 
-os.mkdir(f"{path}/agents")
+if not os.path.exists(f"{path}/agents"):
+    os.mkdir(f"{path}/agents")
 ags_list = list()
 
 for directory in dir_list:
-    ags = load_agents_last_iteration(directory)
+    ags = load_agents_last_iteration(os.path.join(path, directory))
     ags_list.append(ags)
     with open(f"{path}/agents/{directory}.pickle", "wb") as f:
         pickle.dump(ags, f)
