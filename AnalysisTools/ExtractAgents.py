@@ -7,7 +7,7 @@ import os
 
 # Loading --------------------------------------------------------------------------------------------------------------
 
-def load_NNSGA_agents(path):
+def load_agents_last_iteration(path):
     ags = list()
     for p in os.listdir(path):
         folder = os.path.join(path, p)
@@ -21,10 +21,15 @@ def load_NNSGA_agents(path):
         numbers = ''.join((ch if ch in '0123456789' else ' ') for ch in ea_path)
         resume_from = int(numbers.split()[-1])
         with open(f"{ea_path}", "rb") as f:
-            NNSGA_resume = pickle.load(f)
+            resume = pickle.load(f)
         print(f"Execution successfully loaded from {folder} .")
-        for ag in NNSGA_resume[2]:
-            ags.append(ag)
+        if len(resume) == 3:
+            for ag in resume[2]:
+                ags.append(ag)
+        else:
+            for ea_pair in resume:
+                E, theta = ea_pair
+                ags.append(theta)
     return ags
 
 
@@ -50,35 +55,3 @@ def load_POET_agents(path):
             E, theta = ea_pair
             ags.append(theta)
     return ags
-
-
-folder = ""
-file_selected = False
-while not file_selected:
-    folder = input("Path to NNSGA executions folder : ")
-    if not os.path.exists(folder):
-        continue
-    file_selected = True
-
-NNSGA_ags = load_NNSGA_agents(folder)
-
-path = input("Save to :")
-
-with open(path, "wb") as f:
-    pickle.dump(NNSGA_ags, f)
-print(f"Saved NNSGA agents to {path}")
-
-folder = ""
-file_selected = False
-while not file_selected:
-    folder = input("Path to POET executions folder : ")
-    if not os.path.exists(folder):
-        continue
-    file_selected = True
-POET_ags = load_POET_agents(folder)
-
-path = input("Save to :")
-
-with open(path, "wb") as f:
-    pickle.dump(POET_ags, f)
-print(f"Saved POET agents to {path}")

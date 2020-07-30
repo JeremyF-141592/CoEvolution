@@ -94,7 +94,7 @@ def NSGAII_ag_env(pop, envs, args):
     new_evs = envs + generate_env(envs, args)
 
     for p in new_pop:
-        if type(p.get_opt_state) != int:
+        if type(p.get_opt_state()) != int:
             p.set_opt_state(0)
         else:
             p.set_opt_state(p.get_opt_state() + 1)
@@ -120,7 +120,7 @@ def NSGAII_ag_env(pop, envs, args):
         val += dists[:args.knn].mean()
         novelty.append(val)
 
-    results = [(res[i][0] - new_pop[i].get_opt_state(), novelty[i]) for i in range(len(res))]
+    results = [(res[i][0] - new_pop[i].get_opt_state()/10.0, novelty[i]) for i in range(len(res))]
 
     nd_sort = np.array(fast_non_dominated_sort(results))
 

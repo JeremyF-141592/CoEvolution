@@ -8,9 +8,11 @@ import sys
 sys.path.append("..")
 
 from Parameters import Configuration
+from AnalysisTools.ExtractAgents import load_agents_last_iteration
 import ipyparallel as ipp
 import pickle
 import numpy as np
+import os
 
 Configuration.make()
 
@@ -37,29 +39,33 @@ for i in range(nb_envs):
         test = test.get_child()
     test_envs.append(test)
 
-path1 = input("Path to agents 1 :")
-with open(path1, "rb") as f:
-    ags1 = pickle.load(f)
-print(f"\tSuccessfully loaded agents from {path1}")
+path = input("path to parent folder : ")
+while not os.path.exists(path) or not os.path.isdir(path):
+    path = input("path to parent folder : ")
 
-path2 = input("Path to agents 1 :")
-with open(path2, "rb") as f:
-    ags2 = pickle.load(f)
-print(f"\tSuccessfully loaded agents from {path2}")
+dir_list = list()
+res_dic = dict()
+for f in os.listdir(path):
+    if os.path.isdir(f):
+        dir_list.append(f)
+        res_dic[f] = [list() for i in range(nb_envs)]
 
-with open("./Test_Environments.pickle", "wb") as f:
-    pickle.dump(test_envs, f)
+os.mkdir(f"{path}/agents")
+ags_list = list()
 
-cross_res_1 = [list() for i in range(nb_envs)]
-cross_res_2 = [list() for i in range(nb_envs)]
+for directory in dir_list:
+    ags = load_agents_last_iteration(directory)
+    ags_list.append(ags)
+    with open(f"{path}/agents/{directory}.pickle", "wb") as f:
+        pickle.dump(ags, f)
 
 print("Evaluation (may take a while) ...")
 for i in range(nb_envs):
-    cross_res_1[i] = Configuration.lview.map(test_envs[i], ags1)
-    cross_res_2[i] = Configuration.lview.map(test_envs[i], ags2)
+    print(f"\tEnvironment {i}")
+    for j in range(len(dir_list)):
+        res_dic[dir_list[j]] = Configuration.lview.map(test_envs[i], ags_list[j])
 
-cross_res_1 = np.array(cross_res_1)
-cross_res_2 = np.array(cross_res_2)
+with open(f"{path}/Result.pickle", "wb") as f:
+    pickle.dump(res_dic, f)
 
-np.save(f"Results_{path1}", cross_res_1)
-np.save(f"Results_{path2}", cross_res_2)
+print("Done.")
