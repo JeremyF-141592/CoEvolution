@@ -50,15 +50,11 @@ for f in os.listdir(path):
         dir_list.append(f)
         res_dic[f] = [list() for i in range(nb_envs)]
 
-if not os.path.exists(f"{path}/agents"):
-    os.mkdir(f"{path}/agents")
 ags_list = list()
 
 for directory in dir_list:
     ags = load_agents_last_iteration(os.path.join(path, directory))
     ags_list.append(ags)
-    with open(f"{path}/agents/{directory}.pickle", "wb") as f:
-        pickle.dump(ags, f)
 
 print("Evaluation (may take a while) ...")
 for i in range(nb_envs):
