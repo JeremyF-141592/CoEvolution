@@ -28,10 +28,10 @@ def load_agents_last_iteration(folder):
 
         if loc:
             for pop_ag in resume[0]:
-                for ag in pop_ag:
+                for ag in pop_ag[(3*len(pop_ag))//4:]:
                     ags.append(ag)
         else:
-            for ag in resume[2]:
+            for ag in resume[2][(3*len(resume[2]))//4:]:
                 ags.append(ag)
     else:
         for ea_pair in resume:

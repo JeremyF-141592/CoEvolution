@@ -115,6 +115,7 @@ for t in range(start_from, args.T):
         print(f"Local iteration {t} ...")
         for i in range(len(pop_env)):
             pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_mean_observation_novelty], args)
+            pop_ag[i] = [pop_ag[i][j] for _, j in sorted(zip(objs_local[i], range(len(objs_local[i]))))]
     else:
         print(f"Global iteration {t} ...")
         if transition_global:
@@ -126,7 +127,7 @@ for t in range(start_from, args.T):
                 for k in range(min(extraction_size, args.pop_size)):
                     pop_generalist.append(pop_ag[i][c_sorted[k]])
         pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty], args)
-        pop_generalist = [pop_generalist[i] for _,i in sorted(zip(objs_general, range(len(objs_general))))]
+        pop_generalist = [pop_generalist[i] for _, i in sorted(zip(objs_general, range(len(objs_general))))]
 
     # Save execution ----------------------------------------------------------------------------------
     if args.save_mode == "last" and t > 0:
