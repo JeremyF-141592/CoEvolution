@@ -26,6 +26,16 @@ class Environment(ABC):
         return NotImplementedError
 
 
+class ParameterizedEnvironment(Environment):
+    @abstractmethod
+    def get_weights(self):
+        return NotImplementedError
+
+    @abstractmethod
+    def set_weights(self, weights):
+        return NotImplementedError
+
+
 class GymInterface(gym.Env, ABC):
     def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
         """

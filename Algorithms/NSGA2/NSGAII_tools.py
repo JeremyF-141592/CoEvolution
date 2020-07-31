@@ -1,5 +1,6 @@
 from Algorithms.NSGA2.NSGAII_core import *
 from Parameters import Configuration
+from ABC.Environments import ParameterizedEnvironment
 
 
 def NSGAII(pop, envs, additional_objectives, args):
@@ -70,10 +71,10 @@ def add_env_objectives(fitness, observation, new_pop, objectives, envs, args):
 
 # Objectives -----------------------------------------------------------------------------------------------------------
 def obj_genotypic_novelty(index, fitness, observation, new_pop, envs, args):
-    w = new_pop[index].get_weights()
+    w = np.array(new_pop[index].get_weights())
     dists = np.zeros(len(new_pop))
     for j in range(len(new_pop)):
-        dists[j] = np.linalg.norm(w - new_pop[j].get_weights())
+        dists[j] = np.linalg.norm(w - np.array(new_pop[j].get_weights()))
     dists.sort()
     return dists[:args.knn].mean()
 
@@ -129,6 +130,17 @@ def obj_env_pata_ec(index, fitness, observation, new_pop, envs, args):
 def obj_env_forwarding(index, fitness, observation, new_pop, envs, args):
     # todo : HoF forwarding
     return np.random.random()
+
+
+def obj_parametrized_env_novelty(index, fitness, observation, new_pop, envs, args):
+    if not isinstance(envs[0], ParameterizedEnvironment):
+        return 0
+    w = np.array(envs[index].get_weights())
+    dists = np.zeros(len(envs))
+    for j in range(len(envs)):
+        dists[j] = np.linalg.norm(w - np.array(envs[j].get_weights()))
+    dists.sort()
+    return dists[:args.knn].mean()
 
 
 # Generate Environments ------------------------------------------------------------------------------------------------

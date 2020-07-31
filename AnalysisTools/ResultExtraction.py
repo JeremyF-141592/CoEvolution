@@ -14,6 +14,7 @@ for key in res.keys():
         scores = list()
         for i in range(len(ev)):
             scores.append(ev[i][0])
+        print(len(scores))
         solvabilty.append(np.array(scores).max())
     points = [solvabilty.count(i) for i in range(6)]
     print(points)

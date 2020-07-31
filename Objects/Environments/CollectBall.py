@@ -2,12 +2,12 @@ from Objects.Environments.pyFastSimEnv.DefaultNav_Env import SimpleNavEnv
 import pyfastsim as fs
 import numpy as np
 import time
-from ABC.Environments import Environment, EnvironmentFactory
+from ABC.Environments import ParameterizedEnvironment, EnvironmentFactory
 from Parameters import Configuration
 import os
 
 
-class CollectBall(Environment):
+class CollectBall(ParameterizedEnvironment):
     """
     2 Wheeled robot inside a maze, collecting balls and dropping them into a goal.
     The environment is an additional layer to pyFastSim.
@@ -28,6 +28,24 @@ class CollectBall(Environment):
     Environment mutation corresponds to a translation of the balls + translation and rotation of the initial position
     of the robot at the start of one episode.
     """
+
+    def get_weights(self):
+        w = self.init_balls
+        w.append(self.init_pos[0])
+        w.append(self.init_pos[1])
+        w.append(self.init_pos[2])
+        return w
+
+    def set_weights(self, weights):
+        b = weights[:-3]
+        p0 = weights[-3]
+        p1 = weights[-2]
+        p2 = weights[-1]
+        self.init_balls = b
+        self.init_pos = (p0, p1, p2)
+
+        posture = fs.Posture(*self.env.initPos)
+        self.env.robot.set_pos(posture)
 
     def __init__(self, mut_std=5.0, nb_ball=6, ini_pos=(100, 500, 45)):
         self.env = SimpleNavEnv(os.path.dirname(__file__) + "/pyFastSimEnv/LS_maze_hard.xml")

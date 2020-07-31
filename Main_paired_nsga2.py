@@ -120,7 +120,18 @@ def NSGAII_ag_env(pop, envs, args):
         val += dists[:args.knn].mean()
         novelty.append(val)
 
-    results = [(res[i][0] - new_pop[i].get_opt_state()/10.0, novelty[i]) for i in range(len(res))]
+    env_novelty = list()
+    for i in range(len(new_evs)):
+        val = 0
+        w = np.array(new_evs[i].get_weights())
+        dists = np.zeros(len(new_evs))
+        for j in range(len(new_evs)):
+            dists[j] = np.linalg.norm(w - np.array(new_evs[i].get_weights()))
+        dists.sort()
+        val += dists[:args.knn].mean()
+        env_novelty.append(val)
+
+    results = [(res[i][0] - new_pop[i].get_opt_state()/10.0, novelty[i], env_novelty[i]) for i in range(len(res))]
 
     nd_sort = np.array(fast_non_dominated_sort(results))
 
