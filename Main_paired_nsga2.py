@@ -126,7 +126,7 @@ def NSGAII_ag_env(pop, envs, args):
         w = np.array(new_evs[i].get_weights())
         dists = np.zeros(len(new_evs))
         for j in range(len(new_evs)):
-            dists[j] = np.linalg.norm(w - np.array(new_evs[i].get_weights()))
+            dists[j] = np.linalg.norm(w - np.array(new_evs[j].get_weights()))
         dists.sort()
         val += dists[:args.knn].mean()
         env_novelty.append(val)

@@ -30,18 +30,23 @@ class CollectBall(ParameterizedEnvironment):
     """
 
     def get_weights(self):
-        w = self.init_balls
+        w = list()
+        for i in self.init_balls:
+            w.append(i[0])
+            w.append(i[1])
         w.append(self.init_pos[0])
         w.append(self.init_pos[1])
         w.append(self.init_pos[2])
         return w
 
     def set_weights(self, weights):
-        b = weights[:-3]
+        tups = list()
+        for w in range(0, len(weights)-3, 2):
+            tups.append((weights[w], weights[w+1]))
         p0 = weights[-3]
         p1 = weights[-2]
         p2 = weights[-1]
-        self.init_balls = b
+        self.init_balls = tups
         self.init_pos = (p0, p1, p2)
 
         posture = fs.Posture(*self.env.initPos)
