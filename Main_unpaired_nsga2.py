@@ -160,9 +160,12 @@ def generate_env(envs, args):
     return new_list
 
 
-def obj_paired_fitness(index, fitness, observation, new_pop, envs, args):
-    # p-mean over environments fitness
-    return fitness[index][index]
+def obj_max_fitness(index, fitness, observation, new_pop, envs, args):
+    maxi = float("-inf")
+    for i in range(len(envs)):
+        if fitness[i][index] > maxi:
+            maxi = fitness[i][index]
+    return maxi
 
 
 # NSGAII Algorithm -----------------------------------------------------------------------------------------------------
@@ -181,7 +184,7 @@ for t in range(start_from, args.T):
     print(f"Iteration {t}", flush=True)
 
     pop_ag, pop_env, objs_local = NSGAII_ag_env(pop_ag, pop_env, [obj_generalisation,
-                                                                  obj_paired_fitness,
+                                                                  obj_max_fitness,
                                                                   obj_mean_observation_novelty,
                                                                   obj_parametrized_env_novelty], args)
 
