@@ -5,7 +5,7 @@
 
 from Parameters import Configuration
 from Algorithms.POET.Mutation import mutate_envs
-from Algorithms.POET.LocalTraining import ES_Step
+from Algorithms.POET.LocalTraining import ES_Step, NSGAII_step
 from Algorithms.POET.Transfer import Evaluate_Candidates
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats
@@ -113,6 +113,7 @@ for t in range(start_from, args.T):
         if args.verbose > 0:
             print(f"\n\t{m} : ", end="", flush=True)
         theta, threshold[m, t % 5] = ES_Step(theta, E, args, allow_verbose=1)
+        # theta, threshold[m, t % 5] = ES_Step(theta, E, args, allow_verbose=1)
         EA_List[m] = (E, theta)
 
     # Transfer  -------------------------------------------------------

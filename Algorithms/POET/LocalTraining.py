@@ -1,4 +1,5 @@
 import numpy as np
+from Algorithms.NSGA2.NSGAII_tools import NSGAII, obj_mean_observation_novelty, obj_mean_fitness
 from Parameters import Configuration
 
 
@@ -41,6 +42,31 @@ def ES_Step(theta, E, args, allow_verbose=0):
     new_ag.set_opt_state(new_state)
     new_ag.set_weights(og_weights + step)
     return new_ag, self_fitness
+
+
+def NSGAII_step(theta, E, args, allow_verbose=0):
+    """Local optimization by Evolution Strategy steps, rank normalization and weight decay."""
+    og_weights = theta.get_weights()
+
+    shared_gaussian_table = [np.random.normal(0, 1, size=len(og_weights)) for i in range(args.batch_size)]
+
+    sigma = max(args.noise_limit, args.noise_std * args.noise_decay ** theta.get_opt_state()["t"])
+
+    thetas = []
+    for i in range(args.batch_size):
+        new_theta = Configuration.agentFactory.new()
+        new_theta.set_weights(og_weights + sigma * shared_gaussian_table[i])
+        thetas.append(new_theta)
+
+    new_pop, objs = NSGAII(thetas, [E], [obj_mean_fitness, obj_mean_observation_novelty], args)
+
+    fit_list = list()
+    for tup in objs:
+        fit_list.append(tup[0])
+    fit_list = np.array(fit_list)
+    best_ag = new_pop[fit_list.argmax()]
+
+    return best_ag, fit_list.max()
 
 
 def rank_normalize(arr):
