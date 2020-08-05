@@ -212,7 +212,7 @@ for t in range(start_from, args.T):
     pop_ag, pop_env, objs_local = NSGAII_ag_env(pop_ag, pop_env, args)
 
     # Save execution ----------------------------------------------------------------------------------
-    if args.save_mode.is_digit():
+    if args.save_mode.isdigit():
         if t % int(args.save_mode) == 0:
             with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
                 pickle.dump((pop_ag, pop_env), f)
