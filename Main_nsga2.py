@@ -40,6 +40,7 @@ parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number o
 # Population
 parser.add_argument('--pop_size', type=int, default=100, help='Population size')
 # NSGA2
+parser.add_argument('--env_path', type=str, default="", help='Path to pickled environment')
 parser.add_argument('--gen_size', type=int, default=100, help='Population generation size')
 parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of mutation')
 parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of crossover')
@@ -87,8 +88,15 @@ for t in range(start_from, args.T):
     pop, objs = NSGAII(pop, [env], [obj_mean_fitness, obj_genotypic_novelty], args)
 
     # Save execution ----------------------------------------------------------------------------------
-    with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
-        pickle.dump(pop, f)
+    if args.save_mode.is_digit():
+        if t % int(args.save_mode) == 0:
+            with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+                pickle.dump(pop, f)
+    else:
+        if args.save_mode == "last" and t > 0:
+            os.remove(f'{args.save_to}/Iteration_{t - 1}.pickle')
+        with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+            pickle.dump(pop, f)
     with open(f"{args.save_to}/TotalBudget.json", 'w') as f:
         budget_dic = dict()
         budget_dic["Budget_per_step"] = Configuration.budget_spent

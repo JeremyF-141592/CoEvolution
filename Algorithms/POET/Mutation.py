@@ -53,7 +53,10 @@ def mutate_envs(ea_list, args):
 
 def eligible_to_reproduce(ea_pair, args):
     E, theta = ea_pair
-    return E(theta) > args.repro_threshold
+    sc = E(theta)
+    if type(sc) == tuple or type(sc) == list:
+        sc = sc[0]
+    return sc > args.repro_threshold
 
 
 def mc_satisfied(child_list, args):

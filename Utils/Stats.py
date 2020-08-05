@@ -29,7 +29,11 @@ def paired_fitness(agents, envs):
     for i in range(len(agents)):
         mini_res = 0
         for k in range(5):
-            mini_res += envs[i](agents[i])
+            a = envs[i](agents[i])
+            if type(a) == tuple or type(a) == list:
+                mini_res += envs[i](agents[i])[0]
+            else:
+                mini_res += envs[i](agents[i])
         res.append(mini_res / 5.0)
     return res
 

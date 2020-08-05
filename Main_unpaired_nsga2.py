@@ -189,10 +189,15 @@ for t in range(start_from, args.T):
                                                                   obj_parametrized_env_novelty], args)
 
     # Save execution ----------------------------------------------------------------------------------
-    if args.save_mode == "last" and t > 0:
-        os.remove(f'{args.save_to}/Iteration_{t-1}.pickle')
-    with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
-        pickle.dump((pop_ag, pop_env), f)
+    if args.save_mode.is_digit():
+        if t % int(args.save_mode) == 0:
+            with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+                pickle.dump((pop_ag, pop_env), f)
+    else:
+        if args.save_mode == "last" and t > 0:
+            os.remove(f'{args.save_to}/Iteration_{t - 1}.pickle')
+        with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+            pickle.dump((pop_ag, pop_env), f)
     with open(f"{args.save_to}/TotalBudget.json", 'w') as f:
         budget_dic = dict()
         budget_dic["Budget_per_step"] = Configuration.budget_spent

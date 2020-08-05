@@ -130,10 +130,15 @@ for t in range(start_from, args.T):
         pop_generalist = [pop_generalist[i] for _, i in sorted(zip(objs_general, range(len(objs_general))))]
 
     # Save execution ----------------------------------------------------------------------------------
-    if args.save_mode == "last" and t > 0:
-        os.remove(f'{args.save_to}/Iteration_{t-1}.pickle')
-    with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
-        pickle.dump((pop_ag, pop_env, pop_generalist), f)
+    if args.save_mode.is_digit():
+        if t % int(args.save_mode) == 0:
+            with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+                pickle.dump((pop_ag, pop_env, pop_generalist), f)
+    else:
+        if args.save_mode == "last" and t > 0:
+            os.remove(f'{args.save_to}/Iteration_{t-1}.pickle')
+        with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+            pickle.dump((pop_ag, pop_env, pop_generalist), f)
     with open(f"{args.save_to}/TotalBudget.json", 'w') as f:
         budget_dic = dict()
         budget_dic["Budget_per_step"] = Configuration.budget_spent

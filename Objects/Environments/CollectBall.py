@@ -4,6 +4,7 @@ import numpy as np
 import time
 from ABC.Environments import ParameterizedEnvironment, EnvironmentFactory
 from Parameters import Configuration
+from collections import defaultdict
 import os
 
 
@@ -218,6 +219,79 @@ class CollectBall(ParameterizedEnvironment):
 
     def __del__(self):
         self.env.close()
+
+    def a_star_complexity(self):
+        total = 0
+        for b in self.init_balls:
+            goal = np.array((b[0], b[1]), dtype=int)
+            g = np.array([self.init_pos[0], self.init_pos[1]], dtype=int)
+            total += len(self.A_star(g, goal, CollectBall.distance_h))
+        return total
+
+    def a_star_render(self, pos=(40, 200)):
+        b = np.array(pos, dtype=int)
+        g = np.array([self.init_pos[0], self.init_pos[1]], dtype=int)
+        p = self.A_star(g, b, CollectBall.distance_h)
+        self.env.enable_display()
+
+        for i in range(len(p)):
+            new_pos = (p[i][0], p[i][1], 90.0)
+            posture = fs.Posture(*new_pos)
+            self.env.robot.set_pos(posture)
+            self.env.render()
+            time.sleep(0.01)
+        return p
+
+    def A_star(self, start, end, h):
+        open_set = [(start[0], start[1])]
+
+        came_from = dict()
+        g_score = np.ones((600, 600)) * 1e6
+        g_score[start[0], start[1]] = 0
+
+        f_score = np.ones((600, 600)) * 1e6
+        f_score[start[0], start[1]] = h(start, end)
+
+        while len(open_set) > 0:
+            current = None
+            best = float("inf")
+            for k in open_set:
+                if f_score[k[0], k[1]] < best:
+                    best = f_score[k]
+                    current = k
+
+            if abs(current[0] - end[0]) <= 2 and abs(current[1]-end[1]) <= 2:
+                return CollectBall.reconstruct_path(came_from, current)
+
+            open_set.remove(current)
+            neighbors = [current + np.array([0, 2]),
+                         current + np.array([0, -2]),
+                         current + np.array([2, 0]),
+                         current + np.array([-2, 0])]
+            for n in neighbors:
+                if n[0] >= 600 or n[0] < 0 or n[1] >= 600 or n[1] < 0 or \
+                        self.env.map.get_real(n[0], n[1]) == self.env.map.status_t.obstacle:
+                    continue
+                new_g_score = g_score[current[0], current[1]] + 1
+                if new_g_score < g_score[n[0], n[1]]:
+                    came_from[(n[0], n[1])] = current
+                    g_score[n[0], n[1]] = new_g_score
+                    f_score[n[0], n[1]] = g_score[n[0], n[1]] + h(n, end)
+                    if (n[0], n[1]) not in open_set:
+                        open_set.append((n[0], n[1]))
+        return -1
+
+    @staticmethod
+    def reconstruct_path(came_from, current):
+        total_path = [current]
+        while (current[0], current[1]) in came_from.keys():
+            current = came_from[current]
+            total_path.append(current)
+        return total_path[::-1]
+
+    @staticmethod
+    def distance_h(a, b):
+        return np.linalg.norm(a-b)
 
 
 class CollectBallFactory(EnvironmentFactory):
