@@ -105,13 +105,13 @@ objs_general = list()
 for t in range(start_from, args.T):
     Configuration.budget_spent.append(0)
     local = t % (args.t_local + args.t_global) < args.t_local
-    gen_env = t % (args.t_local + args.t_global) == 0 and t != 0 and args.load_env != ""
+    gen_env = t % (args.t_local + args.t_global) == 0 and t != 0 and args.load_env == ""
     transition_global = t % (args.t_local + args.t_global) == args.t_local and args.t_local != 0
 
     if gen_env:
         print(f"Generating new environments ...")
         proposed_environments = generate_environments(pop_env, args)
-        pop_env = NSGAII_env(pop_generalist, proposed_environments, [obj_env_pata_ec, obj_env_forwarding], args)
+        pop_env = NSGAII_env(pop_generalist, proposed_environments, [obj_parametrized_env_novelty, obj_env_forwarding], args)
         for i in range(len(pop_env)):
             pop_ag[i] += pop_generalist
         objs_local = [list() for i in range(len(pop_env))]
@@ -119,7 +119,7 @@ for t in range(start_from, args.T):
     if local:
         print(f"Local iteration {t} ...")
         for i in range(len(pop_env)):
-            pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_mean_observation_novelty], args)
+            pop_ag[i], objs_local[i] = NSGAII(pop_ag[i], [pop_env[i]], [obj_mean_fitness, obj_mean_observation_novelty],args)
             pop_ag[i] = [pop_ag[i][j] for _, j in sorted(zip(objs_local[i], range(len(objs_local[i]))))]
     else:
         print(f"Global iteration {t} ...")

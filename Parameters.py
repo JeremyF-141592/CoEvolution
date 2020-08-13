@@ -34,9 +34,10 @@ class Configuration:
         #   CollectBall
         # ----------------------------------------------------------------
         from Objects.Environments.CollectBall import CollectBallFactory
+        from Objects.Environments.CustomCartpole import CartPoleFactory
         from Objects.Agents.NumpyAgent import NeuralAgentNumpyFactory
 
-        Configuration.agentFactory = NeuralAgentNumpyFactory(10, 3, 2, 20)
+        Configuration.agentFactory = NeuralAgentNumpyFactory(18, 3, 2, 20)
         Configuration.envFactory = CollectBallFactory()
 
         """
