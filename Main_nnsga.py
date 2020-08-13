@@ -61,6 +61,7 @@ parser.add_argument('--t_global', type=int, default=20, help='Iterations spent g
 parser.add_argument('--mean', type=float, default=-0.25, help='Generalisation score, sliding mean of fitness')
 
 parser.add_argument('--max_env_children', type=int, default=100, help='Maximum number of env children per reproduction')
+parser.add_argument('--load_env', type=str, default="", help='Whether to load a predefined set of environments.')
 
 parser.add_argument('--pata_ec_tol', type=float, default=2, help='Ranking tolerance for PATA_EC diversity')
 parser.add_argument('--pata_ec_clipmax', type=float, default=250, help='Upper fitness bound for PATA_EC diversity')
@@ -93,6 +94,9 @@ if ea_load:
 else:
     pop_ag = [new_population([], args) for i in range(args.pop_env_size)]
     pop_env = generate_environments([], args)
+    if args.load_env != "":
+        with open(args.load_env, "rb") as f:
+            pop_env = pickle.load(f)
     pop_generalist = new_population([], args)
 
 objs_local = [list() for i in range(len(pop_env))]
@@ -100,7 +104,7 @@ objs_general = list()
 for t in range(start_from, args.T):
     Configuration.budget_spent.append(0)
     local = t % (args.t_local + args.t_global) < args.t_local
-    gen_env = t % (args.t_local + args.t_global) == 0 and t != 0
+    gen_env = t % (args.t_local + args.t_global) == 0 and t != 0 and args.load_env != ""
     transition_global = t % (args.t_local + args.t_global) == args.t_local and args.t_local != 0
 
     if gen_env:

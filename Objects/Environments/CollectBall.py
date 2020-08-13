@@ -225,7 +225,10 @@ class CollectBall(ParameterizedEnvironment):
         for b in self.init_balls:
             goal = np.array((b[0], b[1]), dtype=int)
             g = np.array([self.init_pos[0], self.init_pos[1]], dtype=int)
-            total += len(self.A_star(g, goal, CollectBall.distance_h))
+            path = self.A_star(g, goal, CollectBall.distance_h)
+            if path == -1:
+                return -1
+            total += len(path)
         return total
 
     def a_star_render(self, pos=(40, 200)):

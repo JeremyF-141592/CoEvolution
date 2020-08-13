@@ -188,6 +188,8 @@ for t in range(start_from, args.T):
                                                                   obj_mean_observation_novelty,
                                                                   obj_parametrized_env_novelty], args)
 
+    pop_ag = [pop_ag[i] for _, i in sorted(zip(objs_local, range(len(objs_local))))]
+
     # Save execution ----------------------------------------------------------------------------------
     if args.save_mode.isdigit():
         if t % int(args.save_mode) == 0:
