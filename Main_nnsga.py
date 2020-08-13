@@ -92,11 +92,12 @@ if ea_load:
     pop_env = ea_load[1]
     pop_generalist = ea_load[2]
 else:
-    pop_ag = [new_population([], args) for i in range(args.pop_env_size)]
     pop_env = generate_environments([], args)
     if args.load_env != "":
         with open(args.load_env, "rb") as f:
             pop_env = pickle.load(f)
+        args.pop_env_size = len(pop_env)
+    pop_ag = [new_population([], args) for i in range(args.pop_env_size)]
     pop_generalist = new_population([], args)
 
 objs_local = [list() for i in range(len(pop_env))]
