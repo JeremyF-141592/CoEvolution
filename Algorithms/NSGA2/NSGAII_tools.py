@@ -167,7 +167,7 @@ def obj_jensen_shannon(index, fitness, observation, new_pop, envs, args):
 
     esp = fit_distribution.mean()
     std = fit_distribution.std()
-    fit_distribution = (fit_distribution - esp) / std
+    fit_distribution = (fit_distribution - esp) / (std + 1e-8)
 
     fit_distribution_de = np.histogram(fit_distribution, bins=bins, density=True)[0]
 

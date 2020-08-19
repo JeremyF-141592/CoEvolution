@@ -117,7 +117,7 @@ class CollectBall(ParameterizedEnvironment):
                     self.ball_held = i
                     self.balls.remove(self.balls[i])
                     self.add_balls()
-                    return 0.0
+                    return 0.1
         return 0.0
 
     def release(self):
@@ -299,7 +299,7 @@ class CollectBall(ParameterizedEnvironment):
 
 class CollectBallFactory(EnvironmentFactory):
 
-    def __init__(self, mut_std=25.0, ini_pos=(80, 480, 45), nb_balls=6):
+    def __init__(self, mut_std=35.0, ini_pos=(80, 480, 45), nb_balls=8):
         self.mut_std = mut_std
         self.ini_pos = ini_pos
         self.nb_balls = nb_balls

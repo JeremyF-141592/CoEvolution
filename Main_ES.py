@@ -35,6 +35,7 @@ parser = argparse.ArgumentParser(description='NSGA2 Implementation as in Deb, K.
 parser.add_argument('--T', type=int, default=400, help='Iterations limit')
 parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
 parser.add_argument('--save_to', type=str, default="./NSGA_execution", help="Execution save-to folder.")
+parser.add_argument('--save_mode', type=str, default="all", help="'all' or 'last'")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number of environment evaluations.")
 # Population
