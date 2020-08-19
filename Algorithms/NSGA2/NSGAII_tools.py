@@ -1,6 +1,9 @@
 from Algorithms.NSGA2.NSGAII_core import *
 from Parameters import Configuration
 from ABC.Environments import ParameterizedEnvironment
+from scipy.spatial.distance import jensenshannon
+from scipy.stats import norm
+import numpy as np
 
 
 def NSGAII(pop, envs, additional_objectives, args):
@@ -128,8 +131,16 @@ def obj_env_pata_ec(index, fitness, observation, new_pop, envs, args):
 
 
 def obj_env_forwarding(index, fitness, observation, new_pop, envs, args):
-    # todo : HoF forwarding
-    return np.random.random()
+    ev = envs[index]
+
+    if "past_score" in dir(ev):
+        new_max = np.array(fitness[index]).max()
+        val = new_max - ev.past_score
+        ev.past_score = new_max
+        return val
+    else:
+        ev.past_score = np.array(fitness[index]).max()
+        return 0
 
 
 def obj_parametrized_env_novelty(index, fitness, observation, new_pop, envs, args):
@@ -141,6 +152,19 @@ def obj_parametrized_env_novelty(index, fitness, observation, new_pop, envs, arg
         dists[j] = np.linalg.norm(w - np.array(envs[j].get_weights()))
     dists.sort()
     return dists[:args.knn].mean()
+
+
+def obj_jensen_shannon(index, fitness, observation, new_pop, envs, args):
+    bins = [i for i in range(-5, 5)]
+
+    fit_distribution = list()
+    for i in range(len(envs)):
+        fit_distribution.append(fitness[i][index])
+    fit_distribution_de = np.histogram(fit_distribution)
+
+    normal_bins = [norm.cdf(bins[i + 1]) - norm.cdf(bins[i]) for i in range(len(bins) - 1)]
+
+    return -jensenshannon(fit_distribution_de, normal_bins, base=2)
 
 
 # Generate Environments ------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import numpy as np
-from Algorithms.POET.LocalTraining import Local_Algorithm
+from Algorithms.POET.LocalTraining import ES_Step
 from Parameters import Configuration
 
 
@@ -24,7 +24,7 @@ def Evaluate_Candidates(ea_list, env, args, threshold=0):
             proposed_agents.append(base_agents[i])
             full_scores.append(scores[i])
 
-            theta, _ = Local_Algorithm(base_agents[i], env, args)
+            theta, _ = ES_Step(base_agents[i], env, args)
             fine_tuned_agents.append(theta)
 
     if len(fine_tuned_agents) == 0:  # No other agent has a fitness above the threshold
