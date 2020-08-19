@@ -163,8 +163,8 @@ def obj_jensen_shannon(index, fitness, observation, new_pop, envs, args):
     fit_distribution = np.array(fit_distribution)
 
     esp = fit_distribution.mean()
-    var = fit_distribution.var()
-    fit_distribution = (fit_distribution - esp) / var
+    std = fit_distribution.std()
+    fit_distribution = (fit_distribution - esp) / std
 
     fit_distribution_de = np.histogram(fit_distribution)
 
