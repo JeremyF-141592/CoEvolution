@@ -160,6 +160,12 @@ def obj_jensen_shannon(index, fitness, observation, new_pop, envs, args):
     fit_distribution = list()
     for i in range(len(envs)):
         fit_distribution.append(fitness[i][index])
+    fit_distribution = np.array(fit_distribution)
+
+    esp = fit_distribution.mean()
+    var = fit_distribution.var()
+    fit_distribution = (fit_distribution - esp) / var
+
     fit_distribution_de = np.histogram(fit_distribution)
 
     normal_bins = [norm.cdf(bins[i + 1]) - norm.cdf(bins[i]) for i in range(len(bins) - 1)]
