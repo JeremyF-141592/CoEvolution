@@ -3,17 +3,25 @@ import numpy as np
 
 
 class Adam(Optimizer):
-    def __init__(self, beta1=0.9, beta2=0.999, epsilon=1e-08):
+    def __init__(self, lr_init=0.01, lr_decay=0.9999, lr_limit=0.001, beta1=0.9, beta2=0.999, epsilon=1e-08):
         self.beta1 = beta1
         self.beta2 = beta2
         self.epsilon = epsilon
 
-    def step(self, gradient, state, args):
+        self.lr_init = lr_init
+        self.lr_decay = lr_decay
+        self.lr_limit = lr_limit
+
+    def step(self, gradient, state):
+        if state is None:
+            state = self.default_state()
+            print("yo")
+
         t = state["t"]
         m = state["m"]
         v = state["v"]
 
-        stepsize = max(args.lr_init * args.lr_decay ** t, args.lr_limit)
+        stepsize = max(self.lr_init * self.lr_decay ** t, self.lr_limit)
 
         if m is None:
             m = np.zeros(len(gradient), dtype=np.float32)

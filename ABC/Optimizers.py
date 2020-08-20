@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class Optimizer(ABC):
     @abstractmethod
-    def step(self, gradient, state, args):
+    def step(self, gradient, state):
         """Returns a tuple (step taken in gradient space, new optimizer state)"""
         return NotImplementedError()
 

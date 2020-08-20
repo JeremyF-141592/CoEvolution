@@ -17,16 +17,13 @@ class Configuration:
     archive = []
     budget_spent = []
 
-    # Specific variable to the Benchmark environment - todo: delete this (or move it away)
-    benchmark = None
-
     @staticmethod
     def make():
         """Edit this part to easily change configuration."""
         from Objects.Optimizers.Adam import Adam
         import Utils.Metrics
 
-        Configuration.metric = Utils.Metrics.fitness_bc
+        Configuration.metric = Utils.Metrics.fitness_metric
 
         Configuration.optimizer = Adam()
 
@@ -37,7 +34,7 @@ class Configuration:
         from Objects.Environments.CustomCartpole import CartPoleFactory
         from Objects.Agents.NumpyAgent import NeuralAgentNumpyFactory
 
-        Configuration.agentFactory = NeuralAgentNumpyFactory(18, 3, 2, 20)
+        Configuration.agentFactory = NeuralAgentNumpyFactory(18, 3, 2, 10)
         Configuration.envFactory = CollectBallFactory()
 
         """
@@ -67,3 +64,4 @@ class Configuration:
             [-1, 1]
         )
         """
+

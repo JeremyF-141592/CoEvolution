@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import numpy as np
 import os
 import sys
@@ -19,7 +18,7 @@ def plot_raw(key, dic, destination):
     plt.savefig(f"{destination}/Raw_{key}")
 
 
-def plot(value, dic, destination):
+def plot(value, key, destination):
     extensions = list()
     max_range = 0
     for tup in value:
@@ -52,6 +51,7 @@ def plot(value, dic, destination):
     quart1[:] = np.nan
     quart3 = np.empty(max_range)
     quart3[:] = np.nan
+
     for i in range(len(cat)):
         if len(cat[i]) != 0:
             val = np.array(cat[i])
@@ -60,7 +60,6 @@ def plot(value, dic, destination):
             quart3[i] = np.quantile(val, 0.75)
             max_ext[i] = np.quantile(val, 1.0)
             min_ext[i] = np.quantile(val, 0.0)
-
     plt.fill_between(np.arange(max_range), quart3, quart1, color=(0, 0.5, 1, 0.5))
     plt.plot(np.arange(max_range), med_ext, "r")
     plt.title(f"{key} median and quartiles")
@@ -74,15 +73,29 @@ def plot(value, dic, destination):
     plt.clf()
 
 
-# path = input("Path to execution folder :")
-# while not os.path.exists(path) and not os.path.isdir(path):
-#     path = input("Path to execution folder :")
-path = "../temp/CollectBallNNSGA_L2"
-dic = unpack_stats(f"{path}/Stats.json")
-if not os.path.exists(f"{path}/Plots"):
-    os.mkdir(f"{path}/Plots")
-for key, value in dic.items():
-    plot(value, key, f"{path}/Plots")
-    plt.close()
+sub_directories = False
+path = "../temp/NNSGA_JS"
+
+if sub_directories:
+    l_path = os.listdir(path)
+    for p in l_path:
+        full_path = path + p
+        if not os.path.isdir(full_path):
+            continue
+        dic = unpack_stats(f"{full_path}/Stats.json")
+        if not os.path.exists(f"{full_path}/Plots"):
+            os.mkdir(f"{full_path}/Plots")
+        for key, value in dic.items():
+            plot(value, key, f"{full_path}/Plots")
+            plt.close()
+
+        print("Done.", p)
+else:
+    dic = unpack_stats(f"{path}/Stats.json")
+    if not os.path.exists(f"{path}/Plots"):
+        os.mkdir(f"{path}/Plots")
+    for key, value in dic.items():
+        plot(value, key, f"{path}/Plots")
+        plt.close()
 
 print("Done.")

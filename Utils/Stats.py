@@ -1,13 +1,14 @@
-# Stats are made by saving a dict "name_of_stat" : list(float) at each iteration
-# doing so requires the choice of a set of information to be saved, each stat is therefore defined by a function of
-# agents and environments at a given iteration.
-#
-# This way of saving makes it so that there might be different size of stats on consecutive iterations, combining
-# the information back together requires a bit of manipulation.
+"""
+Stats are made by saving a dict "name_of_stat" : list(float) at each iteration
+doing so requires the choice of a set of information to be saved, each stat is therefore defined by a function of
+agents and environments at a given iteration.
+
+This way of saving makes it so that there might be different size of stats on consecutive iterations, combining
+the information back together requires a bit of manipulation.
+"""
 
 import numpy as np
 import json
-from Parameters import Configuration
 
 
 # Measure functions ----------------------------------------------------------------------------------------------------
@@ -39,16 +40,11 @@ def paired_fitness(agents, envs):
 
 
 def benchmark_evolution(ags, envs):
-    res_xy = list()
-    res_x = list()
-    res_y = list()
-    if len(ags) != len(envs):
-        return [(-1, -1)]
+    res = list()
     for i in range(len(envs)):
-        res_xy.append((ags[i].value, envs[i].y_value))
-        res_x.append(ags[i].value)
-        res_y.append(envs[i].y_value)
-    return res_xy, res_x, res_y
+        for j in range(len(ags)):
+            res.append((ags[j].value, envs[i].y_value))
+    return res
 
 
 # Stats bundle manipulation --------------------------------------------------------------------------------------------
@@ -172,7 +168,8 @@ def min_max(path, key):
 # Stats bundle creation  -----------------------------------------------------------------------------------------------
 def bundle_stats(agents, envs):
     saved_stats = {
-        "Dist_Mean": mean_ag_dist
+        "Dist_Mean": mean_ag_dist,
+        # '2D_benchmark': benchmark_evolution
     }
 
     dic = dict()
@@ -181,6 +178,4 @@ def bundle_stats(agents, envs):
 
     if len(agents) == len(envs):
         dic["Paired_fitness"] = paired_fitness(agents, envs)
-    if Configuration.benchmark is not None:
-        dic["xy_benchmark"], dic["x_benchmark"], dic["y_benchmark"] = benchmark_evolution(agents, envs)
     return dic

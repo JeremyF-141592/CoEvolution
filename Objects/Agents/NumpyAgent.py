@@ -1,6 +1,5 @@
 import numpy as np
 from ABC.Agents import Agent, AgentFactory
-from Parameters import Configuration
 
 
 def sigmoid(x):
@@ -20,7 +19,7 @@ class NeuralAgentNumpy(Agent):
         self.weights = None 
         self.n_weights = None
         self.bias = None
-        self.opt_state = Configuration.optimizer.default_state()
+        self.opt_state = None
         self.out = np.zeros(n_out)
         self.randomize()
 

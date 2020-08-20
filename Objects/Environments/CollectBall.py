@@ -1,11 +1,11 @@
+from collections import deque
+import time
+import os
+import numpy as np
 from Objects.Environments.pyFastSimEnv.DefaultNav_Env import SimpleNavEnv
 import pyfastsim as fs
-import numpy as np
-import time
 from ABC.Environments import ParameterizedEnvironment, EnvironmentFactory
 from Parameters import Configuration
-from collections import defaultdict
-import os
 
 
 class CollectBall(ParameterizedEnvironment):
@@ -128,7 +128,7 @@ class CollectBall(ParameterizedEnvironment):
                 return 1.0
         return 0.0
 
-    def __call__(self, agent, render=False, use_state_path=False, max_steps=2000, exceed_reward=0):
+    def __call__(self, agent, render=False, use_state_path=False, max_steps=12000, exceed_reward=0):
         self.balls = self.init_balls.copy()
         self.add_balls()
         if render and not self.windows_alive:
@@ -140,11 +140,12 @@ class CollectBall(ParameterizedEnvironment):
         done = False
 
         fitness = 0.0
+
+        is_stuck = deque()
+
         path = list()
         count = 0
         while not done:
-            if len(self.balls) == 0:
-                break
             if render:
                 self.env.render()
                 time.sleep(0.01)
@@ -164,9 +165,17 @@ class CollectBall(ParameterizedEnvironment):
             if not holding:
                 reward += self.release()
 
-            if count % 200 == 0 and count != 0:
+            if count % 50 == 0 and count > 0:
+                if np.array(is_stuck).std() < 1:
+                    break
+
+            if count % 50 == 0 and count > 0:
                 path.append(self.pos[0])
                 path.append(self.pos[1])
+
+            if len(is_stuck) == 100:
+                is_stuck.popleft()
+            is_stuck.append(state)
 
             fitness += reward
             count += 1

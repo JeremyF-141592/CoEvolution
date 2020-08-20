@@ -1,22 +1,26 @@
+#!/usr/bin/env python
 """
-FILE IS TO BE CLEANED AND REFACTORED
+Generates N new environments, mutates them randomly and test multiple algorithm by loading their final states.
 
-If you can read this warning, chances are the file will be unreadable and not useful.
+Specified folder should be 'parent_folder' such that final states of algorithm{1-2} are located in
+'parent_folder/algorithm{1-2}/Iteration0.pickle'.
+
+Results are saved as a dictionary under 'parent_folder/Results.pickle'.
 
 """
 import sys
+import os
+import pickle
 sys.path.append("..")
 
+import ipyparallel as ipp
+import numpy as np
 from Parameters import Configuration
 from AnalysisTools.ExtractAgents import load_agents_last_iteration
-import ipyparallel as ipp
-import pickle
-import numpy as np
-import os
 
 Configuration.make()
 
-nb_envs = 100
+nb_envs = 100  # Amount of randomly generated Environments
 
 # Ipyparallel ----------------------------------------------------------------------------------------------------------
 # Local parallelism, make sure that ipcluster is started beforehand otherwise this will raise an error.
@@ -34,7 +38,7 @@ print(f"Generating {nb_envs} new environments ...")
 test_envs = list()
 for i in range(nb_envs):
     test = Configuration.envFactory.new()
-    nb_mut = np.random.randint(5, 15)
+    nb_mut = np.random.randint(5, 30)  # Mutates the environment 5 to 30 times
     for k in range(nb_mut):
         test = test.get_child()
     test_envs.append(test)

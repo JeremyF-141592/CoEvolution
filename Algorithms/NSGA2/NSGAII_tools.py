@@ -72,6 +72,35 @@ def add_env_objectives(fitness, observation, new_pop, objectives, envs, args):
     return new_res
 
 
+# Levenshtein distance, useful to compute Collectball BC ---------------------------------------------------------------
+
+def levenshtein(seq1, seq2):
+    size_x = len(seq1) + 1
+    size_y = len(seq2) + 1
+    matrix = np.zeros ((size_x, size_y))
+    for x in range(size_x):
+        matrix[x, 0] = x
+    for y in range(size_y):
+        matrix[0, y] = y
+
+    for x in range(1, size_x):
+        for y in range(1, size_y):
+            if seq1[x-1] == seq2[y-1]:
+                matrix[x, y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1],
+                    matrix[x, y-1] + 1
+                )
+            else:
+                matrix[x, y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1] + 1,
+                    matrix[x, y-1] + 1
+                )
+    return matrix[size_x - 1, size_y - 1]
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 # Objectives -----------------------------------------------------------------------------------------------------------
 def obj_genotypic_novelty(index, fitness, observation, new_pop, envs, args):
     w = np.array(new_pop[index].get_weights())
@@ -90,6 +119,19 @@ def obj_mean_observation_novelty(index, fitness, observations, new_pop, envs, ar
         dists = np.zeros(len(new_pop))
         for j in range(len(new_pop)):
             dists[j] = np.linalg.norm(w - np.array(observation[j]))
+        dists.sort()
+        res += dists[:args.knn].mean()
+    return res / len(observations)
+
+
+def obj_levenshtein_novelty(index, fitness, observations, new_pop, envs, args):
+    """Return Levenshtein distance of discrete observations."""
+    res = 0
+    for observation in observations:
+        w = np.array(observation[index]) // 50
+        dists = np.zeros(len(new_pop))
+        for j in range(len(new_pop)):
+            dists[j] = levenshtein(w, np.array(observation[j]) // 50)
         dists.sort()
         res += dists[:args.knn].mean()
     return res / len(observations)

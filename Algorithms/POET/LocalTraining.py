@@ -10,6 +10,11 @@ def ES_Step(theta, E, args, allow_verbose=0):
 
     shared_gaussian_table = [np.random.normal(0, 1, size=len(og_weights)) for i in range(args.batch_size)]
 
+    if theta.get_opt_state() is None:
+        theta.set_opt_state(Configuration.optimizer.default_state())
+    if "t" not in theta.get_opt_state().keys():
+        theta.set_opt_state({**theta.get_opt_state(), "t": 1})
+
     sigma = max(args.noise_limit, args.noise_std * args.noise_decay ** theta.get_opt_state()["t"])
 
     thetas = []
@@ -37,7 +42,7 @@ def ES_Step(theta, E, args, allow_verbose=0):
         summed_weights += scores[i] * shared_gaussian_table[i]
     grad_estimate = -(1/(len(shared_gaussian_table))) * summed_weights
 
-    step, new_state = Configuration.optimizer.step(grad_estimate, theta.get_opt_state(), args)
+    step, new_state = Configuration.optimizer.step(grad_estimate, theta.get_opt_state())
 
     new_ag = Configuration.agentFactory.new()
     new_ag.set_opt_state(new_state)

@@ -43,8 +43,8 @@ parser.add_argument('--pop_size', type=int, default=100, help='Population size')
 # NSGA2
 parser.add_argument('--env_path', type=str, default="", help='Path to pickled environment')
 parser.add_argument('--gen_size', type=int, default=100, help='Population generation size')
-parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of mutation')
-parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of crossover')
+parser.add_argument('--p_mut_ag', type=float, default=0.5, help='Probability of mutation')
+parser.add_argument('--p_cross_ag', type=float, default=0, help='Probability of crossover')
 
 parser.add_argument('--mut_low_bound', type=float, default=-1.0, help='Lower bound for polynomial bounded mutation')
 parser.add_argument('--mut_high_bound', type=float, default=1.0, help='Upper bound for polynomial bounded mutation')

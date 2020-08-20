@@ -2,7 +2,7 @@
 # Author : FERSULA Jeremy
 
 from Utils.Loader import resume_from_folder, prepare_folder
-from Utils.Stats import append_stats
+from Utils.Stats import append_stats, bundle_stats
 from Algorithms.NSGA2.NSGAII_tools import *
 import numpy as np
 import ipyparallel as ipp
@@ -38,8 +38,8 @@ parser.add_argument('--save_mode', type=str, default="all", help="'all' or 'last
 parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
 # NSGA2
-parser.add_argument('--p_mut_ag', type=float, default=0.2, help='Probability of agent mutation')
-parser.add_argument('--p_cross_ag', type=float, default=0.3, help='Probability of agent crossover')
+parser.add_argument('--p_mut_ag', type=float, default=0.5, help='Probability of agent mutation')
+parser.add_argument('--p_cross_ag', type=float, default=0, help='Probability of agent crossover')
 
 parser.add_argument('--mut_low_bound', type=float, default=-1.0, help='Lower bound for polynomial bounded mutation')
 parser.add_argument('--mut_high_bound', type=float, default=1.0, help='Upper bound for polynomial bounded mutation')
@@ -131,7 +131,7 @@ for t in range(start_from, args.T):
                 c_sorted = np.array(c_dists).argsort()
                 for k in range(min(extraction_size, args.pop_size)):
                     pop_generalist.append(pop_ag[i][c_sorted[k]])
-        pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty], args)
+        pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty, obj_jensen_shannon()], args)
         pop_generalist = [pop_generalist[i] for _, i in sorted(zip(objs_general, range(len(objs_general))))]
 
     # Save execution ----------------------------------------------------------------------------------
@@ -150,20 +150,10 @@ for t in range(start_from, args.T):
         budget_dic["Total"] = sum(Configuration.budget_spent)
         json.dump(budget_dic, f)
 
-    bundle = bundle_stats_NNSGA(local, objs_local, objs_general, args)
-    # Benchmark saving
-    if Configuration.benchmark is not None:
-        bundle["xy_benchmark"] = list()
-        if local:
-            for i in range(len(pop_env)):
-                for j in range(args.pop_size):
-                    bundle["xy_benchmark"].append((pop_ag[i][j].value, pop_env[i].y_value))
-        else:
-            for i in range(len(pop_env)):
-                for j in range(len(pop_generalist)):
-                    bundle["xy_benchmark"].append((pop_generalist[j].value, pop_env[i].y_value))
+    bundle0 = bundle_stats_NNSGA(local, objs_local, objs_general, args)
+    bundle1 = bundle_stats(pop_generalist, pop_env)
 
-    append_stats(f"{args.save_to}/Stats.json", bundle)
+    append_stats(f"{args.save_to}/Stats.json", {**bundle0, **bundle1})
     if args.verbose > 0:
         print(f"\tExecution saved at {args.save_to}.")
     if 0 < args.max_budget < sum(Configuration.budget_spent):

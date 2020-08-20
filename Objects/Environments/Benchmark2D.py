@@ -2,7 +2,6 @@ import numpy as np
 from Parameters import Configuration
 from ABC.Agents import Agent, AgentFactory
 from ABC.Environments import Environment, EnvironmentFactory
-import random
 
 
 def cross_cosinus_gaussian(x, y):
@@ -42,14 +41,15 @@ def cosx(x, y):
 
 
 class BenchmarkEnv(Environment):
-    random.seed(42)
-
     def __init__(self, y):
         self.y_value = y
-        self.map = Configuration.benchmark
+
+        # ------------------------------------------------------------------------------------------- Benchmark Function
+        self.map = diag_gaussian
+        # --------------------------------------------------------------------------------------------------------------
 
     def __call__(self, agent, render=False, max_steps=2000, exceed_reward=0):
-        return Configuration.benchmark(agent.value, self.y_value), [agent.value]
+        return Configuration.metric(agent, self, self.map(agent.value, self.y_value), [agent.value])
 
     def get_child(self):
         child = BenchmarkEnv(self.y_value + np.random.uniform(-3, 3))
@@ -79,7 +79,7 @@ class BenchmarkEnvFactory(EnvironmentFactory):
 class BenchmarkAg(Agent):
     def __init__(self):
         self.value = np.random.uniform(-50.0, 50.0)
-        self.opt_state = Configuration.optimizer.default_state()
+        self.opt_state = None
 
     def choose_action(self, state):
         return self.value
