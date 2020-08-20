@@ -141,7 +141,8 @@ class CollectBall(ParameterizedEnvironment):
 
         fitness = 0.0
 
-        is_stuck = deque()
+        is_stuck_x = deque()
+        is_stuck_y = deque()
 
         path = list()
         count = 0
@@ -165,17 +166,22 @@ class CollectBall(ParameterizedEnvironment):
             if not holding:
                 reward += self.release()
 
-            if count % 50 == 0 and count > 0:
-                if np.array(is_stuck).std() < 1:
+            if count % 50 == 0 and count >= 100:
+                if np.array(is_stuck_x).std() + np.array(is_stuck_y).std() < 10:
+                    print("stop", count)
                     break
 
             if count % 50 == 0 and count > 0:
                 path.append(self.pos[0])
                 path.append(self.pos[1])
 
-            if len(is_stuck) == 100:
-                is_stuck.popleft()
-            is_stuck.append(state)
+            if len(is_stuck_x) == 200:
+                is_stuck_x.popleft()
+                is_stuck_x.popleft()
+                is_stuck_y.popleft()
+                is_stuck_y.popleft()
+            is_stuck_x.append(self.pos[0])
+            is_stuck_y.append(self.pos[1])
 
             fitness += reward
             count += 1
@@ -184,7 +190,6 @@ class CollectBall(ParameterizedEnvironment):
                 break
         for i in range(20 - len(path)):
             path.append(-1)
-
         return Configuration.metric(agent, self, fitness, path)
 
     def get_child(self):
