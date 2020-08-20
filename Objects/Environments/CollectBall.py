@@ -168,14 +168,14 @@ class CollectBall(ParameterizedEnvironment):
 
             fitness += reward
 
-            if count % 50 == 0 and count >= 100:
-                if np.array(is_stuck_x).std() + np.array(is_stuck_y).std() < 10:
-                    print("stop", count)
-                    break
-
             if count % 150 == 0 and 900 >= count > 0:
                 path.append(self.pos[0])
                 path.append(self.pos[1])
+
+            if count % 50 == 0 and count >= 900:
+                if np.array(is_stuck_x).std() + np.array(is_stuck_y).std() < 10:
+                    print("stop", count)
+                    break
 
             if len(is_stuck_x) == 200:
                 is_stuck_x.popleft()
