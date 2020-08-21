@@ -13,7 +13,9 @@ def ES_Step(theta, E, args, allow_verbose=0):
     if theta.get_opt_state() is None:
         theta.set_opt_state(Configuration.optimizer.default_state())
     if "t" not in theta.get_opt_state().keys():
-        theta.set_opt_state({**theta.get_opt_state(), "t": 1})
+        z = theta.get_opt_state().copy()
+        z.update({"t": 1})
+        theta.set_opt_state(z)
 
     sigma = max(args.noise_limit, args.noise_std * args.noise_decay ** theta.get_opt_state()["t"])
 
