@@ -53,8 +53,9 @@ class CollectBall(ParameterizedEnvironment):
         posture = fs.Posture(*self.env.initPos)
         self.env.robot.set_pos(posture)
 
-    def __init__(self, mut_std=5.0, nb_ball=6, ini_pos=(100, 500, 45)):
-        self.env = SimpleNavEnv(os.path.dirname(__file__) + "/pyFastSimEnv/LS_maze_hard.xml")
+    def __init__(self, mut_std=5.0, nb_ball=6, ini_pos=(100, 500, 45), setup="SetupMedium.xml"):
+        path = os.path.dirname(__file__) + "/pyFastSimEnv/" + setup
+        self.env = SimpleNavEnv(path)
         self.env.reset()
 
         self.mut_std = mut_std
@@ -314,10 +315,11 @@ class CollectBall(ParameterizedEnvironment):
 
 class CollectBallFactory(EnvironmentFactory):
 
-    def __init__(self, mut_std=35.0, ini_pos=(80, 480, 45), nb_balls=8):
+    def __init__(self, mut_std=35.0, ini_pos=(80, 480, 45), nb_balls=8, setup="SetupMedium.xml"):
         self.mut_std = mut_std
         self.ini_pos = ini_pos
         self.nb_balls = nb_balls
+        self.setup = setup
 
     def new(self):
-        return CollectBall(mut_std=self.mut_std, ini_pos=self.ini_pos, nb_ball=self.nb_balls)
+        return CollectBall(mut_std=self.mut_std, ini_pos=self.ini_pos, nb_ball=self.nb_balls, setup=self.setup)

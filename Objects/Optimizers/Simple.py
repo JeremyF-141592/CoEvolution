@@ -2,10 +2,15 @@ from ABC.Optimizers import Optimizer
 
 
 class Simple(Optimizer):
-    def step(self, gradient, state, args):
+    def __init__(self, lr_init=0.01, lr_decay=0.9999, lr_limit=0.001):
+        self.lr_init = lr_init
+        self.lr_decay = lr_decay
+        self.lr_limit = lr_limit
+
+    def step(self, gradient, state):
         t = state
 
-        alpha = max(args.lr_init * args.lr_decay ** t, args.lr_limit)
+        alpha = max(self.lr_init * self.lr_decay ** t, self.lr_limit)
         step = gradient * alpha
 
         new_state = dict()

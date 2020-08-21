@@ -48,12 +48,6 @@ def benchmark_evolution(ags, envs):
 
 
 # Stats bundle manipulation --------------------------------------------------------------------------------------------
-def append_stats(path, bundle):
-    with open(path, "a") as f:
-        f.write(json.dumps(bundle))
-        f.write("\n")
-
-
 def unpack_stats(path):
     """Reads a pickled stat bundle and returns an unique dictionary of stats, containing for each
     stats tuples of the form (iteration_number, corresponding_stat_value). Therefore, if one information was
@@ -179,3 +173,9 @@ def bundle_stats(agents, envs):
     if len(agents) == len(envs):
         dic["Paired_fitness"] = paired_fitness(agents, envs)
     return dic
+
+
+def append_stats(path, bundle):
+    with open(path, "a") as f:
+        f.write(json.dumps(bundle))
+        f.write("\n")

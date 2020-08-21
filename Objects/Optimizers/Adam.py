@@ -15,7 +15,6 @@ class Adam(Optimizer):
     def step(self, gradient, state):
         if state is None:
             state = self.default_state()
-            print("yo")
 
         t = state["t"]
         m = state["m"]

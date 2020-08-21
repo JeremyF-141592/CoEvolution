@@ -34,8 +34,12 @@ class Configuration:
         from Objects.Environments.CustomCartpole import CartPoleFactory
         from Objects.Agents.NumpyAgent import NeuralAgentNumpyFactory
 
-        Configuration.agentFactory = NeuralAgentNumpyFactory(18, 3, 2, 10)
-        Configuration.envFactory = CollectBallFactory()
+        Configuration.agentFactory = NeuralAgentNumpyFactory(n_in=18,
+                                                             n_out=3,
+                                                             n_hidden_layers=2,
+                                                             n_neurons_per_hidden=10)
+        Configuration.envFactory = CollectBallFactory(nb_balls=8,
+                                                      setup="SetupMedium.xml")
 
         """
         # ----------------------------------------------------------------

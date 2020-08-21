@@ -1,3 +1,6 @@
+"""
+    Generates plots according to an execution stats trace, and saves them into a /Plot/ folder.
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -5,6 +8,11 @@ import sys
 sys.path.insert(1, "../")
 
 from Utils.Stats import unpack_stats
+
+# Path to the execution folder
+path = "../temp/NNSGA_4"
+# Indicates if the plots should be generated for every sub directory of the 'path' folder
+sub_directories = False
 
 
 def plot_raw(key, dic, destination):
@@ -73,9 +81,6 @@ def plot(value, key, destination):
     plt.clf()
 
 
-sub_directories = False
-path = "../temp/NNSGA_JS"
-
 if sub_directories:
     l_path = os.listdir(path)
     for p in l_path:
@@ -92,6 +97,7 @@ if sub_directories:
         print("Done.", p)
 else:
     dic = unpack_stats(f"{path}/Stats.json")
+    print(len(dic["Dist_Mean"]))
     if not os.path.exists(f"{path}/Plots"):
         os.mkdir(f"{path}/Plots")
     for key, value in dic.items():

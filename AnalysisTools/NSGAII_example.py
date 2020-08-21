@@ -1,6 +1,19 @@
-from Algorithms.NSGA2.NSGAII_core import *
+#!/usr/bin/env python
+"""
+    2D Animation of the NSGA2 algorithm.
+"""
+import os
 import numpy as np
 import matplotlib.pyplot as plt
+from Algorithms.NSGA2.NSGAII_core import *
+
+iterations = 30
+delay = 0.01
+population_size = 10
+generation_size = 10
+
+save = False
+pause = 1
 
 
 def new_point():
@@ -15,13 +28,10 @@ def prepare_plot(phase, pause):
     plt.title("Iteration {} : {:>25}".format(t, phase))
 
 
-iterations = 30
-delay = 0.01
-population_size = 10
-generation_size = 10
-
 colors = ["red", "green", "blue", "yellow", "magenta", "cyan"]
 
+if not os.path.exists("../NSGA_anim") and save:
+    os.mkdir("../NSGA_anim")
 plt.show()
 population = [new_point() for i in range(population_size)]  # list instead of array, flexible structure
 for t in range(iterations):
@@ -34,7 +44,10 @@ for t in range(iterations):
     for point in full_pop:
         plt.plot(point[0], point[1], "o", color="blue")
 
-    plt.savefig(f"../NSGA_anim/{t}-0")
+    if save:
+        plt.savefig(f"../NSGA_anim/{t}-0")
+    else:
+        plt.pause(pause)
 
     # Non dominated sort -----------------------------------------------------------------------------------------------
     ranks = np.array(fast_non_dominated_sort(full_pop))   # get front index for each individual
@@ -47,7 +60,15 @@ for t in range(iterations):
         fronts[ranks[i]].append(point)
         plt.plot(point[0], point[1], "o", color=colors[ranks[i] % len(colors)])
 
-    plt.savefig(f"../NSGA_anim/{t}-1")
+    for j in range(len(fronts)):
+        fronts[j].sort(key=lambda x: x[0])
+        for i in range(len(fronts[j])-1):
+            plt.plot([fronts[j][i][0], fronts[j][i+1][0]], [fronts[j][i][1], fronts[j][i+1][1]], color=colors[j % len(colors)])
+
+    if save:
+        plt.savefig(f"../NSGA_anim/{t}-1")
+    else:
+        plt.pause(pause)
 
     population = list()  # New population
     last_front = 0
@@ -73,4 +94,7 @@ for t in range(iterations):
             population.append(less_crowded_point)
             plt.plot(less_crowded_point[0], less_crowded_point[1], "o", color="blue")
 
-    plt.savefig(f"../NSGA_anim/{t}-2")
+    if save:
+        plt.savefig(f"../NSGA_anim/{t}-2")
+    else:
+        plt.pause(pause)
