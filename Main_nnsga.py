@@ -150,10 +150,12 @@ for t in range(start_from, args.T):
         budget_dic["Total"] = sum(Configuration.budget_spent)
         json.dump(budget_dic, f)
 
-    bundle0 = bundle_stats_NNSGA(local, objs_local, objs_general, args)
-    bundle1 = bundle_stats(pop_generalist, pop_env)
+    bundle = bundle_stats(pop_generalist, pop_env)
+    additional_stats = bundle_stats_NNSGA(local, objs_local, objs_general, args)
 
-    append_stats(f"{args.save_to}/Stats.json", {**bundle0, **bundle1})
+    bundle.update(additional_stats)
+
+    append_stats(f"{args.save_to}/Stats.json", bundle)
     if args.verbose > 0:
         print(f"\tExecution saved at {args.save_to}.")
     if 0 < args.max_budget < sum(Configuration.budget_spent):

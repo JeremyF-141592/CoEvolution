@@ -174,8 +174,10 @@ class CollectBall(ParameterizedEnvironment):
 
             if count % 50 == 0 and count >= 900:
                 if np.array(is_stuck_x).std() + np.array(is_stuck_y).std() < 10:
-                    print("stop", count)
                     break
+
+            if len(self.balls) == 0:
+                break
 
             if len(is_stuck_x) == 200:
                 is_stuck_x.popleft()

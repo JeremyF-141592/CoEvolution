@@ -23,7 +23,7 @@ class Configuration:
         from Objects.Optimizers.Adam import Adam
         import Utils.Metrics
 
-        Configuration.metric = Utils.Metrics.fitness_metric
+        Configuration.metric = Utils.Metrics.fitness_bc
 
         Configuration.optimizer = Adam()
 
