@@ -128,7 +128,7 @@ class CollectBall(ParameterizedEnvironment):
                 return 1.0
         return 0.0
 
-    def __call__(self, agent, render=False, use_state_path=False, max_steps=12000, exceed_reward=0):
+    def __call__(self, agent, render=False, use_state_path=False, max_steps=20000, exceed_reward=0):
         self.balls = self.init_balls.copy()
         self.add_balls()
         if render and not self.windows_alive:
@@ -176,7 +176,7 @@ class CollectBall(ParameterizedEnvironment):
                 if np.array(is_stuck_x).std() + np.array(is_stuck_y).std() < 10:
                     break
 
-            if len(self.balls) == 0:
+            if len(self.balls) == 0 and count >= 900:
                 break
 
             if len(is_stuck_x) == 200:
@@ -188,7 +188,7 @@ class CollectBall(ParameterizedEnvironment):
             is_stuck_y.append(self.pos[1])
 
             count += 1
-            if count > max_steps:
+            if count >= max_steps:
                 fitness += exceed_reward
                 break
         return Configuration.metric(agent, self, fitness, path)
