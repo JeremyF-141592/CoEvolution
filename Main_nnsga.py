@@ -131,7 +131,7 @@ for t in range(start_from, args.T):
                 c_sorted = np.array(c_dists).argsort()
                 for k in range(min(extraction_size, args.pop_size)):
                     pop_generalist.append(pop_ag[i][c_sorted[k]])
-        pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty, obj_jensen_shannon()], args)
+        pop_generalist, objs_general = NSGAII(pop_generalist, pop_env, [obj_generalisation, obj_generalist_novelty], args)
         pop_generalist = [pop_generalist[i] for _, i in sorted(zip(objs_general, range(len(objs_general))))]
 
     # Save execution ----------------------------------------------------------------------------------
