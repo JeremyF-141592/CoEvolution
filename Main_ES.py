@@ -4,7 +4,7 @@
 # Author : FERSULA Jeremy
 
 from Utils.Loader import resume_from_folder, prepare_folder
-from Utils.Stats import bundle_stats
+from Utils.Stats import bundle_stats, append_stats
 from Algorithms.NSGA2.NSGAII_tools import *
 from Parameters import Configuration
 import ipyparallel as ipp
@@ -34,7 +34,7 @@ parser = argparse.ArgumentParser(description='NSGA2 Implementation as in Deb, K.
 # General
 parser.add_argument('--T', type=int, default=400, help='Iterations limit')
 parser.add_argument('--resume_from', type=str, default="", help="Resume execution from folder.")
-parser.add_argument('--save_to', type=str, default="./NSGA_execution", help="Execution save-to folder.")
+parser.add_argument('--save_to', type=str, default="./ES_execution", help="Execution save-to folder.")
 parser.add_argument('--save_mode', type=str, default="all", help="'all' or 'last'")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number of environment evaluations.")
@@ -75,6 +75,13 @@ def ES_Step(theta, envs, args):
     og_weights = theta.get_weights()
 
     shared_gaussian_table = [np.random.normal(0, 1, size=len(og_weights)) for i in range(args.batch_size)]
+
+    if theta.get_opt_state() is None:
+        theta.set_opt_state(Configuration.optimizer.default_state())
+    if "t" not in theta.get_opt_state().keys():
+        z = theta.get_opt_state().copy()
+        z.update({"t": 1})
+        theta.set_opt_state(z)
 
     sigma = max(args.noise_limit, args.noise_std * args.noise_decay ** theta.get_opt_state()["t"])
 
@@ -137,9 +144,9 @@ for t in range(start_from, args.T):
     Configuration.budget_spent.append(0)
 
     envs = list()
-    for i in range(len(args.pop_env_size)):
+    for i in range(args.pop_env_size):
         ev = Configuration.envFactory.new()
-        for j in range(np.random.uniform(5, 30)):
+        for j in range(np.random.randint(5, 30)):
             ev = ev.get_child()
         envs.append(ev)
 
@@ -164,6 +171,7 @@ for t in range(start_from, args.T):
         json.dump(budget_dic, f)
     bundle = bundle_stats(pop, envs)
     bundle["Fitness"] = sc
+    append_stats(f"{args.save_to}/Stats.json", bundle)
     if args.verbose > 0:
         print(f"\tExecution saved at {args.save_to}.")
     if 0 < args.max_budget < sum(Configuration.budget_spent):
