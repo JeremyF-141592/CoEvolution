@@ -33,7 +33,8 @@ parser.add_argument('--resume_from', type=str, default="", help="Resume executio
 parser.add_argument('--save_to', type=str, default="./NNSGA_execution", help="Execution save-to folder")
 parser.add_argument('--verbose', type=int, default=0, help="Print information")
 parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number of environment evaluations.")
-parser.add_argument('--save_mode', type=str, default="all", help="'all' or 'last'")
+parser.add_argument('--save_mode', type=str, default="all", help="Specify save mode among ['all', 'last', N] where N is"
+                                                                 "a number corresponding the saving's interval.")
 # Population
 parser.add_argument('--e_init', type=str, default="flat", help='Initial policy of environments among ["flat"]')
 parser.add_argument('--theta_init', type=str, default="random", help='Initial policy of individuals among ["random"]')
@@ -135,15 +136,17 @@ for t in range(start_from, args.T):
         pop_generalist = [pop_generalist[i] for _, i in sorted(zip(objs_general, range(len(objs_general))))]
 
     # Save execution ----------------------------------------------------------------------------------
+    remove_previous = False
+    if args.save_mode == "last" and t > 0:
+        remove_previous = True
     if args.save_mode.isdigit():
+        remove_previous = True
         if t % int(args.save_mode) == 0:
-            with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
-                pickle.dump((pop_ag, pop_env, pop_generalist), f)
-    else:
-        if args.save_mode == "last" and t > 0:
-            os.remove(f'{args.save_to}/Iteration_{t-1}.pickle')
-        with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
-            pickle.dump((pop_ag, pop_env, pop_generalist), f)
+            remove_previous = False
+    if remove_previous:
+        os.remove(f'{args.save_to}/Iteration_{t-1}.pickle')
+    with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+        pickle.dump((pop_ag, pop_env, pop_generalist), f)
     with open(f"{args.save_to}/TotalBudget.json", 'w') as f:
         budget_dic = dict()
         budget_dic["Budget_per_step"] = Configuration.budget_spent

@@ -40,7 +40,8 @@ parser.add_argument('--resume_from', type=str, default="", help="Resume executio
 parser.add_argument('--save_to', type=str, default="./POET_execution", help="Execution save-to folder.")
 parser.add_argument('--verbose', type=int, default=0, help="Print information.")
 parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number of environment evaluations.")
-parser.add_argument('--save_mode', type=str, default="all", help="'all' or 'last'")
+parser.add_argument('--save_mode', type=str, default="all", help="Specify save mode among ['all', 'last', N] where N is"
+                                                                 "a number corresponding the saving's interval.")
 # Population
 parser.add_argument('--pop_size', type=int, default=1, help='Initial population size')
 # Local optimization
@@ -138,15 +139,17 @@ for t in range(start_from, args.T):
     print(" Done.")
 
     # Save current execution ------------------------------------------
+    remove_previous = False
+    if args.save_mode == "last" and t > 0:
+        remove_previous = True
     if args.save_mode.isdigit():
+        remove_previous = True
         if t % int(args.save_mode) == 0:
-            with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
-                pickle.dump(EA_List, f)
-    else:
-        if args.save_mode == "last" and t > 0:
-            os.remove(f'{args.save_to}/Iteration_{t - 1}.pickle')
-        with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
-            pickle.dump(EA_List, f)
+            remove_previous = False
+    if remove_previous:
+        os.remove(f'{args.save_to}/Iteration_{t - 1}.pickle')
+    with open(f'{args.save_to}/Iteration_{t}.pickle', 'wb') as f:
+        pickle.dump(EA_List, f)
     with open(f'{args.save_to}/Archive.pickle', 'wb') as f:
         pickle.dump(Configuration.archive, f)
     with open(f"{args.save_to}/TotalBudget.json", 'w') as f:
