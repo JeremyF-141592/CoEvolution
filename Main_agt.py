@@ -58,6 +58,9 @@ parser.add_argument('--pop_size', type=int, default=50, help='Population size on
 parser.add_argument('--gen_size', type=int, default=50, help='Amount of newly generated individuals')
 parser.add_argument('--pop_env_size', type=int, default=10, help='Amount of actives environments')
 
+parser.add_argument('--progress_min', type=int, default=5, help='Minimum amount of iterations before discard an'
+                                                                'environment.')
+
 args = parser.parse_args()
 
 # Resume execution -----------------------------------------------------------------------------------------------------
@@ -92,17 +95,24 @@ def NSGAII_agt(pop, envs, additional_objectives, args):
             fit[i].append(r[0])
             obs[i].append(r[1])
 
-    progress = np.zeros(len(envs))
+    valid_environments = list()
     for i in range(len(envs)):
         ev = envs[i]
         if not hasattr(ev, "scores"):
             ev.scores = deque()
-        if len(ev.scores) >= 10:
-            ev.scores.popleft()
         ev.scores.append(np.array(fit[i]).max())
-        progress[i] = ev.scores[-1] - ev.scores[0]
-    discard = np.array(progress).argmin()
-    envs.remove(envs[discard])
+        if len(ev.scores) > args.progress_min:
+            ev.scores.popleft()
+            valid_environments.append(i)
+
+    minimum = float("inf")
+    argmin_progress = 0
+    for i in valid_environments:
+        p = envs[i].scores[-1] - envs[i].scores[0]
+        if p < minimum:
+            minimum = p
+            argmin_progress = i
+    envs.remove(envs[argmin_progress])
 
     new_env = envs[np.random.randint(0, len(envs))].get_child()
     envs.append(new_env)
