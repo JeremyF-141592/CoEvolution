@@ -20,19 +20,8 @@ def load_agents_last_iteration(folder):
         resume = pickle.load(f)
     print(f"Execution successfully loaded from {folder} .")
     if len(resume) == 3:
-        loc = input("Use local populations ? (y/n)")
-        loc = loc.lower()
-        while loc != "y" and loc != "n":
-            loc = input("Use local populations ? (y/n)")
-            loc = loc.lower()
-
-        if loc:
-            for pop_ag in resume[0]:
-                for ag in pop_ag[(3*len(pop_ag))//4:]:
-                    ags.append(ag)
-        else:
-            for ag in resume[2][(3*len(resume[2]))//4:]:
-                ags.append(ag)
+        for ag in resume[2]:
+            ags.append(ag)
     elif len(resume) == 2:
         ags = resume[0]
     else:
