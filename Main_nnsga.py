@@ -112,7 +112,7 @@ for t in range(start_from, args.T):
     if gen_env:
         print(f"Generating new environments ...")
         proposed_environments = generate_environments(pop_env, args)
-        pop_env = NSGAII_env(pop_generalist, proposed_environments, [obj_parametrized_env_novelty, obj_env_forwarding], args)
+        pop_env = NSGAII_env(pop_generalist, proposed_environments, [obj_env_pata_ec], args)
         for i in range(len(pop_env)):
             pop_ag[i] += pop_generalist
         objs_local = [list() for i in range(len(pop_env))]

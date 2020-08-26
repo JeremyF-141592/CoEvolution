@@ -151,7 +151,6 @@ def obj_generalisation(index, fitness, observation, new_pop, envs, args):
 
 
 def obj_generalist_novelty(index, fitness, observation, new_pop, envs, args):
-    # todo : replace with true generalist novelty, such as inverted pata-ec
     return obj_mean_observation_novelty(index, fitness, observation, new_pop, envs, args)
 
 
@@ -173,16 +172,7 @@ def obj_env_pata_ec(index, fitness, observation, new_pop, envs, args):
 
 
 def obj_env_forwarding(index, fitness, observation, new_pop, envs, args):
-    ev = envs[index]
-
-    if "past_score" in dir(ev):
-        new_max = np.array(fitness[index]).max()
-        val = new_max - ev.past_score
-        ev.past_score = new_max
-        return val
-    else:
-        ev.past_score = np.array(fitness[index]).max()
-        return 0
+    return 0
 
 
 def obj_parametrized_env_novelty(index, fitness, observation, new_pop, envs, args):
