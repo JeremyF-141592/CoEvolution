@@ -95,28 +95,6 @@ def NSGAII_agt(pop, envs, additional_objectives, args):
             fit[i].append(r[0])
             obs[i].append(r[1])
 
-    valid_environments = list()
-    for i in range(len(envs)):
-        ev = envs[i]
-        if not hasattr(ev, "scores"):
-            ev.scores = deque()
-        ev.scores.append(np.array(fit[i]).max())
-        if len(ev.scores) > args.progress_min:
-            ev.scores.popleft()
-            valid_environments.append(i)
-
-    minimum = float("inf")
-    argmin_progress = 0
-    for i in valid_environments:
-        p = envs[i].scores[-1] - envs[i].scores[0]
-        if p < minimum:
-            minimum = p
-            argmin_progress = i
-    envs.remove(envs[argmin_progress])
-
-    new_env = envs[np.random.randint(0, len(envs))].get_child()
-    envs.append(new_env)
-
     results = add_objectives(fit, obs, new_pop, additional_objectives, envs, args)
 
     nd_sort = np.array(fast_non_dominated_sort(results))
@@ -146,6 +124,36 @@ def NSGAII_agt(pop, envs, additional_objectives, args):
         for i in range(args.pop_size - len(pop)):  # fill the population with less crowded individuals of the last front
             pop.append(fronts[last_front][cdist_sort[i]])
             objs.append(fronts_objectives[last_front][cdist_sort[i]])
+
+    valid_environments = list()
+    for i in range(len(envs)):
+        if not hasattr(envs[i], "scores"):
+            envs[i].scores = deque()
+        envs[i].scores.append(np.array(fit[i]).max())
+        if len(envs[i].scores) > args.progress_min:
+            envs[i].scores.popleft()
+            valid_environments.append(i)
+
+    minimum = float("inf")
+    argmin_progress = 0
+    for i in valid_environments:
+        p = envs[i].scores[-1] - envs[i].scores[0]
+        if p < minimum:
+            minimum = p
+            argmin_progress = i
+    if len(valid_environments) > 0:
+        envs.remove(envs[argmin_progress])
+        new_env = envs[np.random.randint(0, len(envs))].get_child()
+        best_of_all = np.array(fit).max()
+        mean_all = np.array(fit).mean()
+        for i in range(10):
+            new_env_scores = Configuration.lview.map(new_env, fronts[last_front])
+            Configuration.budget_spent[-1] += len(new_env_scores)
+            new_env_scores = np.array(new_env_scores)
+            if mean_all <= new_env_scores.max() < best_of_all:
+                break
+            new_env = envs[np.random.randint(0, len(envs))].get_child()
+        envs.append(new_env)
 
     # Return new population and their objectives
     return pop, objs

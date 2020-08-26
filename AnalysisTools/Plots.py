@@ -10,9 +10,9 @@ sys.path.insert(1, "../")
 from Utils.Stats import unpack_stats
 
 # Path to the execution folder
-path = "../temp/NNSGA_4"
+path = "../temp/POET_last/"
 # Indicates if the plots should be generated for every sub directory of the 'path' folder
-sub_directories = False
+sub_directories = True
 
 
 def plot_raw(key, dic, destination):
@@ -97,11 +97,10 @@ if sub_directories:
         print("Done.", p)
 else:
     dic = unpack_stats(f"{path}/Stats.json")
-    print(len(dic["Dist_Mean"]))
     if not os.path.exists(f"{path}/Plots"):
         os.mkdir(f"{path}/Plots")
     for key, value in dic.items():
         plot(value, key, f"{path}/Plots")
         plt.close()
 
-print("Done.")
+    print("Done.")
