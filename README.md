@@ -25,10 +25,10 @@ More details can be found in the "Algorithms" section of the wiki.
  
  # Dependencies
  
- **Python 3.4 is required**, due to the frequent use of f-strings.
+ **Python 3.6 is required**, due to the frequent use of f-strings. The package f2format (https://github.com/pybpc/f2format) may come in handy.
  
  Main package dependencies are as follow :
- * Numpy
+ * Numpy / Matplotlib / Scipy
  * Ipyparallel (https://github.com/ipython/ipyparallel)
  * Gym (https://github.com/openai/gym)
  
@@ -52,6 +52,6 @@ Some environments in the repository also need they own packages, including but n
   
   > python POET_Main.py
   
-  Arguments can be written directly in the shell (--*arg* %d), and are detailed in each algorithm's main file.
+  Arguments can be written directly in the shell (--*arg* %d), arguments informations can be displayed with --h or --help.
   
-  It is possible to resume any execution with the argument --resume_from *\*folder\**, loading the last indexed Iteration_%d file, archive if needed and the file *commandline_args.txt* containing previous execution arguments.
+  It is possible to resume any execution with the argument --resume_from *\*folder\**, loading the last indexed Iteration_%d file, archive if needed and the file *Hyperparameters.json* containing previous execution arguments.
