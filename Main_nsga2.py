@@ -87,6 +87,13 @@ for t in range(start_from, args.T):
     print(f"Iteration {t} ...", flush=True)
     Configuration.budget_spent.append(0)
 
+    envs = list()
+    for i in range(20):
+        ev = Configuration.envFactory.new()
+        for j in range(30):
+            ev = ev.get_child()
+        envs.append(ev)
+
     pop, objs = NSGAII(pop, envs, [obj_mean_fitness, obj_mean_observation_novelty], args)
 
     # Save execution ----------------------------------------------------------------------------------
