@@ -13,7 +13,8 @@ Key-words : Reinforcement Learning, Co-Evolution, Evolution algorithms, Quality-
 Currently, the repository includes the full implementations of:
 
 * NSGA-II (Deb, K. et al 2002)
-* POET Enhanced (Wang, R. et al. 2020)
+* POET Enhanced (Wang, R. et al. 2020))
+* Evolution Strategies (Salimans et al., 2017)
 * A new NSGA-II inspired co-evolution algorithm
 
 As well as a structure for co-evolution built up in a test/learner fashion:
