@@ -1,8 +1,7 @@
-# NSGA2 Implementation as in Deb, K., Pratap, A., Agarwal, S., & Meyarivan,
-# T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II
-#
-# Author : FERSULA Jeremy
-
+"""
+NSGA2 (Deb et al. 2002), evaluated by default on a random set of 20 environments at each iteration.
+The environment set can be specified with a pickle file, using --load_env.
+"""
 import argparse
 import json
 import pickle
@@ -42,7 +41,7 @@ parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number o
 # Population
 parser.add_argument('--pop_size', type=int, default=100, help='Population size')
 # NSGA2
-parser.add_argument('--env_path', type=str, default="", help='Path to pickled environment')
+parser.add_argument('--load_env', type=str, default="", help='Path to pickled environment')
 parser.add_argument('--gen_size', type=int, default=100, help='Population generation size')
 parser.add_argument('--p_mut_ag', type=float, default=0.5, help='Probability of mutation')
 parser.add_argument('--p_cross_ag', type=float, default=0, help='Probability of crossover')
@@ -74,25 +73,25 @@ else:
 
 
 # NSGAII Algorithm -----------------------------------------------------------------------------------------------------
+envs = list()
 
-if os.path.exists(args.env_path):
-    with open(args.env_path, "rb") as f:
+default = True
+if os.path.exists(args.load_env):
+    with open(args.load_env, "rb") as f:
         envs = pickle.load(f)
-else:
-    envs = [Configuration.envFactory.new()]
-    with open(f"{args.save_to}/Environment.pickle", "wb") as f:
-        pickle.dump(envs, f)
+    default = False
 
 for t in range(start_from, args.T):
     print(f"Iteration {t} ...", flush=True)
     Configuration.budget_spent.append(0)
 
-    envs = list()
-    for i in range(20):
-        ev = Configuration.envFactory.new()
-        for j in range(30):
-            ev = ev.get_child()
-        envs.append(ev)
+    if default:
+        envs = list()
+        for i in range(20):
+            ev = Configuration.envFactory.new()
+            for j in range(30):
+                ev = ev.get_child()
+            envs.append(ev)
 
     pop, objs = NSGAII(pop, envs, [obj_mean_fitness, obj_mean_observation_novelty], args)
 

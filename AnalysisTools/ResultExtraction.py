@@ -10,22 +10,36 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-paths = ["../temp/ResultsFinal.pickle"]
-bins = range(9)
-group = True
+# path to pickled results
+paths = ["../Results/FinalResults.pickle"]
+
+bins = range(9)  # Bins for solvability histogram
+group = True  # Group executions with the same radical followed by a number
+
+# Rename dictionary keys
 rename = {
-    "NNSGA_JSG": "NNSGA Global + JS (5)",
-    "NNSGA_G": "NNSGA Global (5)",
-    "NNSGA_": "NNSGA Global + Local (5)",
-    # "NNSGA20K_": "NNSGA 12K Local + Global (1)",
+    "NNSGA_f": "NNSGA Global PATA-EC (5)",
+    "NSGA2_f": "NSGA2 Random Environments (5)",
+    "NNSGA_3f": "NSGA2 Local + Global PATA-EC (5)",
+    "NNSGA_4f": "NNSGA Global PATA-EC + Unique (1)",
     "POET_": "POET (5)"
 }
-pop = [
-    "NNSGA_JS",
-    "NNSGA20K_",
-    "NNSGA20K_G"
+
+# Fill this list to keep only the following keys
+keep = [
+    "POET_",
+    "NNSGA_f",
+    "NSGA2_f",
+    "NNSGA_3f",
+    "NNSGA_4f"
 ]
 
+# Fill this list to remove the following keys
+pop = [
+
+]
+
+# ----------------------------------------------------------------------------------------------------------------------
 res = dict()
 for p in paths:
     with open(p, "rb") as f:
@@ -43,15 +57,36 @@ if group:
 else:
     batches = res.copy()
 
+# KEEP
+all_keys = list(batches.keys())
+if len(keep) > 0:
+    for p in all_keys:
+        delete = True
+        for s in keep:
+            if re.match(s, p):
+                delete = False
+                break
+        if delete and p in batches.keys():
+            batches.pop(p)
+
+# POP
+all_keys = list(batches.keys())
+for p in all_keys:
+    delete = False
+    for s in pop:
+        if re.match(s, p):
+            delete = True
+            break
+    if delete and p in batches.keys():
+        batches.pop(p)
+
+# RENAME
 algorithm_batches = dict()
 for k in batches.keys():
     if k in rename.keys():
         algorithm_batches[rename[k]] = batches[k].copy()
     else:
         algorithm_batches[k] = batches[k].copy()
-
-for p in pop:
-    algorithm_batches.pop(p)
 
 print("--- Mean solvability ---")
 sns.set_style('whitegrid')
@@ -102,15 +137,27 @@ for k in solv0.keys():
     else:
         solv[k] = solv0[k]
 
+gen = dict()
 for key in algorithm_batches.keys():
+    radical = re.sub("\d+$", "", str(key))
+    if radical in gen.keys():
+        gen[radical].append(solv[key])
+    else:
+        gen[radical] = [solv[key]]
+
+for key in gen.keys():
     plt.title(f"Generalization score of the best agent - CollectBall ({nb_env} Test Environments)")
-    plt.plot(count, solv[key], "ob", label=key)
-    plt.text(count+0.05, solv[key], round(solv[key], 2))
+    for s in gen[key]:
+        plt.plot(count, s, "ob", label=key)
+        plt.text(count+0.05, s, round(s, 2))
     count += 1
-    labels.append(key)
+    if key in rename.keys():
+        labels.append(rename[key])
+    else:
+        labels.append(key)
 
 sns.set_style('whitegrid')
 plt.ylabel("Mean fitness over environments")
 plt.xticks(np.arange(count), labels)  # Set text labels.
-# plt.legend()
+plt.xlim(0.8, count-0.8)
 plt.show()

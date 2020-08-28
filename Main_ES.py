@@ -1,7 +1,7 @@
-# NSGA2 Implementation as in Deb, K., Pratap, A., Agarwal, S., & Meyarivan,
-# T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: NSGA-II
-#
-# Author : FERSULA Jeremy
+"""
+Evolution Strategies (Salimans 2017), evaluated by default on a random set of 20 environments at each iteration.
+The environment set can be specified with a pickle file, using --load_env.
+"""
 
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats
@@ -27,9 +27,7 @@ Configuration.lview.block = True
 
 # Parse arguments ------------------------------------------------------------------------------------------------------
 
-parser = argparse.ArgumentParser(description='NSGA2 Implementation as in Deb, K., Pratap, A., Agarwal, S., & Meyarivan,'
-                                             'T. A. M. T. (2002). A fast and elitist multiobjective genetic algorithm: '
-                                             'NSGA-II')
+parser = argparse.ArgumentParser(description='Evolution Strategies as in Salimans et al. 2017')
 
 # General
 parser.add_argument('--T', type=int, default=400, help='Iterations limit')
@@ -42,6 +40,7 @@ parser.add_argument('--max_budget', type=int, default=-1, help="Maximum number o
 # Population
 parser.add_argument('--pop_size', type=int, default=100, help='Population size')
 parser.add_argument('--pop_env_size', type=int, default=20, help='Environment Population size')
+parser.add_argument('--load_env', type=str, default="", help='Path to pickled environment')
 # Local optimization
 parser.add_argument('--lr_init', type=float, default=0.01, help="Learning rate initial value")
 parser.add_argument('--lr_decay', type=float, default=0.9999, help="Learning rate decay")
@@ -135,7 +134,15 @@ def rank_normalize(arr):
     return 2*res - 1
 
 
-# NSGAII Algorithm -----------------------------------------------------------------------------------------------------
+envs = list()
+
+default = True
+if os.path.exists(args.load_env):
+    with open(args.load_env, "rb") as f:
+        envs = pickle.load(f)
+    default = False
+
+# ES Algorithm ---------------------------------------------------------------------------------------------------------
 
 if len(pop) == 0:
     pop.append(Configuration.agentFactory.new())
@@ -144,12 +151,13 @@ for t in range(start_from, args.T):
     print(f"Iteration {t} ...", flush=True)
     Configuration.budget_spent.append(0)
 
-    envs = list()
-    for i in range(args.pop_env_size):
-        ev = Configuration.envFactory.new()
-        for j in range(np.random.randint(5, 30)):
-            ev = ev.get_child()
-        envs.append(ev)
+    if default:
+        envs = list()
+        for i in range(args.pop_env_size):
+            ev = Configuration.envFactory.new()
+            for j in range(30):
+                ev = ev.get_child()
+            envs.append(ev)
 
     ag, sc = ES_Step(pop[0], envs, args)
 

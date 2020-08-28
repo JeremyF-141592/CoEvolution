@@ -1,3 +1,8 @@
+"""
+This file is an aborted project of using the IPCA structure (De Jong, 2004) to drive o co-evolution of agents
+and environments.
+"""
+
 from Algorithms.IPCA.IPCA_core import *
 from Utils.Loader import resume_from_folder, prepare_folder
 from Utils.Stats import bundle_stats, append_stats

@@ -136,7 +136,7 @@ def med_qtile(path, key):
 
 
 def min_max(path, key):
-    """Reads a pickled stat bundle, and return (iterations, mean, std) of a stat."""
+    """Reads a pickled stat bundle, and return (iterations, min, max) of a stat."""
     res = list()
     with open(path, "r") as f:
         for line in f.readlines():

@@ -56,7 +56,6 @@ parser.add_argument('--knn_env', type=int, default=5, help='KNN environment nove
 parser.add_argument('--pop_size', type=int, default=50, help='Population size on each environment')
 parser.add_argument('--gen_size', type=int, default=50, help='Amount of newly generated individuals')
 parser.add_argument('--pop_env_size', type=int, default=6, help='Amount of actives environments')
-parser.add_argument('--pop_general_size', type=int, default=50, help='Population size on each environment')
 parser.add_argument('--t_local', type=int, default=20, help='Iterations spent locally')
 parser.add_argument('--t_global', type=int, default=20, help='Iterations spent globally')
 parser.add_argument('--mean', type=float, default=-0.25, help='Generalisation score, sliding mean of fitness')
@@ -125,10 +124,10 @@ for t in range(start_from, args.T):
     else:
         print(f"Global iteration {t} ...")
         if transition_global:
-            # For each environment, extract pop_general_size / pop_env_size individuals
+            # For each environment, extract pop_size / pop_env_size individuals
             for i in range(len(pop_env)):
                 c_dists = crowding_distance(objs_local[i])
-                extraction_size = int(np.floor(args.pop_general_size / len(pop_env)))
+                extraction_size = int(np.floor(args.pop_size / len(pop_env)))
                 c_sorted = np.array(c_dists).argsort()
                 for k in range(min(extraction_size, args.pop_size)):
                     pop_generalist.append(pop_ag[i][c_sorted[k]])

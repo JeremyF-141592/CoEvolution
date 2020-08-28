@@ -10,9 +10,9 @@ sys.path.insert(1, "../")
 from Utils.Stats import unpack_stats
 
 # Path to the execution folder
-path = "../temp/POET_last/"
+path = "../temp/NNSGA_4f0/"
 # Indicates if the plots should be generated for every sub directory of the 'path' folder
-sub_directories = True
+sub_directories = False
 
 
 def plot_raw(key, dic, destination):
