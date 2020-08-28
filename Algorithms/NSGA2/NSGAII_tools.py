@@ -171,6 +171,11 @@ def obj_env_pata_ec(index, fitness, observation, new_pop, envs, args):
     return dists[:args.knn_env].mean()
 
 
+def obj_env_unique(index, fitness, observation, new_pop, envs, args):
+    w = normalize_pata_ec(fitness[index], args)
+    return len(np.unique(w))
+
+
 def obj_env_forwarding(index, fitness, observation, new_pop, envs, args):
     return 0
 
@@ -246,23 +251,24 @@ def NSGAII_env(pop, envs, additional_objectives, args):
         fronts[nd_sort[i]].append(envs[i])
         fronts_objectives[nd_sort[i]].append(results[i])
 
-    pop = list()  # New population
+    pop_env = list()  # New population
     last_front = 0
     for i in range(len(fronts)):
-        if len(pop) + len(fronts[i]) > args.pop_env_size:
+        if len(pop_env) + len(fronts[i]) > args.pop_env_size:
             break
-        pop = pop + fronts[i]
+        pop_env = pop_env + fronts[i]
         last_front = i + 1
 
     if last_front < len(fronts):
         cdistance = np.array(crowding_distance(fronts_objectives[last_front]))
         cdist_sort = cdistance.argsort()[::-1]
 
-        for i in range(args.pop_env_size - len(pop)):  # fill the env population with less crowded individuals of the last front
-            pop.append(fronts[last_front][cdist_sort[i]])
+        # fill the env population with less crowded individuals of the last front
+        for i in range(args.pop_env_size - len(pop_env)):
+            pop_env.append(fronts[last_front][cdist_sort[i]])
 
     # Return new env population
-    return pop
+    return pop_env
 
 
 def normalize_pata_ec(arr, args):
